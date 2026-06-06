@@ -1,0 +1,126 @@
+<resources>
+    <string name="search_placeholder">Search by title, author …</string>
+    <string name="search_all_empty">Your collection is empty\nTap + to add your first book</string>
+    <string name="search_category_empty">No items in this category yet</string>
+    <string name="search_empty">No results for %1$s</string>
+    <plurals name="item_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="delete_item_title">Delete item?</string>
+    <string name="delete_item_message">This will permanently remove the item from your collection.</string>
+    <string name="duplicate_title_dialog_title">Already in your collection</string>
+    <string name="duplicate_title_dialog_message">A title with the same name already exists in this category. Add it anyway?</string>
+    <string name="finished">Finished</string>
+    <string name="bought">Bought</string>
+    <string name="wishlist">On my Wishlist</string>
+    <string name="favorite">Favorite (add to Widget)</string>
+    <string name="favorite_ios">Favorite</string>
+    <string name="add_to_collection">Add to collection</string>
+    <string name="edit_item">Edit item</string>
+    <string name="type_section">Type</string>
+    <string name="edit_title">Title *</string>
+    <string name="title_required">Title is required</string>
+    <string name="author">Author</string>
+    <string name="illustrator">Illustrator</string>
+    <string name="publication_year">Publication year</string>
+    <string name="description">Description</string>
+    <string name="progress_section">Progress</string>
+    <string name="last_volume">Last volume</string>
+    <string name="last_chapter">Last chapter</string>
+    <string name="last_season">Last season</string>
+    <string name="last_episode">Last episode</string>
+    <string name="add_item">Save to Collection</string>
+    <string name="update_item">Save changes</string>
+
+    <string name="searching">Searching…</string>
+    <string name="searching_no_result">No results found for %1$s.</string>
+    <string name="searching_error">Search failed. Please try again.</string>
+    <string name="search_online">Search online</string>
+    <string name="result_dialog_title">Search results</string>
+    <string name="result_dialog_notice">Results are in English. No French source available for manga/anime.</string>
+    <string name="result_dialog_toggle">Add the description anyway</string>
+    <string name="desc_conflict_title">Description already filled</string>
+    <string name="desc_conflict_message">A description already exists. What do you want to do with the new one?</string>
+    <string name="desc_replace">Replace</string>
+    <string name="desc_concatenate">Concatenate</string>
+    <string name="desc_cancel">Don't add it</string>
+
+    <string name="vol_number">Vol. %1$d</string>
+    <string name="chap_number">Ch. %1$d</string>
+    <string name="season_number">S%1$d</string>
+    <string name="ep_number">Ep. %1$d</string>
+    <string name="add_number">+1</string>
+
+    <string name="type_book">Book</string>
+    <string name="type_manga">Manga</string>
+    <string name="type_comic">Comic</string>
+
+    <string name="tab_collection">Collection</string>
+    <string name="tab_stats">Statistics</string>
+    <string name="stats_total">Total</string>
+
+    <string name="filter_all">All</string>
+    <string name="filter_book">Books</string>
+    <string name="filter_manga">Manga</string>
+    <string name="filter_comic">Comics</string>
+    <string name="filter_fav">★ Favs</string>
+    <string name="filter_not_fav">★ Not fav</string>
+    <string name="filter_not_bought">Not bought</string>
+    <string name="filter_not_finished">Not finished</string>
+    <string name="filter_not_loaned">Not loaned</string>
+    <string name="filter_wishlist">My Wishlist</string>
+    <string name="filter_not_in_wishlist">Not in my Wishlist</string>
+
+    <string name="scan_barcode">Scan barcode</string>
+    <string name="scan_barcode_error">Barcode scan failed. Please try again.</string>
+
+    <string name="statistics_type">Collection</string>
+    <string name="statistics_book">Number of Books</string>
+    <string name="statistics_manga">Number of Mangas</string>
+    <string name="statistics_comics">Number of Comics</string>
+    <string name="statistics_progress">Progress</string>
+    <string name="statistics_volume">Number of volumes</string>
+    <string name="statistics_chapter">Number of chapters</string>
+    <string name="statistics_episode">Number of episodes</string>
+
+    <string name="csv_headline_title">type,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_borrowed,borrowed_since,borrowed_by</string>
+
+    <string name="loaned">Loaned</string>
+    <string name="loan_borrowed_by">Borrowed by</string>
+    <string name="loan_borrowed_since">Borrowed since (dd/MM/yyyy)</string>
+
+    <string name="go_back_accessibility">Go back</string>
+    <string name="delete_accessibility">Delete Item</string>
+    <string name="up_accessibility">Collapse</string>
+    <string name="down_accessibility">Expand</string>
+    <string name="fav_add_accessibility">Add to Favorite</string>
+    <string name="fav_remove_accessibility">Remove to Favorite</string>
+    <string name="add_accessibility">Add</string>
+    <string name="remove_cover_accessibility">Remove cover image</string>
+    <string name="clear_search_accessibility">Clear search</string>
+    <string name="export_menu_accessibility">Export options</string>
+    <string name="export_csv">Export to CSV</string>
+    <string name="export_database">Export data</string>
+    <string name="import_database">Import data</string>
+
+    <string name="check_update">Check for new volumes</string>
+    <string name="check_update_loading">Checking…</string>
+    <string name="check_update_up_to_date">You\'re up to date!</string>
+    <string name="check_update_error">Could not check for updates. Please try again.</string>
+    <string name="check_update_new_tome">New volumes available! %1$d volumes total (you\'re at tome %2$d)</string>
+    <string name="check_update_new_tome_no_progress">New volumes available! %1$d volumes total</string>
+    <string name="check_update_new_episode">New episodes available! %1$d episodes total (you\'re at episode %2$d)</string>
+    <string name="check_update_new_episode_no_progress">New episodes available! %1$d episodes total</string>
+
+    <string name="discover_manga">Discover manga</string>
+    <string name="discover_title">Top Manga</string>
+    <string name="discover_loading">Loading suggestions…</string>
+    <string name="discover_error">Could not load suggestions. Please try again.</string>
+    <string name="discover_add_wishlist">Add to wishlist</string>
+    <string name="discover_added">Added to wishlist!</string>
+    <string name="discover_retry">Relaunch the search</string>
+</resources>

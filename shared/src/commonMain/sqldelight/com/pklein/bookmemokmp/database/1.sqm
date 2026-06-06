@@ -1,0 +1,17 @@
+-- Migration v1 → v2
+-- Adds the image_url column to store a cover image URL for each item.
+-- Adds the season column to store a last season for each item.
+-- Adds loan tracking: who has borrowed a book and since when.
+-- Existing rows will have NULL for image_url, season, borrowed_since, borrowed_by and is_borrowed = 0.
+ALTER TABLE Book ADD COLUMN image_url TEXT;
+ALTER TABLE Book ADD COLUMN illustrator TEXT;
+ALTER TABLE Book ADD COLUMN season INTEGER;
+ALTER TABLE Book ADD COLUMN wishlist INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE Book ADD COLUMN is_borrowed INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE Book ADD COLUMN borrowed_since INTEGER;
+ALTER TABLE Book ADD COLUMN borrowed_by TEXT;
+ALTER TABLE Book ADD COLUMN jikan_id INTEGER;
+ALTER TABLE Book ADD COLUMN jikan_type TEXT;
+ALTER TABLE Book ADD COLUMN tot_tome INTEGER;
+ALTER TABLE Book ADD COLUMN tot_chapter INTEGER;
+ALTER TABLE Book ADD COLUMN tot_episode INTEGER;

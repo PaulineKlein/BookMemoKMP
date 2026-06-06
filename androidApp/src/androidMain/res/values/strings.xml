@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Book Memo</string>
+    <string name="widget_description">Shows your favorite items</string>
+    <string name="widget_favorites_title">⭐ Favorites</string>
+    <string name="widget_empty">No favorites yet. \nMark items as favorite in the app.</string>
+    <string name="vol_number">Vol. %1$d</string>
+    <string name="chap_number">Ch. %1$d</string>
+    <string name="season_number">S%1$d</string>
+    <string name="ep_number">Ep. %1$d</string>
+</resources>

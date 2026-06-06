@@ -1,0 +1,10 @@
+TEAM_ID=
+
+PRODUCT_NAME=BookMemoKmp
+PRODUCT_BUNDLE_IDENTIFIER=com.pklein.bookmemokmp.BookMemoKmp$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
+
+FRAMEWORK_SEARCH_PATHS=$(inherited) "$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+OTHER_LDFLAGS=$(inherited) -framework BookMemo -lsqlite3

@@ -1,5 +1,7 @@
 package com.pklein.bookmemokmp.data.remote
 
+import com.pklein.bookmemokmp.androidCertFingerprint
+import com.pklein.bookmemokmp.androidPackageName
 import com.pklein.bookmemokmp.data.remote.dto.GoogleBooksResponse
 import com.pklein.bookmemokmp.data.remote.dto.JikanAnimeResponse
 import com.pklein.bookmemokmp.data.remote.dto.JikanAnimeSingleResponse
@@ -17,6 +19,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -54,7 +57,10 @@ class BookSearchService {
                     parameter("q", query)
                     parameter("maxResults", SEARCH_RESULTS_LIMIT)
                     langRestrict?.let { parameter("langRestrict", it) }
+                    // TODO NEED to create an API key for iOS too
                     googleBooksApiKey()?.let { parameter("key", it) }
+                    androidPackageName()?.let { header("X-Android-Package", it) }
+                    androidCertFingerprint()?.let { header("X-Android-Cert", it) }
                 }.body()
         return response.toSearchResults()
     }

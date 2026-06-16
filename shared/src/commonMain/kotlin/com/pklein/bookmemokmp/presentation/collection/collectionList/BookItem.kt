@@ -145,9 +145,9 @@ fun BookItem(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                item.year?.let {
+                if (((item.year ?: 0) > 0)) {
                     Text(
-                        it.toString(),
+                        item.year.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -184,10 +184,18 @@ fun BookItem(
                 ProgressCard(item)
                 Spacer(Modifier.height(6.dp))
 
-                item.description?.let {
+                if (!item.notes.isNullOrBlank()) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        it,
+                        item.notes,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (!item.description.isNullOrBlank()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        item.description,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

@@ -27,8 +27,14 @@
     <string name="illustrator">Dessinateur</string>
     <string name="publication_year">Année de Parution</string>
     <string name="description">Description</string>
+    <string name="notes">Notes</string>
     <string name="progress_section">Progression</string>
     <string name="last_volume">Dernier Tome</string>
+    <string name="total_volumes">Total tomes</string>
+    <string name="volumes_section">Tomes</string>
+    <string name="volumes_check_all">Tout sélectionner</string>
+    <string name="volumes_uncheck_all">Tout désélectionner</string>
+    <string name="volumes_missing">Manquants : %1$s</string>
     <string name="last_chapter">Dernier Chapitre</string>
     <string name="last_season">Dernière Saison</string>
     <string name="last_episode">Dernier Episode</string>
@@ -86,7 +92,7 @@
     <string name="statistics_chapter">Nombre de chapitres</string>
     <string name="statistics_episode">Nombre d'épisodes</string>
 
-    <string name="csv_headline_title">type,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,prêté,prêté_depuis,prêté_à</string>
+    <string name="csv_headline_title">type,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
 
     <string name="loaned">Prêté</string>
     <string name="loan_borrowed_by">Prêté à</string>

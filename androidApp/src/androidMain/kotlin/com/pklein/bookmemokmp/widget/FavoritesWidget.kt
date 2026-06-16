@@ -20,6 +20,7 @@ import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -31,7 +32,6 @@ import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 import com.pklein.bookmemokmp.MainActivity
 import com.pklein.bookmemokmp.R
 import com.pklein.bookmemokmp.domain.model.CollectionItem
@@ -52,6 +52,13 @@ import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.text.font.FontWeight as ComposeFontWeight
 
 const val EXTRA_EDIT_ITEM_ID = "EDIT_ITEM_ID"
+private const val ACTION_EDIT_ITEM = "ACTION_EDIT_ITEM"
+
+// Light / dark color pairs for the widget
+private val widgetBackground = ColorProvider(day = Color(0xFFFFFFFF), night = Color(0xFF1C1C1E))
+private val widgetOnSurface = ColorProvider(day = Color(0xFF000000), night = Color(0xFFFFFFFF))
+private val widgetSubtle = ColorProvider(day = Color(0xFF757575), night = Color(0xFF9E9E9E))
+private val widgetDivider = ColorProvider(day = Color(0xFF9AB8CC), night = Color(0xFF3A5A70))
 
 class FavoritesWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
@@ -73,7 +80,7 @@ private fun FavoritesContent(favorites: List<CollectionItem>) {
         modifier =
             GlanceModifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(widgetBackground)
                 .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Text(
@@ -82,7 +89,7 @@ private fun FavoritesContent(favorites: List<CollectionItem>) {
                 TextStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = ColorProvider(Color.Black),
+                    color = widgetOnSurface,
                 ),
             modifier = GlanceModifier.padding(bottom = 6.dp),
         )
@@ -92,7 +99,7 @@ private fun FavoritesContent(favorites: List<CollectionItem>) {
                 GlanceModifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(Color(0xFF9AB8CC)),
+                    .background(widgetDivider),
         ) {}
 
         if (favorites.isEmpty()) {
@@ -105,7 +112,7 @@ private fun FavoritesContent(favorites: List<CollectionItem>) {
                     style =
                         TextStyle(
                             fontSize = 12.sp,
-                            color = ColorProvider(Color(0xFF757575)),
+                            color = widgetSubtle,
                         ),
                 )
             }
@@ -125,7 +132,7 @@ private fun FavoriteRow(item: CollectionItem) {
     val context = LocalContext.current
     val intent =
         Intent(context, MainActivity::class.java).apply {
-            action = "ACTION_EDIT_ITEM"
+            action = ACTION_EDIT_ITEM
             putExtra(EXTRA_EDIT_ITEM_ID, item.id)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -157,7 +164,7 @@ private fun FavoriteRow(item: CollectionItem) {
                     style =
                         TextStyle(
                             fontSize = 13.sp,
-                            color = ColorProvider(Color.Black),
+                            color = widgetOnSurface,
                         ),
                     maxLines = 1,
                 )
@@ -167,7 +174,7 @@ private fun FavoriteRow(item: CollectionItem) {
                         style =
                             TextStyle(
                                 fontSize = 11.sp,
-                                color = ColorProvider(Color(0xFF757575)),
+                                color = widgetSubtle,
                             ),
                     )
                 }
@@ -192,12 +199,18 @@ private fun ItemType.toEmoji() =
 // the widget's visual structure using standard Compose for the IDE preview pane.
 
 @Composable
-private fun FavoritesContentPreview(favorites: List<CollectionItem>) {
+private fun FavoritesContentPreview(
+    favorites: List<CollectionItem>,
+    dark: Boolean = false,
+) {
+    val bg = if (dark) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)
+    val onSurface = if (dark) Color(0xFFFFFFFF) else Color(0xFF000000)
+    val subtle = if (dark) Color(0xFF9E9E9E) else Color(0xFF757575)
     ComposeColumn(
         modifier =
             Modifier
                 .composeFillMaxSize()
-                .composeBackground(Color.White)
+                .composeBackground(bg)
                 .composePadding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         ComposeText(
@@ -206,12 +219,12 @@ private fun FavoritesContentPreview(favorites: List<CollectionItem>) {
                 ComposeTextStyle(
                     fontWeight = ComposeFontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color.Black,
+                    color = onSurface,
                 ),
             modifier = Modifier.composePadding(bottom = 6.dp),
         )
         HorizontalDivider(
-            color = Color(0xFF9AB8CC),
+            color = if (dark) Color(0xFF3A5A70) else Color(0xFF9AB8CC),
             thickness = 1.dp,
             modifier = Modifier.composePadding(bottom = 6.dp),
         )
@@ -222,17 +235,13 @@ private fun FavoritesContentPreview(favorites: List<CollectionItem>) {
             ) {
                 ComposeText(
                     text = "No favorites yet",
-                    style =
-                        ComposeTextStyle(
-                            fontSize = 12.sp,
-                            color = Color(0xFF757575),
-                        ),
+                    style = ComposeTextStyle(fontSize = 12.sp, color = subtle),
                 )
             }
         } else {
             ComposeColumn(modifier = Modifier.composeFillMaxSize()) {
                 for (item in favorites) {
-                    FavoriteRowPreview(item)
+                    FavoriteRowPreview(item, onSurface = onSurface, subtle = subtle)
                 }
             }
         }
@@ -240,7 +249,11 @@ private fun FavoritesContentPreview(favorites: List<CollectionItem>) {
 }
 
 @Composable
-private fun FavoriteRowPreview(item: CollectionItem) {
+private fun FavoriteRowPreview(
+    item: CollectionItem,
+    onSurface: Color = Color.Black,
+    subtle: Color = Color(0xFF757575),
+) {
     val progressParts =
         buildList {
             item.tome?.let { add("Vol. $it") }
@@ -263,58 +276,74 @@ private fun FavoriteRowPreview(item: CollectionItem) {
         ComposeColumn(modifier = Modifier.composeFillMaxWidth()) {
             ComposeText(
                 text = item.title,
-                style =
-                    ComposeTextStyle(
-                        fontSize = 13.sp,
-                        color = Color.Black,
-                    ),
+                style = ComposeTextStyle(fontSize = 13.sp, color = onSurface),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             if (progressParts.isNotEmpty()) {
                 ComposeText(
                     text = progressParts.joinToString(" · "),
-                    style =
-                        ComposeTextStyle(
-                            fontSize = 11.sp,
-                            color = Color(0xFF757575),
-                        ),
+                    style = ComposeTextStyle(fontSize = 11.sp, color = subtle),
                 )
             }
         }
     }
 }
 
-@Preview(name = "Widget — empty", showBackground = true, widthDp = 200, heightDp = 160)
+@Preview(name = "Widget — empty (light)", showBackground = true, widthDp = 200, heightDp = 160)
 @Composable
 private fun PreviewFavoritesEmpty() {
-    FavoritesContentPreview(favorites = emptyList())
+    FavoritesContentPreview(favorites = emptyList(), dark = false)
 }
 
-@Preview(name = "Widget — with items", showBackground = true, widthDp = 200, heightDp = 300)
+@Preview(
+    name = "Widget — empty (dark)",
+    showBackground = true,
+    backgroundColor = 0xFF1C1C1E,
+    widthDp = 200,
+    heightDp = 160,
+)
+@Composable
+private fun PreviewFavoritesEmptyDark() {
+    FavoritesContentPreview(favorites = emptyList(), dark = true)
+}
+
+@Preview(name = "Widget — with items (light)", showBackground = true, widthDp = 200, heightDp = 300)
 @Composable
 private fun PreviewFavoritesWithItems() {
-    FavoritesContentPreview(
-        favorites =
-            listOf(
-                CollectionItem(
-                    id = 1,
-                    type = ItemType.LITERATURE,
-                    title = "The Hobbit",
-                    author = "Tolkien",
-                    favorite = true,
-                ),
-                CollectionItem(
-                    id = 2,
-                    type = ItemType.MANGA,
-                    title = "Berserk",
-                    tome = 12,
-                    chapter = 980,
-                    episode = 100,
-                    season = 2,
-                    favorite = true,
-                ),
-                CollectionItem(id = 3, type = ItemType.COMIC, title = "Watchmen", favorite = true),
-            ),
-    )
+    FavoritesContentPreview(favorites = previewItems, dark = false)
 }
+
+@Preview(
+    name = "Widget — with items (dark)",
+    showBackground = true,
+    backgroundColor = 0xFF1C1C1E,
+    widthDp = 200,
+    heightDp = 300,
+)
+@Composable
+private fun PreviewFavoritesWithItemsDark() {
+    FavoritesContentPreview(favorites = previewItems, dark = true)
+}
+
+private val previewItems =
+    listOf(
+        CollectionItem(
+            id = 1,
+            type = ItemType.LITERATURE,
+            title = "The Hobbit",
+            author = "Tolkien",
+            favorite = true,
+        ),
+        CollectionItem(
+            id = 2,
+            type = ItemType.MANGA,
+            title = "Berserk",
+            tome = 12,
+            chapter = 980,
+            episode = 100,
+            season = 2,
+            favorite = true,
+        ),
+        CollectionItem(id = 3, type = ItemType.COMIC, title = "Watchmen", favorite = true),
+    )

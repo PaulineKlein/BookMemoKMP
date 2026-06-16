@@ -318,7 +318,11 @@ class CollectionViewModel(
                 append(",")
                 append(item.borrowedSince?.toString() ?: "")
                 append(",")
-                appendLine((item.borrowedBy ?: "").csvEscape())
+                append((item.borrowedBy ?: "").csvEscape())
+                append(",")
+                append(item.checkedTomes.joinToString(";").csvEscape())
+                append(",")
+                appendLine((item.notes ?: "").csvEscape())
             }
         }
 

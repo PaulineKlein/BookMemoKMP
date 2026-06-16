@@ -76,6 +76,7 @@ import bookmemokmp.shared.generated.resources.last_volume
 import bookmemokmp.shared.generated.resources.loan_borrowed_by
 import bookmemokmp.shared.generated.resources.loan_borrowed_since
 import bookmemokmp.shared.generated.resources.loaned
+import bookmemokmp.shared.generated.resources.notes
 import bookmemokmp.shared.generated.resources.progress_section
 import bookmemokmp.shared.generated.resources.publication_year
 import bookmemokmp.shared.generated.resources.remove_cover_accessibility
@@ -83,6 +84,7 @@ import bookmemokmp.shared.generated.resources.scan_barcode
 import bookmemokmp.shared.generated.resources.search_online
 import bookmemokmp.shared.generated.resources.searching
 import bookmemokmp.shared.generated.resources.title_required
+import bookmemokmp.shared.generated.resources.total_volumes
 import bookmemokmp.shared.generated.resources.type_book
 import bookmemokmp.shared.generated.resources.type_comic
 import bookmemokmp.shared.generated.resources.type_manga
@@ -95,6 +97,7 @@ import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.isAndroidPlatform
 import com.pklein.bookmemokmp.presentation.additem.viewmodel.AddItemViewModel
 import com.pklein.bookmemokmp.presentation.additem.viewmodel.SearchState
+import com.pklein.bookmemokmp.presentation.additem.volumeCheckboxGrid.VolumeCheckboxGrid
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import kotlinx.coroutines.launch
@@ -163,6 +166,7 @@ private fun AddItemScreenContent(
     var illustrator by remember { mutableStateOf(initialItem?.illustrator ?: "") }
     var year by remember { mutableStateOf(initialItem?.year?.toString() ?: "") }
     var description by remember { mutableStateOf(initialItem?.description ?: "") }
+    var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
     var bought by remember { mutableStateOf(initialItem?.bought ?: false) }
     var wishlist by remember { mutableStateOf(initialItem?.wishlist ?: false) }
     var favorite by remember { mutableStateOf(initialItem?.favorite ?: false) }
@@ -171,13 +175,24 @@ private fun AddItemScreenContent(
     var chapter by remember { mutableStateOf(initialItem?.chapter?.toString() ?: "") }
     var episode by remember { mutableStateOf(initialItem?.episode?.toString() ?: "") }
     var season by remember { mutableStateOf(initialItem?.season?.toString() ?: "") }
+    var checkedTomes by remember { mutableStateOf(initialItem?.checkedTomes ?: emptyList()) }
+    var totTome by remember { mutableStateOf(initialItem?.totTome?.toString() ?: "") }
+    var volumeSlotCount by remember {
+        mutableStateOf(
+            maxOf(
+                initialItem?.tome ?: 0,
+                initialItem?.totTome ?: 0,
+                initialItem?.checkedTomes?.maxOrNull() ?: 0,
+                1,
+            ),
+        )
+    }
     var titleError by remember { mutableStateOf(false) }
     var imageUrl by remember { mutableStateOf(initialItem?.imageUrl ?: "") }
     var isBorrowed by remember { mutableStateOf(initialItem?.isBorrowed ?: false) }
     var borrowedBy by remember { mutableStateOf(initialItem?.borrowedBy ?: "") }
     var jikanId by remember { mutableStateOf(initialItem?.jikanId) }
     var jikanType by remember { mutableStateOf(initialItem?.jikanType) }
-    var totTome by remember { mutableStateOf(initialItem?.totTome) }
     var totChapter by remember { mutableStateOf(initialItem?.totChapter) }
     var totEpisode by remember { mutableStateOf(initialItem?.totEpisode) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -217,7 +232,10 @@ private fun AddItemScreenContent(
                 imageUrl = result.imageUrl ?: ""
                 jikanId = result.jikanId
                 jikanType = result.jikanType
-                totTome = result.totTome
+                totTome = result.totTome?.toString() ?: totTome
+                result.totTome?.let { n ->
+                    if (n > 0) volumeSlotCount = maxOf(n, tome.toIntOrNull() ?: 0)
+                }
                 totChapter = result.totChapter
                 totEpisode = result.totEpisode
                 titleError = false
@@ -512,6 +530,14 @@ private fun AddItemScreenContent(
                     minLines = 3,
                 )
 
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text(stringResource(Res.string.notes)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                )
+
                 // ── Progress ─────────────────────────────────────────────────────
                 Text(
                     stringResource(Res.string.progress_section),
@@ -525,12 +551,44 @@ private fun AddItemScreenContent(
                 ) {
                     OutlinedTextField(
                         value = tome,
-                        onValueChange = { if (it.all(Char::isDigit)) tome = it },
+                        onValueChange = {
+                            if (it.all(Char::isDigit)) {
+                                tome = it
+                                val n = it.toIntOrNull() ?: 0
+                                if (n > 0) volumeSlotCount = maxOf(n, totTome.toIntOrNull() ?: 0)
+                            }
+                        },
                         label = { Text(stringResource(Res.string.last_volume)) },
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                     )
+                    OutlinedTextField(
+                        value = totTome,
+                        onValueChange = {
+                            if (it.all(Char::isDigit)) {
+                                totTome = it
+                                val n = it.toIntOrNull() ?: 0
+                                if (n > 0) volumeSlotCount = maxOf(n, tome.toIntOrNull() ?: 0)
+                            }
+                        },
+                        label = { Text(stringResource(Res.string.total_volumes)) },
+                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                    )
+                }
+                VolumeCheckboxGrid(
+                    checkedTomes = checkedTomes,
+                    totTome = totTome.toIntOrNull(),
+                    slotCount = volumeSlotCount,
+                    onSlotCountChange = { volumeSlotCount = it },
+                    onCheckedTomesChange = { checkedTomes = it },
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     OutlinedTextField(
                         value = chapter,
                         onValueChange = { if (it.all(Char::isDigit)) chapter = it },
@@ -660,9 +718,11 @@ private fun AddItemScreenContent(
                             borrowedSince = if (isBorrowed) datePickerState.selectedDateMillis else null,
                             jikanId = jikanId,
                             jikanType = jikanType,
-                            totTome = totTome,
+                            totTome = totTome.toIntOrNull(),
                             totChapter = totChapter,
                             totEpisode = totEpisode,
+                            checkedTomes = checkedTomes,
+                            notes = notes.trim().ifBlank { null },
                         )
                     scope.launch {
                         isCheckingDuplicate = true

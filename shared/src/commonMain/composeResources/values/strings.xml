@@ -28,8 +28,14 @@
     <string name="illustrator">Illustrator</string>
     <string name="publication_year">Publication year</string>
     <string name="description">Description</string>
+    <string name="notes">Notes</string>
     <string name="progress_section">Progress</string>
     <string name="last_volume">Last volume</string>
+    <string name="total_volumes">Total volumes</string>
+    <string name="volumes_section">Volumes</string>
+    <string name="volumes_check_all">Select all</string>
+    <string name="volumes_uncheck_all">Deselect all</string>
+    <string name="volumes_missing">Missing: %1$s</string>
     <string name="last_chapter">Last chapter</string>
     <string name="last_season">Last season</string>
     <string name="last_episode">Last episode</string>
@@ -87,7 +93,7 @@
     <string name="statistics_chapter">Number of chapters</string>
     <string name="statistics_episode">Number of episodes</string>
 
-    <string name="csv_headline_title">type,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_borrowed,borrowed_since,borrowed_by</string>
+    <string name="csv_headline_title">type,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
 
     <string name="loaned">Loaned</string>
     <string name="loan_borrowed_by">Borrowed by</string>

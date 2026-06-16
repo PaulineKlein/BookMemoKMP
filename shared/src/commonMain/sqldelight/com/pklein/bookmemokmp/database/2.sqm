@@ -1,0 +1,6 @@
+-- Migration v2 → v3
+-- Adds checked_tomes column: comma-separated list of owned/read volume numbers (e.g. "1,2,5,8").
+-- Adds notes column: free-text user notes per item.
+-- Existing rows get NULL for both columns.
+ALTER TABLE Book ADD COLUMN checked_tomes TEXT AS kotlin.collections.List<kotlin.Int>;
+ALTER TABLE Book ADD COLUMN notes TEXT;

@@ -79,6 +79,8 @@ class CollectionRepositoryImpl(
                 tot_tome = item.totTome?.toLong(),
                 tot_chapter = item.totChapter?.toLong(),
                 tot_episode = item.totEpisode?.toLong(),
+                checked_tomes = item.checkedTomes,
+                notes = item.notes,
             )
             queries.lastInsertRowId().executeAsOne()
         }
@@ -109,6 +111,8 @@ class CollectionRepositoryImpl(
                 tot_tome = item.totTome?.toLong(),
                 tot_chapter = item.totChapter?.toLong(),
                 tot_episode = item.totEpisode?.toLong(),
+                checked_tomes = item.checkedTomes,
+                notes = item.notes,
                 id = item.id,
             )
         }

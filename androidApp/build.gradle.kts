@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -47,8 +49,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = 8
-        versionName = "2.0"
+        versionCode = 10
+        versionName = "2.1"
     }
 
     packaging {
@@ -105,4 +107,6 @@ android {
 dependencies {
     debugImplementation(libs.compose.uiTooling)
     implementation(libs.compose.uiToolingPreview)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
 }

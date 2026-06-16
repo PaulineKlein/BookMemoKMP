@@ -19,6 +19,7 @@ import bookmemokmp.shared.generated.resources.chap_number
 import bookmemokmp.shared.generated.resources.ep_number
 import bookmemokmp.shared.generated.resources.season_number
 import bookmemokmp.shared.generated.resources.vol_number
+import bookmemokmp.shared.generated.resources.volumes_missing
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
@@ -28,7 +29,9 @@ import org.jetbrains.compose.resources.stringResource
 fun ProgressCard(item: CollectionItem) {
     val hasVolume = item.tome != null || item.chapter != null
     val hasEpisode = item.season != null || item.episode != null
-    if (!hasVolume && !hasEpisode) return
+    val hasCheckedTomes = item.checkedTomes.isNotEmpty()
+    val missingLabel = item.missingTomesLabel()
+    if (!hasVolume && !hasEpisode && !hasCheckedTomes && missingLabel == null) return
 
     val onContainer = MaterialTheme.colorScheme.onPrimaryContainer
 
@@ -41,51 +44,72 @@ fun ProgressCard(item: CollectionItem) {
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             val tomeItem =
-                item.tome?.let {
+                if ((item.tome ?: 0) > 0) {
                     if ((item.totTome ?: 0) > 0) {
-                        stringResource(Res.string.vol_number, it) + " / " + item.totTome
+                        stringResource(Res.string.vol_number, item.tome ?: 0) +
+                            " / " +
+                            item.totTome
                     } else {
-                        stringResource(Res.string.vol_number, it)
+                        stringResource(Res.string.vol_number, item.tome ?: 0)
                     }
-                }
-            val chapterItem =
-                item.chapter?.let {
-                    if ((item.totChapter ?: 0) > 0) {
-                        stringResource(Res.string.chap_number, it) + " / " + item.totChapter
-                    } else {
-                        stringResource(Res.string.chap_number, it)
-                    }
-                }
-            val volumeLine = listOfNotNull(tomeItem, chapterItem)
-            val episodeItem =
-                item.episode?.let {
-                    if ((item.totEpisode ?: 0) > 0) {
-                        stringResource(Res.string.ep_number, it) + " / " + item.totEpisode
-                    } else {
-                        stringResource(Res.string.ep_number, it)
-                    }
-                }
-            val seasonItem =
-                item.season?.let {
-                    stringResource(Res.string.season_number, it)
+                } else {
+                    null
                 }
 
-            val episodeLine = listOfNotNull(seasonItem, episodeItem)
+            val chapterItem =
+                if ((item.chapter ?: 0) > 0) {
+                    if ((item.totChapter ?: 0) > 0) {
+                        stringResource(Res.string.chap_number, item.chapter ?: 0) +
+                            " / " +
+                            item.totChapter
+                    } else {
+                        stringResource(Res.string.chap_number, item.chapter ?: 0)
+                    }
+                } else {
+                    null
+                }
+
+            val episodeItem =
+                if ((item.episode ?: 0) > 0) {
+                    if ((item.totEpisode ?: 0) > 0) {
+                        stringResource(Res.string.ep_number, item.episode ?: 0) +
+                            " / " +
+                            item.totEpisode
+                    } else {
+                        stringResource(Res.string.ep_number, item.episode ?: 0)
+                    }
+                } else {
+                    null
+                }
+
+            val seasonItem =
+                if ((item.season ?: 0) > 0) {
+                    stringResource(Res.string.season_number, item.season ?: 0)
+                } else {
+                    null
+                }
 
             if (hasVolume) {
                 Text(
-                    text = volumeLine.joinToString("  ·  "),
+                    text = listOfNotNull(tomeItem, chapterItem).joinToString("  ·  "),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = onContainer,
                 )
             }
             if (hasEpisode) {
                 Text(
-                    text = episodeLine.joinToString("  ·  "),
+                    text = listOfNotNull(seasonItem, episodeItem).joinToString("  ·  "),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = onContainer,
+                )
+            }
+            if (missingLabel != null) {
+                Text(
+                    text = stringResource(Res.string.volumes_missing, missingLabel),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         }
@@ -112,8 +136,7 @@ private fun ProgressCardPreview() {
                     finished = true,
                     isBorrowed = true,
                     borrowedBy = "Alice",
-                    borrowedSince = 1_746_057_600_000L, // 2025-05-01
-                    tome = 3,
+                    borrowedSince = 1_746_057_600_000L,
                     chapter = 42,
                     season = 1,
                     episode = 5,
@@ -140,7 +163,7 @@ private fun ProgressCardNoVolumeNoEpisodePreview() {
                     finished = true,
                     isBorrowed = true,
                     borrowedBy = "Alice",
-                    borrowedSince = 1_746_057_600_000L, // 2025-05-01
+                    borrowedSince = 1_746_057_600_000L,
                     tome = null,
                     totTome = 10,
                     chapter = 42,
@@ -171,7 +194,7 @@ private fun ProgressCardFullPreview() {
                     finished = true,
                     isBorrowed = true,
                     borrowedBy = "Alice",
-                    borrowedSince = 1_746_057_600_000L, // 2025-05-01
+                    borrowedSince = 1_746_057_600_000L,
                     tome = 3,
                     chapter = 42,
                     season = 1,
@@ -179,6 +202,25 @@ private fun ProgressCardFullPreview() {
                     totEpisode = 10,
                     totTome = 5,
                     totChapter = 100,
+                ),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProgressCardWithMissingPreview() {
+    BookMemoTheme {
+        ProgressCard(
+            item =
+                CollectionItem(
+                    id = 2,
+                    type = ItemType.MANGA,
+                    title = "One Piece",
+                    author = "Eiichiro Oda",
+                    tome = 10,
+                    totTome = 10,
+                    checkedTomes = listOf(1, 2, 3, 5, 8, 9, 10),
                 ),
         )
     }
@@ -202,7 +244,7 @@ private fun ProgressCardPreviewBigFont() {
                     finished = true,
                     isBorrowed = true,
                     borrowedBy = "Alice",
-                    borrowedSince = 1_746_057_600_000L, // 2025-05-01
+                    borrowedSince = 1_746_057_600_000L,
                     tome = 3,
                     chapter = 42,
                     season = 1,
@@ -230,7 +272,7 @@ private fun ProgressCardFullPreviewBigFont() {
                     finished = true,
                     isBorrowed = true,
                     borrowedBy = "Alice",
-                    borrowedSince = 1_746_057_600_000L, // 2025-05-01
+                    borrowedSince = 1_746_057_600_000L,
                     tome = 3,
                     chapter = 42,
                     season = 1,

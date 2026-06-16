@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS Book (
     jikan_type     TEXT,
     tot_tome       INTEGER,
     tot_chapter    INTEGER,
-    tot_episode    INTEGER
+    tot_episode    INTEGER,
+    checked_tomes  TEXT AS kotlin.collections.List<kotlin.Int>,
+    notes          TEXT
 );
 
 selectAll:
@@ -38,8 +40,8 @@ selectFavorites:
 SELECT * FROM Book WHERE favorite = 1 ORDER BY title COLLATE NOCASE ASC;
 
 insert:
-INSERT INTO Book (type, title, author, illustrator, year, bought, wishlist, finish, tome, chapter, episode, season, desc, favorite, image_url, is_borrowed, borrowed_since, borrowed_by, jikan_id, jikan_type, tot_tome, tot_chapter, tot_episode)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Book (type, title, author, illustrator, year, bought, wishlist, finish, tome, chapter, episode, season, desc, favorite, image_url, is_borrowed, borrowed_since, borrowed_by, jikan_id, jikan_type, tot_tome, tot_chapter, tot_episode, checked_tomes, notes)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE Book SET
@@ -65,7 +67,9 @@ UPDATE Book SET
     jikan_type     = ?,
     tot_tome       = ?,
     tot_chapter    = ?,
-    tot_episode    = ?
+    tot_episode    = ?,
+    checked_tomes  = ?,
+    notes          = ?
 WHERE id = ?;
 
 updateTotals:

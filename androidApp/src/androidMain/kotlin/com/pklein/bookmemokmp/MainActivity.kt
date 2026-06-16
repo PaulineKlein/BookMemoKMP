@@ -176,6 +176,11 @@ class MainActivity : ComponentActivity() {
                                         totTome = getIntOrNull("tot_tome"),
                                         totChapter = getIntOrNull("tot_chapter"),
                                         totEpisode = getIntOrNull("tot_episode"),
+                                        checkedTomes = getStrOrNull("checked_tomes")
+                                            ?.split(",")
+                                            ?.mapNotNull { n -> n.trim().toIntOrNull() }
+                                            ?: emptyList(),
+                                        notes = getStrOrNull("notes"),
                                     )
                                 repository.add(item)
                             }

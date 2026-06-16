@@ -31,4 +31,6 @@ fun Book.toDomain(): CollectionItem =
         totTome = tot_tome?.toInt(),
         totChapter = tot_chapter?.toInt(),
         totEpisode = tot_episode?.toInt(),
+        checkedTomes = checked_tomes.orEmpty(),
+        notes = notes,
     )

@@ -29,7 +29,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -67,6 +71,7 @@ import bookmemokmp.shared.generated.resources.edit_title
 import bookmemokmp.shared.generated.resources.favorite
 import bookmemokmp.shared.generated.resources.favorite_ios
 import bookmemokmp.shared.generated.resources.finished
+import bookmemokmp.shared.generated.resources.format_section
 import bookmemokmp.shared.generated.resources.go_back_accessibility
 import bookmemokmp.shared.generated.resources.illustrator
 import bookmemokmp.shared.generated.resources.last_chapter
@@ -92,6 +97,7 @@ import bookmemokmp.shared.generated.resources.type_section
 import bookmemokmp.shared.generated.resources.update_item
 import bookmemokmp.shared.generated.resources.wishlist
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.isAndroidPlatform
@@ -161,6 +167,7 @@ private fun AddItemScreenContent(
     var pendingDescriptionResult by remember { mutableStateOf<SearchResult?>(null) }
 
     var type by remember { mutableStateOf(initialItem?.type ?: ItemType.LITERATURE) }
+    var format by remember { mutableStateOf(initialItem?.format) }
     var title by remember { mutableStateOf(initialItem?.title ?: "") }
     var author by remember { mutableStateOf(initialItem?.author ?: "") }
     var illustrator by remember { mutableStateOf(initialItem?.illustrator ?: "") }
@@ -355,7 +362,10 @@ private fun AddItemScreenContent(
                     ItemType.entries.forEachIndexed { index, itemType ->
                         SegmentedButton(
                             selected = type == itemType,
-                            onClick = { type = itemType },
+                            onClick = {
+                                type = itemType
+                                format = null
+                            },
                             shape = SegmentedButtonDefaults.itemShape(index, ItemType.entries.size),
                         ) {
                             Text(
@@ -521,6 +531,48 @@ private fun AddItemScreenContent(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                 )
+
+                var formatExpanded by remember { mutableStateOf(false) }
+                val formatOptions = FormatType.forType(type)
+                ExposedDropdownMenuBox(
+                    expanded = formatExpanded,
+                    onExpandedChange = { formatExpanded = it },
+                ) {
+                    OutlinedTextField(
+                        value = format?.let { stringResource(it.stringRes) } ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(Res.string.format_section)) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                        singleLine = true,
+                    )
+                    ExposedDropdownMenu(
+                        expanded = formatExpanded,
+                        onDismissRequest = { formatExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("—") },
+                            onClick = {
+                                format = null
+                                formatExpanded = false
+                            },
+                        )
+                        formatOptions.forEach { formatType ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(formatType.stringRes)) },
+                                onClick = {
+                                    format = formatType
+                                    formatExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
 
                 OutlinedTextField(
                     value = description,
@@ -723,6 +775,7 @@ private fun AddItemScreenContent(
                             totEpisode = totEpisode,
                             checkedTomes = checkedTomes,
                             notes = notes.trim().ifBlank { null },
+                            format = format,
                         )
                     scope.launch {
                         isCheckingDuplicate = true

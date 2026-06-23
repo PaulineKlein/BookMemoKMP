@@ -81,6 +81,7 @@ class CollectionRepositoryImpl(
                 tot_episode = item.totEpisode?.toLong(),
                 checked_tomes = item.checkedTomes,
                 notes = item.notes,
+                format = item.format?.name,
             )
             queries.lastInsertRowId().executeAsOne()
         }
@@ -113,6 +114,7 @@ class CollectionRepositoryImpl(
                 tot_episode = item.totEpisode?.toLong(),
                 checked_tomes = item.checkedTomes,
                 notes = item.notes,
+                format = item.format?.name,
                 id = item.id,
             )
         }

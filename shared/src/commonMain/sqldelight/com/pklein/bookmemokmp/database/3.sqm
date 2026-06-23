@@ -1,0 +1,4 @@
+-- Migration v3 → v4
+-- Adds format column: stores the FormatType enum name (e.g. "NOVEL", "WEBTOON").
+-- Existing rows get NULL (no format specified).
+ALTER TABLE Book ADD COLUMN format TEXT;

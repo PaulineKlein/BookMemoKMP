@@ -27,8 +27,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProgressCard(item: CollectionItem) {
-    val hasVolume = item.tome != null || item.chapter != null
-    val hasEpisode = item.season != null || item.episode != null
+    val hasVolume = (item.tome ?: 0) > 0 || (item.chapter ?: 0) > 0
+    val hasEpisode = (item.season ?: 0) > 0 || (item.episode ?: 0) > 0
     val hasCheckedTomes = item.checkedTomes.isNotEmpty()
     val missingLabel = item.missingTomesLabel()
     if (!hasVolume && !hasEpisode && !hasCheckedTomes && missingLabel == null) return

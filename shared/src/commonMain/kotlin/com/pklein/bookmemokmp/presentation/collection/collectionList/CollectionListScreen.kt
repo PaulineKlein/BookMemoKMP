@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 fun CollectionListPage(
     items: List<CollectionItem>,
     searchQuery: String,
-    activeFilter: CollectionFilter,
+    activeFilter: CollectionFilter?,
     hasActiveStatusFilters: Boolean,
     listState: LazyListState,
     updateCheckState: UpdateCheckState,
@@ -43,7 +43,7 @@ fun CollectionListPage(
     onCheckForUpdates: (CollectionItem) -> Unit,
     onDismissUpdateCheck: () -> Unit,
 ) {
-    val noActiveFilters = activeFilter == CollectionFilter.ALL && !hasActiveStatusFilters
+    val noActiveFilters = activeFilter == null && !hasActiveStatusFilters
     when {
         items.isEmpty() && searchQuery.isBlank() && noActiveFilters -> {
             EmptyState(stringResource(Res.string.search_all_empty))
@@ -113,7 +113,7 @@ private fun PreviewCollectionWithItems() {
         CollectionListPage(
             items = sampleItems,
             searchQuery = "",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             hasActiveStatusFilters = false,
             listState = LazyListState(),
             onEditClick = {},
@@ -133,7 +133,7 @@ private fun PreviewCollectionWithItemsBigFont() {
         CollectionListPage(
             items = sampleItems,
             searchQuery = "",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             hasActiveStatusFilters = false,
             listState = LazyListState(),
             onEditClick = {},
@@ -186,7 +186,7 @@ private fun PreviewCollectionNoResults() {
         CollectionListPage(
             items = emptyList(),
             searchQuery = "Dune",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             hasActiveStatusFilters = false,
             listState = LazyListState(),
             onEditClick = {},
@@ -207,7 +207,7 @@ private fun PreviewCollectionNoResultsDark() {
         CollectionListPage(
             items = emptyList(),
             searchQuery = "Dune",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             hasActiveStatusFilters = false,
             listState = LazyListState(),
             onEditClick = {},
@@ -228,7 +228,7 @@ private fun PreviewCollectionEmpty() {
         CollectionListPage(
             items = emptyList(),
             searchQuery = "",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             hasActiveStatusFilters = false,
             listState = LazyListState(),
             onEditClick = {},
@@ -249,7 +249,7 @@ private fun PreviewCollectionEmptyBigFont() {
         CollectionListPage(
             items = emptyList(),
             searchQuery = "",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             hasActiveStatusFilters = false,
             listState = LazyListState(),
             onEditClick = {},

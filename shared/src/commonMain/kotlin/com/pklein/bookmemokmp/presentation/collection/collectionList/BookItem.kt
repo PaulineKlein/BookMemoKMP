@@ -137,6 +137,7 @@ fun BookItem(
                         item.illustrator?.takeIf { it.isNotBlank() },
                     ).takeIf { it.isNotEmpty() }?.joinToString(" & ")
 
+                item.format?.let { FormatBadge(it) }
                 authorIllustrator?.let {
                     Text(
                         it,

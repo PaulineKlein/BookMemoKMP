@@ -60,12 +60,14 @@ import bookmemokmp.shared.generated.resources.search_placeholder
 import bookmemokmp.shared.generated.resources.tab_collection
 import bookmemokmp.shared.generated.resources.tab_stats
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.presentation.collection.collectionList.CollectionListPage
 import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverMangaBottomSheet
 import com.pklein.bookmemokmp.presentation.collection.filter.CollectionFilter
 import com.pklein.bookmemokmp.presentation.collection.filter.FilterRow
+import com.pklein.bookmemokmp.presentation.collection.filter.FormatFilterRow
 import com.pklein.bookmemokmp.presentation.collection.filter.StatusFilterField
 import com.pklein.bookmemokmp.presentation.collection.filter.StatusFilters
 import com.pklein.bookmemokmp.presentation.collection.filter.SubFilterRow
@@ -94,6 +96,7 @@ fun CollectionScreen(
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filter by viewModel.filter.collectAsState()
     val statusFilters by viewModel.statusFilters.collectAsState()
+    val formatFilter by viewModel.formatFilter.collectAsState()
     val discoverState by viewModel.discoverState.collectAsState()
     val updateCheckState by viewModel.updateCheckState.collectAsState()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -105,6 +108,7 @@ fun CollectionScreen(
         searchQuery = searchQuery,
         activeFilter = filter,
         activeStatusFilters = statusFilters,
+        activeFormat = formatFilter,
         discoverState = discoverState,
         updateCheckState = updateCheckState,
         onSearchChange = viewModel::onSearchQueryChange,
@@ -114,6 +118,7 @@ fun CollectionScreen(
         },
         onFilterChange = viewModel::onFilterChange,
         onStatusFilterCycle = viewModel::onStatusFilterCycle,
+        onFormatFilterChange = viewModel::onFormatFilterChange,
         onAddClick = onAddClick,
         onEditClick = onEditClick,
         onFavoriteToggle = { viewModel.update(it) },
@@ -136,14 +141,16 @@ private fun CollectionContent(
     items: List<CollectionItem>,
     allItems: List<CollectionItem>,
     searchQuery: String,
-    activeFilter: CollectionFilter,
+    activeFilter: CollectionFilter?,
     activeStatusFilters: StatusFilters,
+    activeFormat: FormatType?,
     discoverState: DiscoverState,
     updateCheckState: UpdateCheckState,
     onSearchChange: (String) -> Unit,
     onClearSearch: () -> Unit,
-    onFilterChange: (CollectionFilter) -> Unit,
+    onFilterChange: (CollectionFilter?) -> Unit,
     onStatusFilterCycle: (StatusFilterField) -> Unit,
+    onFormatFilterChange: (FormatType?) -> Unit,
     onAddClick: () -> Unit,
     onEditClick: (CollectionItem) -> Unit,
     onFavoriteToggle: (CollectionItem) -> Unit,
@@ -277,6 +284,11 @@ private fun CollectionContent(
                         )
                     }
                     FilterRow(activeFilter = activeFilter, onFilterChange = onFilterChange)
+                    FormatFilterRow(
+                        activeFilter = activeFilter,
+                        activeFormat = activeFormat,
+                        onFormatFilterChange = onFormatFilterChange,
+                    )
                     SubFilterRow(
                         activeStatusFilters = activeStatusFilters,
                         onStatusFilterCycle = onStatusFilterCycle,
@@ -389,13 +401,15 @@ private fun PreviewCollectionWithItems() {
             items = sampleItems,
             allItems = sampleItems,
             searchQuery = "",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             activeStatusFilters = StatusFilters(),
+            activeFormat = null,
             discoverState = DiscoverState.Idle,
             onSearchChange = {},
             onClearSearch = {},
             onFilterChange = {},
             onStatusFilterCycle = {},
+            onFormatFilterChange = {},
             onAddClick = {},
             onEditClick = {},
             onFavoriteToggle = {},
@@ -424,11 +438,13 @@ private fun PreviewCollectionBooksAndFavorites() {
             searchQuery = "",
             activeFilter = CollectionFilter.LITERATURE,
             activeStatusFilters = StatusFilters(favorites = TriState.YES),
+            activeFormat = null,
             discoverState = DiscoverState.Idle,
             onSearchChange = {},
             onClearSearch = {},
             onFilterChange = {},
             onStatusFilterCycle = {},
+            onFormatFilterChange = {},
             onAddClick = {},
             onEditClick = {},
             onFavoriteToggle = {},
@@ -455,13 +471,15 @@ private fun PreviewCollectionEmpty() {
             items = emptyList(),
             allItems = emptyList(),
             searchQuery = "",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             activeStatusFilters = StatusFilters(),
+            activeFormat = null,
             discoverState = DiscoverState.Idle,
             onSearchChange = {},
             onClearSearch = {},
             onFilterChange = {},
             onStatusFilterCycle = {},
+            onFormatFilterChange = {},
             onAddClick = {},
             onEditClick = {},
             onFavoriteToggle = {},
@@ -488,13 +506,15 @@ private fun PreviewCollectionNoResults() {
             items = emptyList(),
             allItems = sampleItems,
             searchQuery = "Dune",
-            activeFilter = CollectionFilter.ALL,
+            activeFilter = null,
             activeStatusFilters = StatusFilters(),
+            activeFormat = null,
             discoverState = DiscoverState.Idle,
             onSearchChange = {},
             onClearSearch = {},
             onFilterChange = {},
             onStatusFilterCycle = {},
+            onFormatFilterChange = {},
             onAddClick = {},
             onEditClick = {},
             onFavoriteToggle = {},

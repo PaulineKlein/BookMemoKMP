@@ -2,6 +2,7 @@ package com.pklein.bookmemokmp.data.mapper
 
 import com.pklein.bookmemokmp.database.Book
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.JikanType
 
@@ -33,4 +34,5 @@ fun Book.toDomain(): CollectionItem =
         totEpisode = tot_episode?.toInt(),
         checkedTomes = checked_tomes.orEmpty(),
         notes = notes,
+        format = FormatType.fromString(format),
     )

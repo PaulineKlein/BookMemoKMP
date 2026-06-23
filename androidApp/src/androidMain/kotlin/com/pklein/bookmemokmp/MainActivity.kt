@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.JikanType
 import com.pklein.bookmemokmp.domain.repository.CollectionRepository
@@ -181,6 +182,7 @@ class MainActivity : ComponentActivity() {
                                             ?.mapNotNull { n -> n.trim().toIntOrNull() }
                                             ?: emptyList(),
                                         notes = getStrOrNull("notes"),
+                                        format = FormatType.fromString(getStrOrNull("format")),
                                     )
                                 repository.add(item)
                             }

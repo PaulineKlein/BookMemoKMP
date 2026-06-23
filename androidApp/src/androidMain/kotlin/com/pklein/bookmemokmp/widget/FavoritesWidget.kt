@@ -52,7 +52,6 @@ import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.text.font.FontWeight as ComposeFontWeight
 
 const val EXTRA_EDIT_ITEM_ID = "EDIT_ITEM_ID"
-private const val ACTION_EDIT_ITEM = "ACTION_EDIT_ITEM"
 
 // Light / dark color pairs for the widget
 private val widgetBackground = ColorProvider(day = Color(0xFFFFFFFF), night = Color(0xFF1C1C1E))
@@ -132,7 +131,6 @@ private fun FavoriteRow(item: CollectionItem) {
     val context = LocalContext.current
     val intent =
         Intent(context, MainActivity::class.java).apply {
-            action = ACTION_EDIT_ITEM
             putExtra(EXTRA_EDIT_ITEM_ID, item.id)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }

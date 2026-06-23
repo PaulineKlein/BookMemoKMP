@@ -65,35 +65,54 @@
     <string name="type_manga">Manga</string>
     <string name="type_comic">Comic</string>
 
-    <string name="tab_collection">Collection</string>
-    <string name="tab_stats">Statistics</string>
+    <string name="format_section">Format</string>
+    <string name="format_novel">Novel</string>
+    <string name="format_short_story">Short Story</string>
+    <string name="format_essay">Essay</string>
+    <string name="format_biography">Biography</string>
+    <string name="format_autobiography">Autobiography</string>
+    <string name="format_childrens">Children\'s Book</string>
+    <string name="format_poetry">Poetry</string>
+    <string name="format_theatre">Theatre</string>
+    <string name="format_light_novel">Light Novel</string>
+    <string name="format_manga">Manga</string>
+    <string name="format_manhwa">Manhwa</string>
+    <string name="format_manhua">Manhua</string>
+    <string name="format_webtoon">Webtoon</string>
+    <string name="format_franco_belgian_comic">Franco-Belgian Comic</string>
+    <string name="format_american_comics">American Comics</string>
+
+    <string name="tab_collection">My collection</string>
+    <string name="tab_stats">My statistics</string>
     <string name="stats_total">Total</string>
 
-    <string name="filter_all">All</string>
     <string name="filter_book">Books</string>
     <string name="filter_manga">Manga</string>
     <string name="filter_comic">Comics</string>
     <string name="filter_fav">★ Favs</string>
     <string name="filter_not_fav">★ Not fav</string>
+    <string name="filter_bought">Bought</string>
     <string name="filter_not_bought">Not bought</string>
+    <string name="filter_finished">Finished</string>
     <string name="filter_not_finished">Not finished</string>
+    <string name="filter_loaned">Loaned</string>
     <string name="filter_not_loaned">Not loaned</string>
-    <string name="filter_wishlist">My Wishlist</string>
-    <string name="filter_not_in_wishlist">Not in my Wishlist</string>
+    <string name="filter_wishlist">Wishlist</string>
+    <string name="filter_not_in_wishlist">Not in Wishlist</string>
 
     <string name="scan_barcode">Scan barcode</string>
     <string name="scan_barcode_error">Barcode scan failed. Please try again.</string>
 
-    <string name="statistics_type">Collection</string>
+    <string name="statistics_type">My collection</string>
     <string name="statistics_book">Number of Books</string>
     <string name="statistics_manga">Number of Mangas</string>
     <string name="statistics_comics">Number of Comics</string>
-    <string name="statistics_progress">Progress</string>
+    <string name="statistics_progress">My progress</string>
     <string name="statistics_volume">Number of volumes</string>
     <string name="statistics_chapter">Number of chapters</string>
     <string name="statistics_episode">Number of episodes</string>
 
-    <string name="csv_headline_title">type,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
+    <string name="csv_headline_title">type,format,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
 
     <string name="loaned">Loaned</string>
     <string name="loan_borrowed_by">Borrowed by</string>

@@ -3,6 +3,7 @@ package com.pklein.bookmemokmp.presentation.collection.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.domain.usecase.AddItemUseCase
@@ -68,11 +69,14 @@ class CollectionViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _filter = MutableStateFlow(CollectionFilter.ALL)
-    val filter: StateFlow<CollectionFilter> = _filter.asStateFlow()
+    private val _filter = MutableStateFlow<CollectionFilter?>(null)
+    val filter: StateFlow<CollectionFilter?> = _filter.asStateFlow()
 
     private val _statusFilters = MutableStateFlow(StatusFilters())
     val statusFilters: StateFlow<StatusFilters> = _statusFilters.asStateFlow()
+
+    private val _formatFilter = MutableStateFlow<FormatType?>(null)
+    val formatFilter: StateFlow<FormatType?> = _formatFilter.asStateFlow()
 
     // Full unfiltered list, used for statistics
     val allItems: StateFlow<List<CollectionItem>> =
@@ -85,30 +89,28 @@ class CollectionViewModel(
             )
 
     // Combines type filter + status filters + search into a single reactive stream
+    private data class FilterParams(
+        val query: String,
+        val filter: CollectionFilter?,
+        val statusFilters: StatusFilters,
+        val formatFilter: FormatType?,
+    )
+
     val displayedItems: StateFlow<List<CollectionItem>> =
-        combine(
-            _searchQuery,
-            _filter,
-            _statusFilters,
-        ) { query, filter, statusFilters ->
-            Triple(query, filter, statusFilters)
-        }.flatMapLatest { (query, filter, statusFilters) ->
-            val sourceFlow =
-                filter.itemType?.let { itemType ->
-                    getCollection.byType(itemType)
-                } ?: run {
-                    getCollection.all()
-                }
+        combine(_searchQuery, _filter, _statusFilters, _formatFilter) { query, filter, status, fmt ->
+            FilterParams(query, filter, status, fmt)
+        }.flatMapLatest { params ->
+            val sourceFlow = params.filter?.let { getCollection.byType(it.itemType) }
+                ?: getCollection.all()
             sourceFlow.map { items ->
                 var result = items
-                if (query.isNotBlank()) {
-                    result = result.filter { it.matchesQuery(query) }
-                }
-                result = result.applyTriState(statusFilters.favorites) { it.favorite }
-                result = result.applyTriState(statusFilters.bought) { it.bought }
-                result = result.applyTriState(statusFilters.wishlist) { it.wishlist }
-                result = result.applyTriState(statusFilters.finished) { it.finished }
-                result = result.applyTriState(statusFilters.loan) { it.isBorrowed }
+                if (params.query.isNotBlank()) result = result.filter { it.matchesQuery(params.query) }
+                result = result.applyTriState(params.statusFilters.favorites) { it.favorite }
+                result = result.applyTriState(params.statusFilters.bought) { it.bought }
+                result = result.applyTriState(params.statusFilters.wishlist) { it.wishlist }
+                result = result.applyTriState(params.statusFilters.finished) { it.finished }
+                result = result.applyTriState(params.statusFilters.loan) { it.isBorrowed }
+                params.formatFilter?.let { fmt -> result = result.filter { it.format == fmt } }
                 result
             }
         }.stateIn(
@@ -125,8 +127,13 @@ class CollectionViewModel(
         _searchQuery.value = ""
     }
 
-    fun onFilterChange(filter: CollectionFilter) {
+    fun onFilterChange(filter: CollectionFilter?) {
         _filter.value = filter
+        _formatFilter.value = null
+    }
+
+    fun onFormatFilterChange(format: FormatType?) {
+        _formatFilter.value = format
     }
 
     fun onStatusFilterCycle(field: StatusFilterField) {
@@ -279,6 +286,8 @@ class CollectionViewModel(
             appendLine(headline)
             allItems.value.forEach { item ->
                 append(item.type.name.csvEscape())
+                append(",")
+                append((item.format?.name ?: "").csvEscape())
                 append(",")
                 append(item.title.csvEscape())
                 append(",")

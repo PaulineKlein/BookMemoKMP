@@ -64,35 +64,54 @@
     <string name="type_manga">Manga</string>
     <string name="type_comic">BD</string>
 
-    <string name="tab_collection">Collection</string>
-    <string name="tab_stats">Statistiques</string>
+    <string name="format_section">Format</string>
+    <string name="format_novel">Roman</string>
+    <string name="format_short_story">Nouvelle</string>
+    <string name="format_essay">Essai</string>
+    <string name="format_biography">Biographie</string>
+    <string name="format_autobiography">Autobiographie</string>
+    <string name="format_childrens">Livre jeunesse</string>
+    <string name="format_poetry">Poésie</string>
+    <string name="format_theatre">Théâtre</string>
+    <string name="format_light_novel">Light Novel</string>
+    <string name="format_manga">Manga</string>
+    <string name="format_manhwa">Manhwa</string>
+    <string name="format_manhua">Manhua</string>
+    <string name="format_webtoon">Webtoon</string>
+    <string name="format_franco_belgian_comic">BD Franco-Belge</string>
+    <string name="format_american_comics">Comics</string>
+
+    <string name="tab_collection">Ma collection</string>
+    <string name="tab_stats">Mes statistiques</string>
     <string name="stats_total">Total</string>
 
-    <string name="filter_all">Tout</string>
     <string name="filter_book">Livres</string>
     <string name="filter_manga">Manga</string>
     <string name="filter_comic">BDs</string>
     <string name="filter_fav">★ Favs</string>
-    <string name="filter_not_fav">★ Pas favori</string>
-    <string name="filter_not_bought">Non acheté</string>
-    <string name="filter_not_finished">Non terminé</string>
-    <string name="filter_not_loaned">Non prêté</string>
-    <string name="filter_wishlist">Ma liste d'envies</string>
-    <string name="filter_not_in_wishlist">Hors de ma liste d'envies</string>
+    <string name="filter_not_fav">★ Non favs</string>
+    <string name="filter_bought">Achetés</string>
+    <string name="filter_not_bought">Non achetés</string>
+    <string name="filter_finished">Terminés</string>
+    <string name="filter_not_finished">Non terminés</string>
+    <string name="filter_loaned">Prêtés</string>
+    <string name="filter_not_loaned">Non prêtés</string>
+    <string name="filter_wishlist">Liste d'envies</string>
+    <string name="filter_not_in_wishlist">Hors liste d'envies</string>
 
     <string name="scan_barcode">Scanner un code</string>
     <string name="scan_barcode_error">Échec du scan. Veuillez réessayer.</string>
 
-    <string name="statistics_type">Collection</string>
+    <string name="statistics_type">Ma collection</string>
     <string name="statistics_book">Nombre de Livres</string>
     <string name="statistics_manga">Nombre de Manga</string>
     <string name="statistics_comics">Nombre de BDs</string>
-    <string name="statistics_progress">Progression</string>
+    <string name="statistics_progress">Ma progression</string>
     <string name="statistics_volume">Nombre de tomes</string>
     <string name="statistics_chapter">Nombre de chapitres</string>
     <string name="statistics_episode">Nombre d'épisodes</string>
 
-    <string name="csv_headline_title">type,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
+    <string name="csv_headline_title">type,format,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
 
     <string name="loaned">Prêté</string>
     <string name="loan_borrowed_by">Prêté à</string>

@@ -27,6 +27,7 @@ data class CollectionItem(
     val totEpisode: Int? = null,
     val checkedTomes: List<Int> = emptyList(),
     val notes: String? = null,
+    val format: FormatType? = null,
 ) {
     /** Compact range string of volumes absent from [checkedTomes] within 1..total,
      *  where total is [totTome] if known, otherwise the highest checked volume.

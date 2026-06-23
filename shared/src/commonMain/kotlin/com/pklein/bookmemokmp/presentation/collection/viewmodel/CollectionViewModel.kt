@@ -97,14 +97,23 @@ class CollectionViewModel(
     )
 
     val displayedItems: StateFlow<List<CollectionItem>> =
-        combine(_searchQuery, _filter, _statusFilters, _formatFilter) { query, filter, status, fmt ->
+        combine(
+            _searchQuery,
+            _filter,
+            _statusFilters,
+            _formatFilter,
+        ) { query, filter, status, fmt ->
             FilterParams(query, filter, status, fmt)
         }.flatMapLatest { params ->
-            val sourceFlow = params.filter?.let { getCollection.byType(it.itemType) }
-                ?: getCollection.all()
+            val sourceFlow =
+                params.filter?.let { getCollection.byType(it.itemType) }
+                    ?: getCollection.all()
             sourceFlow.map { items ->
                 var result = items
-                if (params.query.isNotBlank()) result = result.filter { it.matchesQuery(params.query) }
+                if (params.query.isNotBlank()) {
+                    result =
+                        result.filter { it.matchesQuery(params.query) }
+                }
                 result = result.applyTriState(params.statusFilters.favorites) { it.favorite }
                 result = result.applyTriState(params.statusFilters.bought) { it.bought }
                 result = result.applyTriState(params.statusFilters.wishlist) { it.wishlist }

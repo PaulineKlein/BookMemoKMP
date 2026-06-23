@@ -1,6 +1,6 @@
 package com.pklein.bookmemokmp.presentation.collection.collectionList
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
@@ -24,17 +23,23 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TypeBadge(type: ItemType) {
-    val (bgColor, label) = when (type) {
-        ItemType.LITERATURE -> BadgeBookColor to stringResource(Res.string.type_book)
-        ItemType.MANGA -> BadgeMangaColor to stringResource(Res.string.type_manga)
-        ItemType.COMIC -> BadgeComicColor to stringResource(Res.string.type_comic)
-    }
+    val (bgColor, label) =
+        when (type) {
+            ItemType.LITERATURE -> BadgeBookColor to stringResource(Res.string.type_book)
+            ItemType.MANGA -> BadgeMangaColor to stringResource(Res.string.type_manga)
+            ItemType.COMIC -> BadgeComicColor to stringResource(Res.string.type_comic)
+        }
     Box(
-        modifier = Modifier
-            .background(bgColor, RoundedCornerShape(4.dp))
-            .padding(horizontal = 6.dp, vertical = 2.dp)
+        modifier =
+            Modifier
+                .border(width = 2.dp, color = bgColor, shape = RoundedCornerShape(8.dp))
+                .padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
-        Text(text = label, color = Color.White, style = MaterialTheme.typography.labelMedium)
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+        )
     }
 }
 
@@ -45,7 +50,7 @@ fun TypeBadge(type: ItemType) {
 private fun PreviewTypeBadgeBook() {
     BookMemoTheme {
         TypeBadge(
-            type = ItemType.LITERATURE
+            type = ItemType.LITERATURE,
         )
     }
 }
@@ -55,7 +60,7 @@ private fun PreviewTypeBadgeBook() {
 private fun PreviewTypeBadgeBookBigFont() {
     BookMemoTheme {
         TypeBadge(
-            type = ItemType.LITERATURE
+            type = ItemType.LITERATURE,
         )
     }
 }
@@ -65,7 +70,7 @@ private fun PreviewTypeBadgeBookBigFont() {
 private fun PreviewTypeBadgeManga() {
     BookMemoTheme {
         TypeBadge(
-            type = ItemType.MANGA
+            type = ItemType.MANGA,
         )
     }
 }
@@ -75,7 +80,7 @@ private fun PreviewTypeBadgeManga() {
 private fun PreviewTypeBadgeMangaBigFont() {
     BookMemoTheme {
         TypeBadge(
-            type = ItemType.MANGA
+            type = ItemType.MANGA,
         )
     }
 }
@@ -85,7 +90,7 @@ private fun PreviewTypeBadgeMangaBigFont() {
 private fun PreviewTypeBadgeComic() {
     BookMemoTheme {
         TypeBadge(
-            type = ItemType.COMIC
+            type = ItemType.COMIC,
         )
     }
 }
@@ -95,7 +100,7 @@ private fun PreviewTypeBadgeComic() {
 private fun PreviewTypeBadgeComicBigFont() {
     BookMemoTheme {
         TypeBadge(
-            type = ItemType.COMIC
+            type = ItemType.COMIC,
         )
     }
 }

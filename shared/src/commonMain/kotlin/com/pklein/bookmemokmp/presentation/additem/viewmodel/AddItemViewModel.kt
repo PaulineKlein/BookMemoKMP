@@ -15,17 +15,25 @@ import kotlinx.coroutines.launch
 
 sealed interface SearchState {
     data object Idle : SearchState
+
     data object Loading : SearchState
-    data class Success(val results: List<SearchResult>) : SearchState
+
+    data class Success(
+        val results: List<SearchResult>,
+    ) : SearchState
+
     data object Empty : SearchState
+
     data object Error : SearchState
+
+    data object NotFoundException : SearchState
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddItemViewModel(
     private val bookSearchUseCase: BookSearchUseCase,
     private val userPrefs: UserPreferencesRepository,
-    private val getCollection: GetCollectionUseCase
+    private val getCollection: GetCollectionUseCase,
 ) : ViewModel() {
     private val _searchState = MutableStateFlow<SearchState>(SearchState.Idle)
     val searchState: StateFlow<SearchState> = _searchState.asStateFlow()
@@ -38,46 +46,62 @@ class AddItemViewModel(
         userPrefs.saveEnglishDescription = enabled
     }
 
-    fun searchByIsbn(isbn: String?) {
+    fun searchByIsbn(
+        isbn: String?,
+        isNotFoundException: Boolean = false,
+    ) {
         if (_searchState.value is SearchState.Loading) return
+        if (isNotFoundException) {
+            _searchState.value = SearchState.NotFoundException
+            return
+        }
         if (isbn.isNullOrBlank()) {
             _searchState.value = SearchState.Error
             return
         }
         _searchState.value = SearchState.Loading
         viewModelScope.launch {
-            _searchState.value = runCatching {
-                bookSearchUseCase.searchByIsbn(isbn)
-            }.fold(
-                onSuccess = { searchResults ->
-                    if (searchResults.isEmpty()) {
-                        return@fold SearchState.Empty
-                    }
-                    SearchState.Success(searchResults)
-                },
-                onFailure = { SearchState.Error }
-            )
+            _searchState.value =
+                runCatching {
+                    bookSearchUseCase.searchByIsbn(isbn)
+                }.fold(
+                    onSuccess = { searchResults ->
+                        if (searchResults.isEmpty()) {
+                            return@fold SearchState.Empty
+                        }
+                        SearchState.Success(searchResults)
+                    },
+                    onFailure = { SearchState.Error },
+                )
         }
     }
 
-    fun search(query: String, type: ItemType, langRestrict: String? = null) {
+    fun search(
+        query: String,
+        type: ItemType,
+        langRestrict: String? = null,
+    ) {
         if (_searchState.value is SearchState.Loading) return
         _searchState.value = SearchState.Loading
         viewModelScope.launch {
-            _searchState.value = runCatching {
-                bookSearchUseCase.search(query, type, langRestrict)
-            }.fold(
-                onSuccess = { searchResults ->
-                    if (searchResults.isEmpty()) {
-                        return@fold SearchState.Empty
-                    }
-                    SearchState.Success(searchResults)
-                },
-                onFailure = { SearchState.Error }
-            )
+            _searchState.value =
+                runCatching {
+                    bookSearchUseCase.search(query, type, langRestrict)
+                }.fold(
+                    onSuccess = { searchResults ->
+                        if (searchResults.isEmpty()) {
+                            return@fold SearchState.Empty
+                        }
+                        SearchState.Success(searchResults)
+                    },
+                    onFailure = { SearchState.Error },
+                )
         }
     }
 
-    suspend fun existsByTitleAndType(title: String, type: ItemType, excludeId: Long): Boolean =
-        getCollection.existsByTitleAndType(title, type, excludeId)
+    suspend fun existsByTitleAndType(
+        title: String,
+        type: ItemType,
+        excludeId: Long,
+    ): Boolean = getCollection.existsByTitleAndType(title, type, excludeId)
 }

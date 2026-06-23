@@ -33,6 +33,7 @@ import bookmemokmp.shared.generated.resources.result_dialog_title
 import bookmemokmp.shared.generated.resources.result_dialog_toggle
 import bookmemokmp.shared.generated.resources.searching_error
 import bookmemokmp.shared.generated.resources.searching_no_result
+import bookmemokmp.shared.generated.resources.searching_not_found_exception
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.presentation.additem.viewmodel.SearchState
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
@@ -45,7 +46,7 @@ fun SearchResultsDialog(
     showEnglishNotice: Boolean = false,
     initialSaveDescription: Boolean = true,
     onSelect: (SearchResult, Boolean) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var shouldSaveDescription by remember { mutableStateOf(initialSaveDescription) }
 
@@ -56,10 +57,11 @@ fun SearchResultsDialog(
             when (searchState) {
                 SearchState.Idle, SearchState.Loading -> {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(80.dp),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(80.dp),
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
                     }
@@ -67,11 +69,21 @@ fun SearchResultsDialog(
 
                 SearchState.Empty -> {
                     Text(
-                        text = stringResource(
-                            Res.string.searching_no_result, (query?.trim()) ?: ""
-                        ),
+                        text =
+                            stringResource(
+                                Res.string.searching_no_result,
+                                (query?.trim()) ?: "",
+                            ),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                SearchState.NotFoundException -> {
+                    Text(
+                        text = stringResource(Res.string.searching_not_found_exception),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -79,7 +91,7 @@ fun SearchResultsDialog(
                     Text(
                         text = stringResource(Res.string.searching_error),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -89,7 +101,7 @@ fun SearchResultsDialog(
                         Text(
                             text = stringResource(Res.string.searching_error),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         return@AlertDialog
                     }
@@ -100,52 +112,53 @@ fun SearchResultsDialog(
                                     text = stringResource(Res.string.result_dialog_notice),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(bottom = 12.dp)
+                                    modifier = Modifier.padding(bottom = 12.dp),
                                 )
                                 ToggleRowItem(
                                     label = stringResource(Res.string.result_dialog_toggle),
                                     checked = shouldSaveDescription,
-                                    onCheckedChange = { shouldSaveDescription = it }
+                                    onCheckedChange = { shouldSaveDescription = it },
                                 )
                                 HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
                             }
                         }
                         items(results) { result ->
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        onSelect(
-                                            result,
-                                            if (showEnglishNotice) shouldSaveDescription else true
-                                        )
-                                    }
-                                    .padding(vertical = 8.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            onSelect(
+                                                result,
+                                                if (showEnglishNotice) shouldSaveDescription else true,
+                                            )
+                                        }.padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                verticalAlignment = Alignment.Top
+                                verticalAlignment = Alignment.Top,
                             ) {
                                 CoverPreviewItem(
                                     imageUrl = result.imageUrl ?: "",
-                                    modifier = Modifier
-                                        .size(40.dp, 56.dp)
+                                    modifier =
+                                        Modifier
+                                            .size(40.dp, 56.dp),
                                 )
                                 Column {
                                     Text(
                                         text = result.title,
-                                        style = MaterialTheme.typography.bodyMedium
+                                        style = MaterialTheme.typography.bodyMedium,
                                     )
                                     if (result.author != null) {
                                         Text(
                                             text = result.author,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         )
                                     }
                                     if (result.year != null) {
                                         Text(
                                             text = result.year.toString(),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         )
                                     }
                                 }
@@ -157,17 +170,23 @@ fun SearchResultsDialog(
             }
         },
         confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } },
     )
 }
 
 // ── Previews ──────────────────────────────────────────────────────────────────
 
-private val previewResults = listOf(
-    SearchResult(title = "The Hobbit", author = "J.R.R. Tolkien", year = 1937, description = null),
-    SearchResult(title = "Berserk", author = "Kentaro Miura", year = 1989, description = null),
-    SearchResult(title = "Watchmen", author = null, year = null, description = null),
-)
+private val previewResults =
+    listOf(
+        SearchResult(
+            title = "The Hobbit",
+            author = "J.R.R. Tolkien",
+            year = 1937,
+            description = null,
+        ),
+        SearchResult(title = "Berserk", author = "Kentaro Miura", year = 1989, description = null),
+        SearchResult(title = "Watchmen", author = null, year = null, description = null),
+    )
 
 @Preview(showBackground = true, name = "loading state")
 @Composable
@@ -177,7 +196,7 @@ private fun PreviewSearchResultsDialogLoading() {
             searchState = SearchState.Loading,
             query = "hobbit",
             onSelect = { _, _ -> },
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }
@@ -190,7 +209,7 @@ private fun PreviewSearchResultsDialog() {
             searchState = SearchState.Success(previewResults),
             query = "hobbit",
             onSelect = { _, _ -> },
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }
@@ -204,7 +223,7 @@ private fun PreviewSearchInFrenchResultsDialog() {
             query = "hobbit",
             showEnglishNotice = true,
             onSelect = { _, _ -> },
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }
@@ -218,7 +237,7 @@ private fun PreviewSearchResultsDialogBigFont() {
             query = "hobbit",
             showEnglishNotice = true,
             onSelect = { _, _ -> },
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }
@@ -231,7 +250,7 @@ private fun PreviewSearchResultsDialogEmpty() {
             searchState = SearchState.Empty,
             query = "hobbit",
             onSelect = { _, _ -> },
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }
@@ -244,7 +263,7 @@ private fun PreviewSearchResultsDialogError() {
             searchState = SearchState.Error,
             query = "hobbit",
             onSelect = { _, _ -> },
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }

@@ -44,6 +44,7 @@
     <string name="searching">Recherche…</string>
     <string name="searching_no_result">Aucun résultat trouvé pour %1$s.</string>
     <string name="searching_error">Une erreur est survenue, merci de réessayer.</string>
+    <string name="searching_not_found_exception">Le module de scan de codes-barres Google n'est pas disponible sur votre appareil</string>
     <string name="search_online">Rechercher en ligne</string>
     <string name="result_dialog_title">Résultats</string>
     <string name="result_dialog_notice">Les résultats sont en anglais. Aucune source française disponible pour les mangas/animés.</string>

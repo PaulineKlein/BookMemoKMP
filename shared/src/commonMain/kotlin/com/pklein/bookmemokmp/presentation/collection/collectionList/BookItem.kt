@@ -160,7 +160,7 @@ fun BookItem(
                                 text = stringResource(Res.string.finished),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = SuccessGreen,
+                                color = MaterialTheme.colorScheme.tertiary,
                             )
                         }
                         if (item.bought) {
@@ -168,7 +168,7 @@ fun BookItem(
                                 text = stringResource(Res.string.bought),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                         if (item.wishlist) {
@@ -176,7 +176,7 @@ fun BookItem(
                                 text = stringResource(Res.string.wishlist),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                     }

@@ -4,10 +4,10 @@ import com.pklein.bookmemokmp.data.remote.JikanUpdateResult
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.JikanType
 import com.pklein.bookmemokmp.domain.model.SearchResult
-import com.pklein.bookmemokmp.domain.repository.BookSearchRepository
+import com.pklein.bookmemokmp.domain.repository.IBookSearchRepository
 
 class BookSearchUseCase(
-    private val repository: BookSearchRepository,
+    private val repository: IBookSearchRepository,
 ) {
     suspend fun search(
         query: String,

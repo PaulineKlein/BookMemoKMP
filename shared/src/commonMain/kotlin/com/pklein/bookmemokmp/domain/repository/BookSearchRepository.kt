@@ -7,18 +7,18 @@ import com.pklein.bookmemokmp.domain.model.SearchResult
 
 class BookSearchRepository(
     private val searchService: BookSearchService,
-) {
-    suspend fun searchByIsbn(isbn: String): List<SearchResult> = searchService.searchGoogleBooks("isbn:$isbn", langRestrict = null)
+) : IBookSearchRepository {
+    override suspend fun searchByIsbn(isbn: String): List<SearchResult> = searchService.searchGoogleBooks("isbn:$isbn", langRestrict = null)
 
     /**
      * Search online for book/manga/anime info matching [query].
      * - LITERATURE / COMIC → Google Books API
      * - MANGA              → Jikan v4 (manga + anime, deduplicated)
      */
-    suspend fun search(
+    override suspend fun search(
         query: String,
         type: ItemType,
-        langRestrict: String? = null,
+        langRestrict: String?,
     ): List<SearchResult> =
         when (type) {
             ItemType.LITERATURE, ItemType.COMIC -> searchService.searchGoogleBooks(query, langRestrict)
@@ -33,9 +33,9 @@ class BookSearchRepository(
         return (manga + anime).filter { seen.add(it.title.trim().lowercase()) }
     }
 
-    suspend fun fetchTopManga(page: Int = 1): Pair<List<SearchResult>, Boolean> = searchService.fetchTopManga(page)
+    override suspend fun fetchTopManga(page: Int): Pair<List<SearchResult>, Boolean> = searchService.fetchTopManga(page)
 
-    suspend fun fetchMangaUpdate(malId: Long): JikanUpdateResult = searchService.fetchMangaUpdate(malId)
+    override suspend fun fetchMangaUpdate(malId: Long): JikanUpdateResult = searchService.fetchMangaUpdate(malId)
 
-    suspend fun fetchAnimeUpdate(malId: Long): JikanUpdateResult = searchService.fetchAnimeUpdate(malId)
+    override suspend fun fetchAnimeUpdate(malId: Long): JikanUpdateResult = searchService.fetchAnimeUpdate(malId)
 }

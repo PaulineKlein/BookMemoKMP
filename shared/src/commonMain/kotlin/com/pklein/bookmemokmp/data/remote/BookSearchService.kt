@@ -77,6 +77,7 @@ class BookSearchService {
                 .get("https://api.jikan.moe/v4/manga") {
                     parameter("q", query)
                     parameter("limit", SEARCH_RESULTS_LIMIT)
+                    parameter("sfw", true) // Filter out Adult entries
                 }.body()
         return response.toSearchResults()
     }
@@ -87,6 +88,7 @@ class BookSearchService {
                 .get("https://api.jikan.moe/v4/anime") {
                     parameter("q", query)
                     parameter("limit", SEARCH_RESULTS_LIMIT)
+                    parameter("sfw", true) // Filter out Adult entries
                 }.body()
         return response.toSearchResults()
     }
@@ -97,6 +99,7 @@ class BookSearchService {
                 .get("https://api.jikan.moe/v4/top/manga") {
                     parameter("limit", SEARCH_TOP_RESULTS_LIMIT)
                     parameter("page", page)
+                    parameter("sfw", true) // Filter out Adult entries
                 }.body()
         return response.toSearchResults() to (response.pagination?.hasNextPage ?: false)
     }

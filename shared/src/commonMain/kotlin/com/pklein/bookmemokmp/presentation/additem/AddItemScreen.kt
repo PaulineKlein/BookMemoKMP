@@ -31,9 +31,9 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -148,7 +148,7 @@ private fun AddItemScreenContent(
     searchState: SearchState = SearchState.Idle,
     onDelete: (() -> Unit)? = null,
     onSearch: (query: String, type: ItemType, langRestrict: String?) -> Unit,
-    onSearchIsbn: (isbn: String?) -> Unit,
+    onSearchIsbn: (isbn: String?, isNotFoundException: Boolean) -> Unit,
     onCheckDuplicate: suspend (title: String, type: ItemType, excludeId: Long) -> Boolean,
     initialSaveDescription: Boolean = true,
     onSaveDescriptionChanged: (Boolean) -> Unit = {},
@@ -477,11 +477,15 @@ private fun AddItemScreenContent(
                                             title = isbn
                                             titleError = false
                                             showResultsDialog = true
-                                            onSearchIsbn(isbn)
+                                            onSearchIsbn(isbn, false)
+                                        },
+                                        onNotFoundException = {
+                                            showResultsDialog = true
+                                            onSearchIsbn(null,  true)
                                         },
                                         onError = {
                                             showResultsDialog = true
-                                            onSearchIsbn(null)
+                                            onSearchIsbn(null, false)
                                         },
                                     )
                                 },
@@ -546,22 +550,16 @@ private fun AddItemScreenContent(
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatExpanded)
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                         singleLine = true,
                     )
                     ExposedDropdownMenu(
                         expanded = formatExpanded,
                         onDismissRequest = { formatExpanded = false },
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("—") },
-                            onClick = {
-                                format = null
-                                formatExpanded = false
-                            },
-                        )
                         formatOptions.forEach { formatType ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(formatType.stringRes)) },
@@ -823,7 +821,7 @@ private fun PreviewAddItemScreenEmpty() {
             onSave = {},
             onBack = {},
             onSearch = { _, _, _ -> },
-            onSearchIsbn = {},
+            onSearchIsbn = { _, _ -> },
             onCheckDuplicate = { _, _, _ -> false },
         )
     }
@@ -839,7 +837,7 @@ private fun PreviewAddItemScreenEdit() {
             onBack = {},
             onDelete = {},
             onSearch = { _, _, _ -> },
-            onSearchIsbn = {},
+            onSearchIsbn = { _, _ -> },
             onCheckDuplicate = { _, _, _ -> false },
             initialItem =
                 CollectionItem(
@@ -871,7 +869,7 @@ private fun PreviewAddItemScreenEditBigFont() {
             onBack = {},
             onDelete = {},
             onSearch = { _, _, _ -> },
-            onSearchIsbn = {},
+            onSearchIsbn = { _, _ -> },
             onCheckDuplicate = { _, _, _ -> false },
             initialItem =
                 CollectionItem(

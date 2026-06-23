@@ -45,6 +45,7 @@
     <string name="searching">Searching…</string>
     <string name="searching_no_result">No results found for %1$s.</string>
     <string name="searching_error">Search failed. Please try again.</string>
+    <string name="searching_not_found_exception">The Google barcode scanning module isn't available on your device</string>
     <string name="search_online">Search online</string>
     <string name="result_dialog_title">Search results</string>
     <string name="result_dialog_notice">Results are in English. No French source available for manga/anime.</string>

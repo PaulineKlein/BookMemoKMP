@@ -9,6 +9,7 @@ import com.pklein.bookmemokmp.database.Book
 import com.pklein.bookmemokmp.database.BookDatabase
 import com.pklein.bookmemokmp.domain.repository.BookSearchRepository
 import com.pklein.bookmemokmp.domain.repository.CollectionRepository
+import com.pklein.bookmemokmp.domain.repository.IBookSearchRepository
 import com.russhwolf.settings.Settings
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -22,7 +23,7 @@ val dataModule = module {
         )
     }
     singleOf(::CollectionRepositoryImpl) bind CollectionRepository::class
-    singleOf(::BookSearchRepository)
+    singleOf(::BookSearchRepository) bind IBookSearchRepository::class
     singleOf(::BookSearchService)
     single<Settings> { Settings() }
     singleOf(::UserPreferencesRepository)

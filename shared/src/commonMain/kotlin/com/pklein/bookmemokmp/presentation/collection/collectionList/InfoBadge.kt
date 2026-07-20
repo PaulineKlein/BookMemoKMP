@@ -21,9 +21,13 @@ fun InfoBadge(title: StringResource) {
         text = stringResource(title),
         style = MaterialTheme.typography.labelSmall,
         color = color,
-        modifier = Modifier
-            .border(1.dp, color.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+        modifier =
+            Modifier
+                .border(1.dp, color.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                .padding(
+                    horizontal = 10.dp,
+                    vertical = 4.dp,
+                ),
     )
 }
 

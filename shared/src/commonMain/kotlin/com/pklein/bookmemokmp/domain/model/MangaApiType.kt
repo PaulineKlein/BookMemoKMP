@@ -1,6 +1,6 @@
 package com.pklein.bookmemokmp.domain.model
 
-enum class JikanType(
+enum class MangaApiType(
     val value: String,
 ) {
     MANGA("manga"),
@@ -8,6 +8,6 @@ enum class JikanType(
     ;
 
     companion object {
-        fun fromString(value: String?): JikanType? = JikanType.entries.firstOrNull { it.value == value }
+        fun fromString(value: String?): MangaApiType? = MangaApiType.entries.firstOrNull { it.value == value }
     }
 }

@@ -1,0 +1,3 @@
+-- Migration v4 → v5
+-- Adds jikan_author_id column:to allow searching information about the author via the MAL API.
+ALTER TABLE Book ADD COLUMN jikan_author_id INTEGER;

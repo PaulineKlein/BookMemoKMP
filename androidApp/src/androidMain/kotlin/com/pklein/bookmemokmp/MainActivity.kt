@@ -21,7 +21,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.domain.model.JikanType
+import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
 import com.pklein.bookmemokmp.widget.EXTRA_EDIT_ITEM_ID
@@ -173,8 +173,9 @@ class MainActivity : ComponentActivity() {
                                                 if (idx == -1 || c.isNull(idx)) null else c.getLong(idx)
                                             },
                                         borrowedBy = getStrOrNull("borrowed_by"),
-                                        jikanId = getIntOrNull("jikan_id")?.toLong(),
-                                        jikanType = JikanType.fromString(getStrOrNull("jikan_type")),
+                                        mangaApiId = getIntOrNull("jikan_id")?.toLong(),
+                                        mangaApiAuthorId = getIntOrNull("jikan_author_id")?.toLong(),
+                                        mangaApiType = MangaApiType.fromString(getStrOrNull("jikan_type")),
                                         totTome = getIntOrNull("tot_tome"),
                                         totChapter = getIntOrNull("tot_chapter"),
                                         totEpisode = getIntOrNull("tot_episode"),

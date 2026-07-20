@@ -62,6 +62,7 @@
     <string name="season_number">S%1$d</string>
     <string name="ep_number">Ep. %1$d</string>
     <string name="add_number">+1</string>
+    <string name="more_author">Du même auteur</string>
 
     <string name="type_book">Livre</string>
     <string name="type_manga">Manga</string>
@@ -131,6 +132,7 @@
     <string name="add_accessibility">Ajouter</string>
     <string name="remove_cover_accessibility">Supprimer l'image de couverture</string>
     <string name="clear_search_accessibility">Effacer la recherche en cours</string>
+    <string name="close_accessibility">Fermer</string>
     <string name="export_menu_accessibility">Options d'export</string>
     <string name="export_csv">Exporter en CSV</string>
     <string name="export_database">Exporter les données</string>
@@ -148,6 +150,7 @@
     <string name="discover_manga">Découvrir des mangas</string>
     <string name="discover_title">Top Manga</string>
     <string name="discover_loading">Chargement des suggestions…</string>
+    <string name="discover_empty">Il n'existe pas de suggestion disponible, non présente dans votre collection</string>
     <string name="discover_error">Impossible de charger les suggestions. Veuillez réessayer.</string>
     <string name="discover_add_wishlist">Ajouter à la liste d'envies</string>
     <string name="discover_added">Ajouté à la liste d'envies !</string>

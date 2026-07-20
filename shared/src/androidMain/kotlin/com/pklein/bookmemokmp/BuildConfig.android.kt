@@ -13,6 +13,9 @@ actual fun isDebugBuild(): Boolean =
 actual fun googleBooksApiKey(): String? =
     com.pklein.bookmemokmp.shared.BuildConfig.GOOGLE_BOOKS_API_KEY.takeIf { it.isNotEmpty() }
 
+actual fun mangaApiKey(): String? =
+    com.pklein.bookmemokmp.shared.BuildConfig.MANGA_API_KEY.takeIf { it.isNotEmpty() }
+
 actual fun androidPackageName(): String? {
     val app = getKoin().get<Application>()
     return app.packageName

@@ -4,7 +4,7 @@ import com.pklein.bookmemokmp.database.Book
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.domain.model.JikanType
+import com.pklein.bookmemokmp.domain.model.MangaApiType
 
 fun Book.toDomain(): CollectionItem =
     CollectionItem(
@@ -27,8 +27,9 @@ fun Book.toDomain(): CollectionItem =
         isBorrowed = is_borrowed == 1L,
         borrowedSince = borrowed_since,
         borrowedBy = borrowed_by,
-        jikanId = jikan_id,
-        jikanType = JikanType.fromString(jikan_type),
+        mangaApiId = jikan_id,
+        mangaApiAuthorId = jikan_author_id,
+        mangaApiType = MangaApiType.fromString(jikan_type),
         totTome = tot_tome?.toInt(),
         totChapter = tot_chapter?.toInt(),
         totEpisode = tot_episode?.toInt(),

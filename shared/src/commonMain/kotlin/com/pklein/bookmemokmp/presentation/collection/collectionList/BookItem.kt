@@ -1,6 +1,7 @@
 package com.pklein.bookmemokmp.presentation.collection.collectionList
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.LibraryAdd
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,14 +50,16 @@ import bookmemokmp.shared.generated.resources.edit_item
 import bookmemokmp.shared.generated.resources.fav_add_accessibility
 import bookmemokmp.shared.generated.resources.fav_remove_accessibility
 import bookmemokmp.shared.generated.resources.finished
+import bookmemokmp.shared.generated.resources.more_author
 import bookmemokmp.shared.generated.resources.up_accessibility
 import bookmemokmp.shared.generated.resources.wishlist
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.domain.model.JikanType
+import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.presentation.collection.cover.CoverSmallPreviewItem
 import com.pklein.bookmemokmp.presentation.collection.viewmodel.UpdateCheckState
+import com.pklein.bookmemokmp.ui.theme.BadgeBookColor
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import org.jetbrains.compose.resources.stringResource
 
@@ -63,6 +69,7 @@ fun BookItem(
     onFavoriteToggle: (CollectionItem) -> Unit,
     onEditClick: (CollectionItem) -> Unit,
     onProgressUpdate: (CollectionItem) -> Unit,
+    onSearchAuthor: (CollectionItem) -> Unit,
     updateCheckState: UpdateCheckState = UpdateCheckState.Idle,
     onCheckForUpdates: (CollectionItem) -> Unit = {},
     onDismissUpdateCheck: () -> Unit = {},
@@ -138,12 +145,30 @@ fun BookItem(
                     ).takeIf { it.isNotEmpty() }?.joinToString(" & ")
 
                 authorIllustrator?.let {
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    val hasAuthor = !item.author.isNullOrBlank()
+                    val authorFontSize = MaterialTheme.typography.bodyMedium.fontSize
+                    val authorIconSize = with(LocalDensity.current) { authorFontSize.toDp() }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = if (hasAuthor) Modifier.clickable { onSearchAuthor(item) } else Modifier,
+                    ) {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        if (hasAuthor) {
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Filled.LibraryAdd,
+                                contentDescription = stringResource(Res.string.more_author),
+                                tint = BadgeBookColor,
+                                modifier = Modifier.size(authorIconSize),
+                            )
+                        }
+                    }
                 }
                 if (((item.year ?: 0) > 0)) {
                     Text(
@@ -153,7 +178,10 @@ fun BookItem(
                     )
                 }
                 Spacer(Modifier.height(6.dp))
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
                     TypeBadge(item.type)
                     item.format?.let { TypeBadge(item.type, stringResource(it.stringRes)) }
                     if (item.finished) {
@@ -200,17 +228,21 @@ fun BookItem(
                     )
                 }
 
+                Spacer(Modifier.height(6.dp))
+
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 10.dp),
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f),
                 )
 
                 // ── Action row ────────────────────────────────────────────────
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val addNumberFontSize = MaterialTheme.typography.titleLarge.fontSize
+                    val iconSize = with(LocalDensity.current) { addNumberFontSize.toDp() }
+
                     TextButton(onClick = { showProgressDialog = true }) {
                         Text(
                             stringResource(Res.string.add_number),
@@ -223,16 +255,16 @@ fun BookItem(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = stringResource(Res.string.edit_item),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(iconSize),
                         )
                     }
-                    if (item.jikanId != null) {
+                    if (item.mangaApiId != null) {
                         if (updateCheckState is UpdateCheckState.Loading) {
                             CircularProgressIndicator(
                                 modifier =
                                     Modifier
                                         .padding(horizontal = 12.dp)
-                                        .width(20.dp)
-                                        .height(20.dp),
+                                        .size(iconSize),
                                 strokeWidth = 2.dp,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
@@ -242,6 +274,7 @@ fun BookItem(
                                     imageVector = Icons.Filled.Refresh,
                                     contentDescription = stringResource(Res.string.check_update),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(iconSize),
                                 )
                             }
                         }
@@ -283,6 +316,7 @@ private fun PreviewBookItemCollapsed() {
             onFavoriteToggle = {},
             onEditClick = {},
             onProgressUpdate = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -302,6 +336,7 @@ private fun PreviewBookItemMinimal() {
             onFavoriteToggle = {},
             onEditClick = {},
             onProgressUpdate = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -336,6 +371,7 @@ private fun PreviewBookItemExpanded() {
             onEditClick = {},
             onProgressUpdate = {},
             initialExpanded = true,
+            onSearchAuthor = {},
         )
     }
 }
@@ -372,6 +408,7 @@ private fun PreviewBookItemExpandedBigFont() {
             onEditClick = {},
             onProgressUpdate = {},
             initialExpanded = true,
+            onSearchAuthor = {},
         )
     }
 }
@@ -399,13 +436,14 @@ private fun PreviewBookItemMangaExpanded() {
                     totTome = 200,
                     totChapter = 1200,
                     totEpisode = 2000,
-                    jikanId = 21_000L,
-                    jikanType = JikanType.MANGA,
+                    mangaApiId = 21_000L,
+                    mangaApiType = MangaApiType.MANGA,
                 ),
             onFavoriteToggle = {},
             onEditClick = {},
             onProgressUpdate = {},
             initialExpanded = true,
+            onSearchAuthor = {},
         )
     }
 }

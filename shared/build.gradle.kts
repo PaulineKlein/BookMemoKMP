@@ -103,6 +103,11 @@ android {
             "GOOGLE_BOOKS_API_KEY",
             "\"${localProperties.getProperty("googleBooksApiKey", "")}\"",
         )
+        buildConfigField(
+            "String",
+            "MANGA_API_KEY",
+            "\"${localProperties.getProperty("mangaApiKey", "")}\"",
+        )
     }
 
     buildFeatures {

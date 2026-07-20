@@ -20,8 +20,9 @@ data class CollectionItem(
     val isBorrowed: Boolean = false,
     val borrowedSince: Long? = null, // Unix timestamp in milliseconds
     val borrowedBy: String? = null,
-    val jikanId: Long? = null,
-    val jikanType: JikanType? = null,
+    val mangaApiId: Long? = null,
+    val mangaApiAuthorId: Long? = null,
+    val mangaApiType: MangaApiType? = null,
     val totTome: Int? = null,
     val totChapter: Int? = null,
     val totEpisode: Int? = null,

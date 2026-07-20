@@ -200,8 +200,8 @@ private fun AddItemScreenContent(
     var imageUrl by remember { mutableStateOf(initialItem?.imageUrl ?: "") }
     var isBorrowed by remember { mutableStateOf(initialItem?.isBorrowed ?: false) }
     var borrowedBy by remember { mutableStateOf(initialItem?.borrowedBy ?: "") }
-    var jikanId by remember { mutableStateOf(initialItem?.jikanId) }
-    var jikanType by remember { mutableStateOf(initialItem?.jikanType) }
+    var jikanId by remember { mutableStateOf(initialItem?.mangaApiId) }
+    var jikanType by remember { mutableStateOf(initialItem?.mangaApiType) }
     var totChapter by remember { mutableStateOf(initialItem?.totChapter) }
     var totEpisode by remember { mutableStateOf(initialItem?.totEpisode) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -239,8 +239,8 @@ private fun AddItemScreenContent(
                 result.author?.let { author = it }
                 result.year?.let { year = it.toString() }
                 imageUrl = result.imageUrl ?: ""
-                jikanId = result.jikanId
-                jikanType = result.jikanType
+                jikanId = result.mangaApiId
+                jikanType = result.mangaApiType
                 totTome = result.totTome?.toString() ?: totTome
                 result.totTome?.let { n ->
                     if (n > 0) volumeSlotCount = maxOf(n, tome.toIntOrNull() ?: 0)
@@ -443,6 +443,7 @@ private fun AddItemScreenContent(
                         )
                         Button(
                             onClick = {
+                                searchQuery = title.trim()
                                 showResultsDialog = true
                                 onSearch(
                                     title.trim(),
@@ -773,8 +774,8 @@ private fun AddItemScreenContent(
                                     null
                                 },
                             borrowedSince = if (isBorrowed) datePickerState.selectedDateMillis else null,
-                            jikanId = jikanId,
-                            jikanType = jikanType,
+                            mangaApiId = jikanId,
+                            mangaApiType = jikanType,
                             totTome = totTome.toIntOrNull(),
                             totChapter = totChapter,
                             totEpisode = totEpisode,

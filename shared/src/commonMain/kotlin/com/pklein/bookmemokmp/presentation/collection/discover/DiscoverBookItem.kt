@@ -40,7 +40,7 @@ import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun DiscoverMangaItem(
+fun DiscoverBookItem(
     result: SearchResult,
     onAddToWishlist: () -> Unit,
     initialExpanded: Boolean = false
@@ -156,40 +156,40 @@ private val sampleLongTitle = SearchResult(
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewDiscoverMangaItemCollapsed() {
+private fun PreviewDiscoverBookItemCollapsed() {
     BookMemoTheme {
-        DiscoverMangaItem(result = sampleFull, onAddToWishlist = {})
+        DiscoverBookItem(result = sampleFull, onAddToWishlist = {})
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewDiscoverMangaItemExpanded() {
+private fun PreviewDiscoverBookItemExpanded() {
     BookMemoTheme {
-        DiscoverMangaItem(result = sampleFull, onAddToWishlist = {}, initialExpanded = true)
+        DiscoverBookItem(result = sampleFull, onAddToWishlist = {}, initialExpanded = true)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewDiscoverMangaItemNoDescription() {
+private fun PreviewDiscoverBookItemNoDescription() {
     BookMemoTheme {
-        DiscoverMangaItem(result = sampleNoDescription, onAddToWishlist = {})
+        DiscoverBookItem(result = sampleNoDescription, onAddToWishlist = {})
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewDiscoverMangaItemLongTitle() {
+private fun PreviewDiscoverBookItemLongTitle() {
     BookMemoTheme {
-        DiscoverMangaItem(result = sampleLongTitle, onAddToWishlist = {})
+        DiscoverBookItem(result = sampleLongTitle, onAddToWishlist = {})
     }
 }
 
 @Preview(showBackground = true, fontScale = 2.0f)
 @Composable
-private fun PreviewDiscoverMangaItemBigFont() {
+private fun PreviewDiscoverBookItemBigFont() {
     BookMemoTheme {
-        DiscoverMangaItem(result = sampleFull, onAddToWishlist = {})
+        DiscoverBookItem(result = sampleFull, onAddToWishlist = {})
     }
 }

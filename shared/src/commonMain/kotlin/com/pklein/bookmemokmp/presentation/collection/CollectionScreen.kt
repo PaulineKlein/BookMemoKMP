@@ -49,6 +49,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
@@ -64,7 +65,7 @@ import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.presentation.collection.collectionList.CollectionListPage
-import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverMangaBottomSheet
+import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverBookBottomSheet
 import com.pklein.bookmemokmp.presentation.collection.filter.CollectionFilter
 import com.pklein.bookmemokmp.presentation.collection.filter.FilterRow
 import com.pklein.bookmemokmp.presentation.collection.filter.FormatFilterRow
@@ -131,6 +132,7 @@ fun CollectionScreen(
         onAddToWishlist = viewModel::addToWishlist,
         onCheckForUpdates = viewModel::checkForUpdates,
         onDismissUpdateCheck = viewModel::dismissUpdateCheck,
+        onSearchAuthor = viewModel::loadBooksFromAuthor,
     )
 }
 
@@ -160,15 +162,17 @@ private fun CollectionContent(
     onImportDb: () -> Unit,
     onDiscoverManga: () -> Unit,
     onLoadMoreManga: () -> Unit,
-    onAddToWishlist: (SearchResult) -> Unit,
+    onAddToWishlist: (SearchResult, ItemType) -> Unit,
     onCheckForUpdates: (CollectionItem) -> Unit,
+    onSearchAuthor: (CollectionItem, String?) -> Unit,
     onDismissUpdateCheck: () -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val statsScrollState = rememberScrollState()
-    var showDiscoverSheet by remember { mutableStateOf(false) }
+    var showDiscoverBook by remember { mutableStateOf(false) }
+    var discoverItem by remember { mutableStateOf<CollectionItem?>(null) }
 
     // Hide header on scroll-down, reveal on scroll-up — CoordinatorLayout style.
     // NestedScrollConnection receives raw deltas so it is immune to list re-anchoring at the bottom.
@@ -190,15 +194,29 @@ private fun CollectionContent(
             }
         }
 
-    if (showDiscoverSheet) {
-        DiscoverMangaBottomSheet(
+    if (showDiscoverBook) {
+        DiscoverBookBottomSheet(
             state = discoverState,
-            onDismiss = { showDiscoverSheet = false },
-            onRetry = onDiscoverManga,
+            author = discoverItem?.author,
+            onDismiss = {
+                showDiscoverBook = false
+                discoverItem = null
+            },
+            onRetryTopManga = onDiscoverManga,
+            onRetryAuthor = {
+                discoverItem?.let {
+                    onSearchAuthor(
+                        it,
+                        if (Locale.current.language == "fr") "fr" else "en",
+                    )
+                }
+            },
             onLoadMore = onLoadMoreManga,
-            onAddToWishlist = { result ->
-                onAddToWishlist(result)
-                showDiscoverSheet = false
+            onAddToWishlistTopManga = { result ->
+                onAddToWishlist(result, ItemType.MANGA)
+            },
+            onAddToWishlistAuthor = { result ->
+                onAddToWishlist(result, discoverItem?.type ?: ItemType.LITERATURE)
             },
         )
     }
@@ -276,7 +294,7 @@ private fun CollectionContent(
                         MenuItem(
                             onAddBook = onAddClick,
                             onShowDiscoverSheet = {
-                                showDiscoverSheet = true
+                                showDiscoverBook = true
                                 onDiscoverManga()
                             },
                             onExportCsv = onExportCsv,
@@ -322,6 +340,14 @@ private fun CollectionContent(
                             onProgressUpdate = onProgressUpdate,
                             onCheckForUpdates = onCheckForUpdates,
                             onDismissUpdateCheck = onDismissUpdateCheck,
+                            onSearchAuthor = { item ->
+                                discoverItem = item
+                                showDiscoverBook = true
+                                onSearchAuthor(
+                                    item,
+                                    if (Locale.current.language == "fr") "fr" else "en",
+                                )
+                            },
                         )
                     }
 
@@ -420,10 +446,11 @@ private fun PreviewCollectionWithItems() {
             onImportDb = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
-            onAddToWishlist = {},
+            onAddToWishlist = { _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = { _, _ -> },
         )
     }
 }
@@ -455,10 +482,11 @@ private fun PreviewCollectionBooksAndFavorites() {
             onImportDb = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
-            onAddToWishlist = {},
+            onAddToWishlist = { _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = { _, _ -> },
         )
     }
 }
@@ -490,10 +518,11 @@ private fun PreviewCollectionEmpty() {
             onImportDb = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
-            onAddToWishlist = {},
+            onAddToWishlist = { _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = { _, _ -> },
         )
     }
 }
@@ -525,10 +554,11 @@ private fun PreviewCollectionNoResults() {
             onImportDb = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
-            onAddToWishlist = {},
+            onAddToWishlist = { _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = { _, _ -> },
         )
     }
 }

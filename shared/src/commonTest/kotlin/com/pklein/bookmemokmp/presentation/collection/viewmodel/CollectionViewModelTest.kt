@@ -1,10 +1,10 @@
 package com.pklein.bookmemokmp.presentation.collection.viewmodel
 
 import app.cash.sqldelight.db.QueryResult
-import com.pklein.bookmemokmp.data.remote.JikanUpdateResult
+import com.pklein.bookmemokmp.data.remote.UpdateResult
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.domain.model.JikanType
+import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.domain.repository.IBookSearchRepository
 import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
@@ -102,7 +102,7 @@ private class FakeICollectionRepository : ICollectionRepository {
 
 private class FakeBookSearchRepository(
     private val topMangaResult: Pair<List<SearchResult>, Boolean> = emptyList<SearchResult>() to false,
-    private val mangaUpdate: JikanUpdateResult = JikanUpdateResult(null, null, null),
+    private val mangaUpdate: UpdateResult = UpdateResult(null, null, null),
     private val shouldFail: Boolean = false,
 ) : IBookSearchRepository {
     override suspend fun fetchTopManga(page: Int): Pair<List<SearchResult>, Boolean> {
@@ -110,12 +110,12 @@ private class FakeBookSearchRepository(
         return topMangaResult
     }
 
-    override suspend fun fetchMangaUpdate(malId: Long): JikanUpdateResult {
+    override suspend fun fetchMangaUpdate(malId: Long): UpdateResult {
         if (shouldFail) throw RuntimeException("Network error")
         return mangaUpdate
     }
 
-    override suspend fun fetchAnimeUpdate(malId: Long): JikanUpdateResult {
+    override suspend fun fetchAnimeUpdate(malId: Long): UpdateResult {
         if (shouldFail) throw RuntimeException("Network error")
         return mangaUpdate
     }
@@ -127,6 +127,13 @@ private class FakeBookSearchRepository(
     ) = emptyList<SearchResult>()
 
     override suspend fun searchByIsbn(isbn: String) = emptyList<SearchResult>()
+
+    override suspend fun fetchMoreBooksFromAuthor(
+        type: ItemType,
+        author: String,
+        authorId: Long?,
+        langRestrict: String?,
+    ) = emptyList<SearchResult>()
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -432,13 +439,13 @@ class CollectionViewModelTest {
     @Test
     fun `checkForUpdates returns UpToDate when totTome unchanged`() =
         runTest {
-            val item = manga1.copy(jikanId = 42L, jikanType = JikanType.MANGA, totTome = 107)
+            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 107)
             val vm =
                 buildViewModel(
                     searchRepo =
                         FakeBookSearchRepository(
                             mangaUpdate =
-                                JikanUpdateResult(
+                                UpdateResult(
                                     totTome = 107,
                                     totChapter = null,
                                     totEpisode = null,
@@ -455,13 +462,13 @@ class CollectionViewModelTest {
     @Test
     fun `checkForUpdates returns NewContent when fresh totTome is higher`() =
         runTest {
-            val item = manga1.copy(jikanId = 42L, jikanType = JikanType.MANGA, totTome = 100)
+            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 100)
             val vm =
                 buildViewModel(
                     searchRepo =
                         FakeBookSearchRepository(
                             mangaUpdate =
-                                JikanUpdateResult(
+                                UpdateResult(
                                     totTome = 110,
                                     totChapter = null,
                                     totEpisode = null,
@@ -480,7 +487,7 @@ class CollectionViewModelTest {
     @Test
     fun `checkForUpdates returns Error on network failure`() =
         runTest {
-            val item = manga1.copy(jikanId = 42L, jikanType = JikanType.MANGA)
+            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA)
             val vm = buildViewModel(searchRepo = FakeBookSearchRepository(shouldFail = true))
 
             vm.checkForUpdates(item)
@@ -492,7 +499,7 @@ class CollectionViewModelTest {
     @Test
     fun `checkForUpdates is no-op when jikanId is null`() =
         runTest {
-            val item = manga1.copy(jikanId = null)
+            val item = manga1.copy(mangaApiId = null)
             val vm = buildViewModel()
 
             vm.checkForUpdates(item)
@@ -504,13 +511,13 @@ class CollectionViewModelTest {
     @Test
     fun `dismissUpdateCheck resets state to Idle`() =
         runTest {
-            val item = manga1.copy(jikanId = 42L, jikanType = JikanType.MANGA, totTome = 100)
+            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 100)
             val vm =
                 buildViewModel(
                     searchRepo =
                         FakeBookSearchRepository(
                             mangaUpdate =
-                                JikanUpdateResult(
+                                UpdateResult(
                                     totTome = 110,
                                     totChapter = null,
                                     totEpisode = null,
@@ -539,10 +546,10 @@ class CollectionViewModelTest {
                     author = "Inoue",
                     year = 1998,
                     description = null,
-                    jikanId = 7L,
-                    jikanType = JikanType.MANGA,
+                    mangaApiId = 7L,
+                    mangaApiType = MangaApiType.MANGA,
                 )
-            vm.addToWishlist(result)
+            vm.addToWishlist(result, ItemType.MANGA)
             advanceUntilIdle()
 
             assertEquals(1, repo.addedItems.size)
@@ -550,6 +557,6 @@ class CollectionViewModelTest {
             assertEquals("Vagabond", added.title)
             assertTrue(added.wishlist)
             assertEquals(ItemType.MANGA, added.type)
-            assertEquals(7L, added.jikanId)
+            assertEquals(7L, added.mangaApiId)
         }
 }

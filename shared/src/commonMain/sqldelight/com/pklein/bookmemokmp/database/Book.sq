@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Book (
     borrowed_since INTEGER,
     borrowed_by    TEXT,
     jikan_id       INTEGER,
+    jikan_author_id INTEGER,
     jikan_type     TEXT,
     tot_tome       INTEGER,
     tot_chapter    INTEGER,
@@ -42,8 +43,8 @@ selectFavorites:
 SELECT * FROM Book WHERE favorite = 1 ORDER BY title COLLATE NOCASE ASC;
 
 insert:
-INSERT INTO Book (type, title, author, illustrator, year, bought, wishlist, finish, tome, chapter, episode, season, desc, favorite, image_url, is_borrowed, borrowed_since, borrowed_by, jikan_id, jikan_type, tot_tome, tot_chapter, tot_episode, checked_tomes, notes, format, is_digital)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Book (type, title, author, illustrator, year, bought, wishlist, finish, tome, chapter, episode, season, desc, favorite, image_url, is_borrowed, borrowed_since, borrowed_by, jikan_id, jikan_author_id, jikan_type, tot_tome, tot_chapter, tot_episode, checked_tomes, notes, format, is_digital)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE Book SET
@@ -66,6 +67,7 @@ UPDATE Book SET
     borrowed_since = ?,
     borrowed_by    = ?,
     jikan_id       = ?,
+    jikan_author_id = ?,
     jikan_type     = ?,
     tot_tome       = ?,
     tot_chapter    = ?,

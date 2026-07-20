@@ -2,16 +2,16 @@ package com.pklein.bookmemokmp.data.remote
 
 import com.pklein.bookmemokmp.androidCertFingerprint
 import com.pklein.bookmemokmp.androidPackageName
+import com.pklein.bookmemokmp.data.remote.dto.AnimeApiSingleResponse
+import com.pklein.bookmemokmp.data.remote.dto.ApiAnimeResponse
 import com.pklein.bookmemokmp.data.remote.dto.GoogleBooksResponse
-import com.pklein.bookmemokmp.data.remote.dto.JikanAnimeResponse
-import com.pklein.bookmemokmp.data.remote.dto.JikanAnimeSingleResponse
-import com.pklein.bookmemokmp.data.remote.dto.JikanMangaResponse
-import com.pklein.bookmemokmp.data.remote.dto.JikanMangaSingleResponse
+import com.pklein.bookmemokmp.data.remote.dto.MangaApiResponse
+import com.pklein.bookmemokmp.data.remote.dto.MangaApiSingleResponse
 import com.pklein.bookmemokmp.data.remote.mapper.toSearchResults
-import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.googleBooksApiKey
 import com.pklein.bookmemokmp.isDebugBuild
+import com.pklein.bookmemokmp.mangaApiKey
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
@@ -24,7 +24,8 @@ import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-private const val SEARCH_RESULTS_LIMIT = 10
+const val SEARCH_LAW_RESULTS_LIMIT = 10
+const val SEARCH_BIG_RESULTS_LIMIT = 40
 private const val SEARCH_TOP_RESULTS_LIMIT = 25
 
 class BookSearchService {
@@ -49,13 +50,14 @@ class BookSearchService {
 
     suspend fun searchGoogleBooks(
         query: String,
+        searchResultLimit: Int,
         langRestrict: String? = null,
     ): List<SearchResult> {
         val response: GoogleBooksResponse =
             client
                 .get("https://www.googleapis.com/books/v1/volumes") {
                     parameter("q", query)
-                    parameter("maxResults", SEARCH_RESULTS_LIMIT)
+                    parameter("maxResults", searchResultLimit)
                     langRestrict?.let { parameter("langRestrict", it) }
                     // TODO NEED to create an API key for iOS too
                     googleBooksApiKey()?.let { parameter("key", it) }
@@ -65,74 +67,94 @@ class BookSearchService {
         return response.toSearchResults()
     }
 
-    // ── Jikan ─────────────────────────────────────────────────────────────────
+    // ── My Anime List API ─────────────────────────────────────────────────────────────────
 
     /**
      * Queries both manga and anime endpoints, merges and deduplicates by title
-     * (manga results first), returns up to [SEARCH_RESULTS_LIMIT].
+     * (manga results first), returns up to [SEARCH_LAW_RESULTS_LIMIT].
      */
-    suspend fun searchJikanManga(query: String): List<SearchResult> {
-        val response: JikanMangaResponse =
+    suspend fun searchMangaApi(query: String): List<SearchResult> {
+        val response: MangaApiResponse =
             client
-                .get("https://api.jikan.moe/v4/manga") {
+                .get("https://api.myanimelist.net/v2/manga") {
+                    // TODO NEED to create an API key for iOS too
+                    mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
                     parameter("q", query)
-                    parameter("limit", SEARCH_RESULTS_LIMIT)
-                    parameter("sfw", true) // Filter out Adult entries
+                    parameter("limit", SEARCH_LAW_RESULTS_LIMIT)
+                    parameter("nsfw", false)
+                    parameter(
+                        "fields",
+                        "synopsis,num_volumes,num_chapters,status,start_date,authors{id,first_name,last_name}",
+                    )
                 }.body()
         return response.toSearchResults()
     }
 
-    suspend fun searchJikanAnime(query: String): List<SearchResult> {
-        val response: JikanAnimeResponse =
+    suspend fun searchAnimeApi(query: String): List<SearchResult> {
+        val response: ApiAnimeResponse =
             client
-                .get("https://api.jikan.moe/v4/anime") {
+                .get("https://api.myanimelist.net/v2/anime") {
+                    mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
                     parameter("q", query)
-                    parameter("limit", SEARCH_RESULTS_LIMIT)
-                    parameter("sfw", true) // Filter out Adult entries
+                    parameter("limit", SEARCH_LAW_RESULTS_LIMIT)
+                    parameter("nsfw", false) // Filter out Adult entries
+                    parameter("fields", "synopsis,num_episodes,status,start_date,studios{name}")
                 }.body()
         return response.toSearchResults()
     }
 
     suspend fun fetchTopManga(page: Int = 1): Pair<List<SearchResult>, Boolean> {
-        val response: JikanMangaResponse =
+        val offset = (page - 1) * SEARCH_TOP_RESULTS_LIMIT
+        val response: MangaApiResponse =
             client
-                .get("https://api.jikan.moe/v4/top/manga") {
+                .get("https://api.myanimelist.net/v2/manga/ranking") {
+                    mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
+                    parameter("ranking_type", "all")
                     parameter("limit", SEARCH_TOP_RESULTS_LIMIT)
-                    parameter("page", page)
-                    parameter("sfw", true) // Filter out Adult entries
+                    parameter("offset", offset)
+                    parameter("nsfw", false) // Filter out Adult entries
+                    parameter(
+                        "fields",
+                        "synopsis,num_volumes,num_chapters,status,start_date,authors{id,first_name,last_name}",
+                    )
                 }.body()
         return response.toSearchResults() to (response.pagination?.hasNextPage ?: false)
     }
 
-    suspend fun fetchMangaUpdate(jikanId: Long): JikanUpdateResult {
-        val response: JikanMangaSingleResponse =
+    suspend fun fetchMangaUpdate(jikanId: Long): UpdateResult {
+        val response: MangaApiSingleResponse =
             client
-                .get("https://api.jikan.moe/v4/manga/$jikanId/full")
-                .body()
-        val item = response.data
-        return JikanUpdateResult(
-            totTome = item?.volumes,
-            totChapter = item?.chapters,
+                .get("https://api.myanimelist.net/v2/manga/$jikanId") {
+                    mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
+                    parameter("fields", "num_volumes,num_chapters,authors{id,first_name,last_name}")
+                }.body()
+        val mainAuthorId = response.firstStoryArtAuthorId()
+        return UpdateResult(
+            totTome = response.volumes,
+            totChapter = response.chapters,
             totEpisode = null,
+            mangaApiAuthorId = mainAuthorId,
         )
     }
 
-    suspend fun fetchAnimeUpdate(jikanId: Long): JikanUpdateResult {
-        val response: JikanAnimeSingleResponse =
+    suspend fun fetchAnimeUpdate(jikanId: Long): UpdateResult {
+        val response: AnimeApiSingleResponse =
             client
-                .get("https://api.jikan.moe/v4/anime/$jikanId/full")
-                .body()
-        val item = response.data
-        return JikanUpdateResult(
+                .get("https://api.myanimelist.net/v2/anime/$jikanId") {
+                    mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
+                    parameter("fields", "num_episodes")
+                }.body()
+        return UpdateResult(
             totTome = null,
             totChapter = null,
-            totEpisode = item?.episodes,
+            totEpisode = response.episodes,
         )
     }
 }
 
-data class JikanUpdateResult(
+data class UpdateResult(
     val totTome: Int?,
     val totChapter: Int?,
     val totEpisode: Int?,
+    val mangaApiAuthorId: Long? = null,
 )

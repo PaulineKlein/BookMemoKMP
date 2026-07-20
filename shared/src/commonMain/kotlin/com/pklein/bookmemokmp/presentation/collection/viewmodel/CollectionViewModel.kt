@@ -56,6 +56,8 @@ sealed interface DiscoverState {
     ) : DiscoverState
 
     data object Error : DiscoverState
+
+    data object Empty : DiscoverState
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -158,7 +160,7 @@ class CollectionViewModel(
 
     suspend fun getById(id: Long): CollectionItem? = getCollection.getById(id)
 
-    // ── Discover ──────────────────────────────────────────────────────────────
+    // ── Discover Manga and Author ──────────────────────────────────────────────────────────────
 
     private val _discoverState = MutableStateFlow<DiscoverState>(DiscoverState.Idle)
     val discoverState: StateFlow<DiscoverState> = _discoverState.asStateFlow()
@@ -169,7 +171,7 @@ class CollectionViewModel(
         discoverPage = 1
         _discoverState.value = DiscoverState.Loading
         viewModelScope.launch {
-            _discoverState.value = fetchPage(page = 1, accumulated = emptyList())
+            _discoverState.value = fetchTopMangaPage(page = 1, accumulated = emptyList())
         }
     }
 
@@ -179,7 +181,7 @@ class CollectionViewModel(
         _discoverState.value = current.copy(isLoadingMore = true)
         viewModelScope.launch {
             _discoverState.value =
-                fetchPage(
+                fetchTopMangaPage(
                     page = discoverPage + 1,
                     accumulated = current.results,
                 ).let { next ->
@@ -193,25 +195,21 @@ class CollectionViewModel(
         }
     }
 
-    private suspend fun fetchPage(
+    private suspend fun fetchTopMangaPage(
         page: Int,
         accumulated: List<SearchResult>,
     ): DiscoverState =
         runCatching { bookSearch.fetchTopManga(page) }
             .fold(
-                onSuccess = { (results, hasNextPage) ->
-                    val collectionTitles =
-                        allItems.value
-                            .filter { it.type == ItemType.MANGA }
-                            .map { it.title.trim().lowercase() }
-                            .toSet()
-                    val filtered =
-                        results.filter {
-                            it.title.trim().lowercase() !in collectionTitles
-                        }
-                    val all = accumulated + filtered
+                onSuccess = { (searchResults, hasNextPage) ->
+                    val filteredResults =
+                        filteredResultsFromExistingCollection(
+                            results = searchResults,
+                            item = ItemType.MANGA,
+                        )
+                    val all = accumulated + filteredResults
                     if (all.isEmpty()) {
-                        DiscoverState.Error
+                        DiscoverState.Empty
                     } else {
                         discoverPage = page
                         DiscoverState.Success(all, hasNextPage = hasNextPage)
@@ -220,25 +218,89 @@ class CollectionViewModel(
                 onFailure = { DiscoverState.Error },
             )
 
-    fun addToWishlist(result: SearchResult) =
+    fun loadBooksFromAuthor(
+        item: CollectionItem,
+        langRestrict: String?,
+    ) {
+        if (_discoverState.value is DiscoverState.Loading) return
+        discoverPage = 1
+        _discoverState.value = DiscoverState.Loading
         viewModelScope.launch {
-            addItem(
-                CollectionItem(
-                    type = ItemType.MANGA,
-                    title = result.title,
-                    author = result.author,
-                    year = result.year,
-                    description = result.description,
-                    imageUrl = result.imageUrl,
-                    wishlist = true,
-                    jikanId = result.jikanId,
-                    jikanType = result.jikanType,
-                    totTome = result.totTome,
-                    totChapter = result.totChapter,
-                    totEpisode = result.totEpisode,
-                ),
-            )
+            _discoverState.value = searchAuthor(item, langRestrict)
         }
+    }
+
+    private suspend fun searchAuthor(
+        item: CollectionItem,
+        langRestrict: String?,
+    ): DiscoverState =
+        runCatching {
+            if (item.author.isNullOrBlank()) {
+                return DiscoverState.Error
+            }
+            bookSearch.fetchMoreBooksFromAuthor(
+                item.type,
+                item.author,
+                item.mangaApiAuthorId,
+                langRestrict,
+            )
+        }.fold(
+            onSuccess = { searchResults ->
+                val filteredResults =
+                    filteredResultsFromExistingCollection(
+                        results = searchResults,
+                        item = item.type,
+                    )
+                if (filteredResults.isEmpty()) {
+                    DiscoverState.Empty
+                } else {
+                    DiscoverState.Success(
+                        results = filteredResults,
+                        hasNextPage = false, // TODO on est sure de ca ?
+                        isLoadingMore = false,
+                    )
+                }
+            },
+            onFailure = { DiscoverState.Error },
+        )
+
+    fun filteredResultsFromExistingCollection(
+        results: List<SearchResult>,
+        item: ItemType,
+    ): List<SearchResult> {
+        val collectionKeys =
+            allItems.value
+                .filter { it.type == item }
+                .map { it.title.trim().lowercase().normalizeSeriesTitle() }
+                .toSet()
+
+        return results.filter { result ->
+            result.title.trim().lowercase().normalizeSeriesTitle() !in collectionKeys
+        }
+    }
+
+    fun addToWishlist(
+        result: SearchResult,
+        type: ItemType,
+    ) = viewModelScope.launch {
+        addItem(
+            CollectionItem(
+                type = type,
+                title = result.title,
+                author = result.author,
+                year = result.year,
+                description = result.description,
+                imageUrl = result.imageUrl,
+                wishlist = true,
+                mangaApiId = result.mangaApiId,
+                mangaApiAuthorId = result.mangaApiAuthorId,
+                mangaApiType = result.mangaApiType,
+                totTome = result.totTome,
+                totChapter = result.totChapter,
+                totEpisode = result.totEpisode,
+            ),
+        )
+    }
 
     // ── Update check ─────────────────────────────────────────────────────────
 
@@ -246,8 +308,8 @@ class CollectionViewModel(
     val updateCheckState: StateFlow<UpdateCheckState> = _updateCheckState.asStateFlow()
 
     fun checkForUpdates(item: CollectionItem) {
-        val jikanId = item.jikanId ?: return
-        val jikanType = item.jikanType ?: return
+        val jikanId = item.mangaApiId ?: return
+        val jikanType = item.mangaApiType ?: return
         if (_updateCheckState.value is UpdateCheckState.Loading) return
         _updateCheckState.value = UpdateCheckState.Loading
         viewModelScope.launch {
@@ -264,6 +326,10 @@ class CollectionViewModel(
                             freshTome != null && (oldTome == null || freshTome > oldTome)
                         val hasNewEpisodes =
                             freshEpisode != null && (oldEpisode == null || freshEpisode > oldEpisode)
+                        // Backfill author id for existing items saved before this field existed
+                        if (item.mangaApiAuthorId == null && result.mangaApiAuthorId != null) {
+                            updateItem(item.copy(mangaApiAuthorId = result.mangaApiAuthorId))
+                        }
                         if (hasNewTomes || hasNewEpisodes) {
                             getCollection.updateTotals(
                                 item.id,
@@ -290,7 +356,7 @@ class CollectionViewModel(
         _updateCheckState.value = UpdateCheckState.Idle
     }
 
-    /** Builds a CSV string from the full unfiltered collection. */
+    // ── Builds a CSV string from the full unfiltered collection. ──────────────────────────────
     fun buildCsvContent(headline: String): String =
         buildString {
             appendLine(headline)
@@ -367,3 +433,11 @@ class CollectionViewModel(
             description?.lowercase()?.contains(q) == true
     }
 }
+
+private val seriesTitleNormRegex = Regex(
+    """[,\s\-–]+(?:vol(?:ume)?\.?|tome|t\.|no\.?|n°|#|book|bd\.?|volume)\s*\d+[\d/]*.*$""" +
+        """|[(\s\-–]+\d+(?:/\d+)?[)\s]*$""",
+    RegexOption.IGNORE_CASE,
+)
+
+private fun String.normalizeSeriesTitle(): String = seriesTitleNormRegex.replace(this, "").trim()

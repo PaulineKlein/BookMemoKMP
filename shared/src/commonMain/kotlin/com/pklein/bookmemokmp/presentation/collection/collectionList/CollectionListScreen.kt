@@ -41,6 +41,7 @@ fun CollectionListPage(
     onFavoriteToggle: (CollectionItem) -> Unit,
     onProgressUpdate: (CollectionItem) -> Unit,
     onCheckForUpdates: (CollectionItem) -> Unit,
+    onSearchAuthor: (CollectionItem) -> Unit,
     onDismissUpdateCheck: () -> Unit,
 ) {
     val noActiveFilters = activeFilter == null && !hasActiveStatusFilters
@@ -78,6 +79,7 @@ fun CollectionListPage(
                             updateCheckState = updateCheckState,
                             onCheckForUpdates = onCheckForUpdates,
                             onDismissUpdateCheck = onDismissUpdateCheck,
+                            onSearchAuthor = onSearchAuthor,
                         )
                     }
                 }
@@ -122,6 +124,7 @@ private fun PreviewCollectionWithItems() {
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -142,6 +145,7 @@ private fun PreviewCollectionWithItemsBigFont() {
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -195,6 +199,7 @@ private fun PreviewCollectionNoResults() {
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -216,6 +221,7 @@ private fun PreviewCollectionNoResultsDark() {
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -237,6 +243,7 @@ private fun PreviewCollectionEmpty() {
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = {},
         )
     }
 }
@@ -258,6 +265,7 @@ private fun PreviewCollectionEmptyBigFont() {
             updateCheckState = UpdateCheckState.Idle,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
+            onSearchAuthor = {},
         )
     }
 }

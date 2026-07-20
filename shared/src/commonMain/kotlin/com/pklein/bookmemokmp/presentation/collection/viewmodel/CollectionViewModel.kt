@@ -119,6 +119,7 @@ class CollectionViewModel(
                 result = result.applyTriState(params.statusFilters.wishlist) { it.wishlist }
                 result = result.applyTriState(params.statusFilters.finished) { it.finished }
                 result = result.applyTriState(params.statusFilters.loan) { it.isBorrowed }
+                result = result.applyTriState(params.statusFilters.isDigital) { it.isDigital }
                 params.formatFilter?.let { fmt -> result = result.filter { it.format == fmt } }
                 result
             }
@@ -331,6 +332,8 @@ class CollectionViewModel(
                 append(item.favorite)
                 append(",")
                 append((item.imageUrl ?: "").csvEscape())
+                append(",")
+                append(item.isDigital)
                 append(",")
                 append(item.isBorrowed)
                 append(",")

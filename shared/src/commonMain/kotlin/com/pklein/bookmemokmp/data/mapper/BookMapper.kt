@@ -35,4 +35,5 @@ fun Book.toDomain(): CollectionItem =
         checkedTomes = checked_tomes.orEmpty(),
         notes = notes,
         format = FormatType.fromString(format),
+        isDigital = is_digital == 1L,
     )

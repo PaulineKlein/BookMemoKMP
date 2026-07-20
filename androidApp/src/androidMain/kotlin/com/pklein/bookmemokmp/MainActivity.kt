@@ -22,7 +22,7 @@ import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.JikanType
-import com.pklein.bookmemokmp.domain.repository.CollectionRepository
+import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
 import com.pklein.bookmemokmp.widget.EXTRA_EDIT_ITEM_ID
 import com.pklein.bookmemokmp.widget.FavoritesWidget
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
     // (handles the case where the app is already in foreground when tapping the widget).
     private var editItemId by mutableStateOf<Long?>(null)
 
-    private val repository: CollectionRepository by inject()
+    private val repository: ICollectionRepository by inject()
 
     private val importDbLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -165,6 +165,7 @@ class MainActivity : ComponentActivity() {
                                         description = getStrOrNull("desc"),
                                         favorite = c.getInt(c.getColumnIndexOrThrow("favorite")) == 1,
                                         imageUrl = getStrOrNull("image_url"),
+                                        isDigital = (getIntOrNull("is_digital") ?: 0) == 1,
                                         isBorrowed = (getIntOrNull("is_borrowed") ?: 0) == 1,
                                         borrowedSince =
                                             run {
@@ -177,10 +178,11 @@ class MainActivity : ComponentActivity() {
                                         totTome = getIntOrNull("tot_tome"),
                                         totChapter = getIntOrNull("tot_chapter"),
                                         totEpisode = getIntOrNull("tot_episode"),
-                                        checkedTomes = getStrOrNull("checked_tomes")
-                                            ?.split(",")
-                                            ?.mapNotNull { n -> n.trim().toIntOrNull() }
-                                            ?: emptyList(),
+                                        checkedTomes =
+                                            getStrOrNull("checked_tomes")
+                                                ?.split(",")
+                                                ?.mapNotNull { n -> n.trim().toIntOrNull() }
+                                                ?: emptyList(),
                                         notes = getStrOrNull("notes"),
                                         format = FormatType.fromString(getStrOrNull("format")),
                                     )

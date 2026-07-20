@@ -2,11 +2,11 @@ package com.pklein.bookmemokmp.domain.usecase
 
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.domain.repository.CollectionRepository
+import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetCollectionUseCase(
-    private val repository: CollectionRepository,
+    private val repository: ICollectionRepository,
 ) {
     fun all(): Flow<List<CollectionItem>> = repository.getAll()
 

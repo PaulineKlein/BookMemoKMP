@@ -19,10 +19,14 @@ import com.pklein.bookmemokmp.ui.theme.BadgeBookColor
 import com.pklein.bookmemokmp.ui.theme.BadgeComicColor
 import com.pklein.bookmemokmp.ui.theme.BadgeMangaColor
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TypeBadge(type: ItemType) {
+fun TypeBadge(
+    type: ItemType,
+    title: String? = null,
+) {
     val (bgColor, label) =
         when (type) {
             ItemType.LITERATURE -> BadgeBookColor to stringResource(Res.string.type_book)
@@ -36,8 +40,8 @@ fun TypeBadge(type: ItemType) {
                 .padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
         Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            text = title ?: label,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             style = MaterialTheme.typography.labelMedium,
         )
     }

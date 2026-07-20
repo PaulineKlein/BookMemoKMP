@@ -15,6 +15,7 @@
     <string name="duplicate_title_dialog_title">Déjà dans votre collection</string>
     <string name="duplicate_title_dialog_message">Un titre avec le même nom existe déjà dans cette catégorie. L'ajouter quand même ?</string>
     <string name="finished">Terminé</string>
+    <string name="digital">Format Numérique</string>
     <string name="bought">Acheté</string>
     <string name="wishlist">Sur ma liste d'envies</string>
     <string name="favorite">Favori (ajout sur Widget)</string>
@@ -39,6 +40,7 @@
     <string name="last_season">Dernière Saison</string>
     <string name="last_episode">Dernier Episode</string>
     <string name="add_item">Ajouter</string>
+    <string name="add_item_menu">Ajouter un livre</string>
     <string name="update_item">Sauvegarder</string>
 
     <string name="searching">Recherche…</string>
@@ -89,10 +91,12 @@
     <string name="filter_book">Livres</string>
     <string name="filter_manga">Manga</string>
     <string name="filter_comic">BDs</string>
-    <string name="filter_fav">★ Favs</string>
-    <string name="filter_not_fav">★ Non favs</string>
+    <string name="filter_fav">★ Favoris</string>
+    <string name="filter_not_fav">★ Non favoris</string>
     <string name="filter_bought">Achetés</string>
     <string name="filter_not_bought">Non achetés</string>
+    <string name="filter_digital">Numériques</string>
+    <string name="filter_not_digital">Non numériques</string>
     <string name="filter_finished">Terminés</string>
     <string name="filter_not_finished">Non terminés</string>
     <string name="filter_loaned">Prêtés</string>
@@ -103,16 +107,16 @@
     <string name="scan_barcode">Scanner un code</string>
     <string name="scan_barcode_error">Échec du scan. Veuillez réessayer.</string>
 
-    <string name="statistics_type">Ma collection</string>
-    <string name="statistics_book">Nombre de Livres</string>
-    <string name="statistics_manga">Nombre de Manga</string>
-    <string name="statistics_comics">Nombre de BDs</string>
-    <string name="statistics_progress">Ma progression</string>
-    <string name="statistics_volume">Nombre de tomes</string>
-    <string name="statistics_chapter">Nombre de chapitres</string>
-    <string name="statistics_episode">Nombre d'épisodes</string>
+    <string name="statistics_type">Nombre de titres par section</string>
+    <string name="statistics_book">Livres</string>
+    <string name="statistics_manga">Manga</string>
+    <string name="statistics_comics">BDs</string>
+    <string name="statistics_progress">Ma progression détaillée</string>
+    <string name="statistics_volume">Tomes</string>
+    <string name="statistics_chapter">Chapitres</string>
+    <string name="statistics_episode">Episodes</string>
 
-    <string name="csv_headline_title">type,format,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
+    <string name="csv_headline_title">type,format,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,format_numérique,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
 
     <string name="loaned">Prêté</string>
     <string name="loan_borrowed_by">Prêté à</string>

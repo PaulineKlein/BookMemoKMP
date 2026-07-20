@@ -66,6 +66,7 @@ import bookmemokmp.shared.generated.resources.author
 import bookmemokmp.shared.generated.resources.bought
 import bookmemokmp.shared.generated.resources.delete_accessibility
 import bookmemokmp.shared.generated.resources.description
+import bookmemokmp.shared.generated.resources.digital
 import bookmemokmp.shared.generated.resources.edit_item
 import bookmemokmp.shared.generated.resources.edit_title
 import bookmemokmp.shared.generated.resources.favorite
@@ -178,6 +179,7 @@ private fun AddItemScreenContent(
     var wishlist by remember { mutableStateOf(initialItem?.wishlist ?: false) }
     var favorite by remember { mutableStateOf(initialItem?.favorite ?: false) }
     var finished by remember { mutableStateOf(initialItem?.finished ?: false) }
+    var digital by remember { mutableStateOf(initialItem?.isDigital ?: false) }
     var tome by remember { mutableStateOf(initialItem?.tome?.toString() ?: "") }
     var chapter by remember { mutableStateOf(initialItem?.chapter?.toString() ?: "") }
     var episode by remember { mutableStateOf(initialItem?.episode?.toString() ?: "") }
@@ -481,7 +483,7 @@ private fun AddItemScreenContent(
                                         },
                                         onNotFoundException = {
                                             showResultsDialog = true
-                                            onSearchIsbn(null,  true)
+                                            onSearchIsbn(null, true)
                                         },
                                         onError = {
                                             showResultsDialog = true
@@ -687,6 +689,11 @@ private fun AddItemScreenContent(
                     onCheckedChange = { wishlist = it },
                 )
                 ToggleRowItem(
+                    label = stringResource(Res.string.digital),
+                    checked = digital,
+                    onCheckedChange = { digital = it },
+                )
+                ToggleRowItem(
                     label = stringResource(Res.string.finished),
                     checked = finished,
                     onCheckedChange = { finished = it },
@@ -774,6 +781,7 @@ private fun AddItemScreenContent(
                             checkedTomes = checkedTomes,
                             notes = notes.trim().ifBlank { null },
                             format = format,
+                            isDigital = digital,
                         )
                     scope.launch {
                         isCheckingDuplicate = true

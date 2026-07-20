@@ -274,6 +274,7 @@ private fun CollectionContent(
                             keyboardActions = KeyboardActions(onSearch = { onClearSearch() }),
                         )
                         MenuItem(
+                            onAddBook = onAddClick,
                             onShowDiscoverSheet = {
                                 showDiscoverSheet = true
                                 onDiscoverManga()

@@ -15,6 +15,7 @@
     <string name="duplicate_title_dialog_title">Already in your collection</string>
     <string name="duplicate_title_dialog_message">A title with the same name already exists in this category. Add it anyway?</string>
     <string name="finished">Finished</string>
+    <string name="digital">Digital</string>
     <string name="bought">Bought</string>
     <string name="wishlist">On my Wishlist</string>
     <string name="favorite">Favorite (add to Widget)</string>
@@ -40,12 +41,13 @@
     <string name="last_season">Last season</string>
     <string name="last_episode">Last episode</string>
     <string name="add_item">Save to Collection</string>
+    <string name="add_item_menu">Add a book</string>
     <string name="update_item">Save changes</string>
 
     <string name="searching">Searching…</string>
     <string name="searching_no_result">No results found for %1$s.</string>
     <string name="searching_error">Search failed. Please try again.</string>
-    <string name="searching_not_found_exception">The Google barcode scanning module isn't available on your device</string>
+    <string name="searching_not_found_exception">The Google barcode scanning module is not available on your device</string>
     <string name="search_online">Search online</string>
     <string name="result_dialog_title">Search results</string>
     <string name="result_dialog_notice">Results are in English. No French source available for manga/anime.</string>
@@ -72,7 +74,7 @@
     <string name="format_essay">Essay</string>
     <string name="format_biography">Biography</string>
     <string name="format_autobiography">Autobiography</string>
-    <string name="format_childrens">Children\'s Book</string>
+    <string name="format_childrens">Children's Book</string>
     <string name="format_poetry">Poetry</string>
     <string name="format_theatre">Theatre</string>
     <string name="format_light_novel">Light Novel</string>
@@ -94,6 +96,8 @@
     <string name="filter_not_fav">★ Not fav</string>
     <string name="filter_bought">Bought</string>
     <string name="filter_not_bought">Not bought</string>
+    <string name="filter_digital">Digital</string>
+    <string name="filter_not_digital">Not digital</string>
     <string name="filter_finished">Finished</string>
     <string name="filter_not_finished">Not finished</string>
     <string name="filter_loaned">Loaned</string>
@@ -104,16 +108,16 @@
     <string name="scan_barcode">Scan barcode</string>
     <string name="scan_barcode_error">Barcode scan failed. Please try again.</string>
 
-    <string name="statistics_type">My collection</string>
-    <string name="statistics_book">Number of Books</string>
-    <string name="statistics_manga">Number of Mangas</string>
-    <string name="statistics_comics">Number of Comics</string>
-    <string name="statistics_progress">My progress</string>
-    <string name="statistics_volume">Number of volumes</string>
-    <string name="statistics_chapter">Number of chapters</string>
-    <string name="statistics_episode">Number of episodes</string>
+    <string name="statistics_type">Number of items by section</string>
+    <string name="statistics_book">Books</string>
+    <string name="statistics_manga">Mangas</string>
+    <string name="statistics_comics">Comics</string>
+    <string name="statistics_progress">Progress overview</string>
+    <string name="statistics_volume">Volumes</string>
+    <string name="statistics_chapter">Chapters</string>
+    <string name="statistics_episode">Episodes</string>
 
-    <string name="csv_headline_title">type,format,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
+    <string name="csv_headline_title">type,format,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_digital,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
 
     <string name="loaned">Loaned</string>
     <string name="loan_borrowed_by">Borrowed by</string>
@@ -135,11 +139,11 @@
 
     <string name="check_update">Check for new volumes</string>
     <string name="check_update_loading">Checking…</string>
-    <string name="check_update_up_to_date">You\'re up to date!</string>
+    <string name="check_update_up_to_date">You are up to date!</string>
     <string name="check_update_error">Could not check for updates. Please try again.</string>
-    <string name="check_update_new_tome">New volumes available! %1$d volumes total (you\'re at tome %2$d)</string>
+    <string name="check_update_new_tome">New volumes available! %1$d volumes total (you are at tome %2$d)</string>
     <string name="check_update_new_tome_no_progress">New volumes available! %1$d volumes total</string>
-    <string name="check_update_new_episode">New episodes available! %1$d episodes total (you\'re at episode %2$d)</string>
+    <string name="check_update_new_episode">New episodes available! %1$d episodes total (you are at episode %2$d)</string>
     <string name="check_update_new_episode_no_progress">New episodes available! %1$d episodes total</string>
 
     <string name="discover_manga">Discover manga</string>

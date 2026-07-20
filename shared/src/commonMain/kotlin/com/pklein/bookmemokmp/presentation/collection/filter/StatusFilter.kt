@@ -2,10 +2,12 @@ package com.pklein.bookmemokmp.presentation.collection.filter
 
 import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.filter_bought
+import bookmemokmp.shared.generated.resources.filter_digital
 import bookmemokmp.shared.generated.resources.filter_fav
 import bookmemokmp.shared.generated.resources.filter_finished
 import bookmemokmp.shared.generated.resources.filter_loaned
 import bookmemokmp.shared.generated.resources.filter_not_bought
+import bookmemokmp.shared.generated.resources.filter_not_digital
 import bookmemokmp.shared.generated.resources.filter_not_fav
 import bookmemokmp.shared.generated.resources.filter_not_finished
 import bookmemokmp.shared.generated.resources.filter_not_in_wishlist
@@ -19,6 +21,7 @@ data class StatusFilters(
     val favorites: TriState = TriState.ALL,
     val wishlist: TriState = TriState.ALL,
     val bought: TriState = TriState.ALL,
+    val isDigital: TriState = TriState.ALL,
     val finished: TriState = TriState.ALL,
     val loan: TriState = TriState.ALL,
 ) {
@@ -48,6 +51,12 @@ enum class StatusFilterField(
         labelNo = Res.string.filter_not_bought,
         get = { it.bought },
         set = { f, v -> f.copy(bought = v) },
+    ),
+    IS_DIGITAL(
+        labelYes = Res.string.filter_digital,
+        labelNo = Res.string.filter_not_digital,
+        get = { it.isDigital },
+        set = { f, v -> f.copy(isDigital = v) },
     ),
     FINISHED(
         labelYes = Res.string.filter_finished,

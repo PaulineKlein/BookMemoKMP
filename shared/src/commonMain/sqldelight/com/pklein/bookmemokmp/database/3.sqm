@@ -2,3 +2,4 @@
 -- Adds format column: stores the FormatType enum name (e.g. "NOVEL", "WEBTOON").
 -- Existing rows get NULL (no format specified).
 ALTER TABLE Book ADD COLUMN format TEXT;
+ALTER TABLE Book ADD COLUMN is_digital INTEGER NOT NULL DEFAULT 0;

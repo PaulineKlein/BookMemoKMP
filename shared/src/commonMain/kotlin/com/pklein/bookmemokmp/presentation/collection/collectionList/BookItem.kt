@@ -3,6 +3,7 @@ package com.pklein.bookmemokmp.presentation.collection.collectionList
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.add_number
 import bookmemokmp.shared.generated.resources.bought
 import bookmemokmp.shared.generated.resources.check_update
+import bookmemokmp.shared.generated.resources.digital
 import bookmemokmp.shared.generated.resources.down_accessibility
 import bookmemokmp.shared.generated.resources.edit_item
 import bookmemokmp.shared.generated.resources.fav_add_accessibility
@@ -47,12 +49,12 @@ import bookmemokmp.shared.generated.resources.finished
 import bookmemokmp.shared.generated.resources.up_accessibility
 import bookmemokmp.shared.generated.resources.wishlist
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.JikanType
 import com.pklein.bookmemokmp.presentation.collection.cover.CoverSmallPreviewItem
 import com.pklein.bookmemokmp.presentation.collection.viewmodel.UpdateCheckState
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
-import com.pklein.bookmemokmp.ui.theme.SuccessGreen
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -112,8 +114,6 @@ fun BookItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
-                Spacer(Modifier.width(8.dp))
-                TypeBadge(item.type)
                 Spacer(Modifier.width(6.dp))
                 Icon(
                     imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
@@ -137,7 +137,6 @@ fun BookItem(
                         item.illustrator?.takeIf { it.isNotBlank() },
                     ).takeIf { it.isNotEmpty() }?.joinToString(" & ")
 
-                item.format?.let { FormatBadge(it) }
                 authorIllustrator?.let {
                     Text(
                         it,
@@ -153,32 +152,21 @@ fun BookItem(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                if (item.favorite || item.finished || item.bought) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (item.finished) {
-                            Text(
-                                text = stringResource(Res.string.finished),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.tertiary,
-                            )
-                        }
-                        if (item.bought) {
-                            Text(
-                                text = stringResource(Res.string.bought),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                        if (item.wishlist) {
-                            Text(
-                                text = stringResource(Res.string.wishlist),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
+                Spacer(Modifier.height(6.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    TypeBadge(item.type)
+                    item.format?.let { TypeBadge(item.type, stringResource(it.stringRes)) }
+                    if (item.finished) {
+                        InfoBadge(Res.string.finished)
+                    }
+                    if (item.bought) {
+                        InfoBadge(Res.string.bought)
+                    }
+                    if (item.isDigital) {
+                        InfoBadge(Res.string.digital)
+                    }
+                    if (item.wishlist) {
+                        InfoBadge(Res.string.wishlist)
                     }
                 }
                 Spacer(Modifier.height(6.dp))
@@ -362,6 +350,7 @@ private fun PreviewBookItemExpandedBigFont() {
                 CollectionItem(
                     id = 1,
                     type = ItemType.LITERATURE,
+                    format = FormatType.NOVEL,
                     title = "The Lord of the Rings",
                     author = "J.R.R. Tolkien",
                     year = 1954,
@@ -370,6 +359,8 @@ private fun PreviewBookItemExpandedBigFont() {
                     favorite = true,
                     finished = true,
                     isBorrowed = true,
+                    wishlist = true,
+                    isDigital = true,
                     borrowedBy = "Jean-Baptiste",
                     borrowedSince = 1_746_057_600_000L, // 2025-05-01
                     tome = 3,
@@ -397,7 +388,11 @@ private fun PreviewBookItemMangaExpanded() {
                     type = ItemType.MANGA,
                     title = "One Piece",
                     author = "Eiichiro Oda",
+                    format = FormatType.MANGA,
                     bought = true,
+                    isDigital = true,
+                    wishlist = true,
+                    finished = true,
                     tome = 107,
                     chapter = 1100,
                     episode = 1090,

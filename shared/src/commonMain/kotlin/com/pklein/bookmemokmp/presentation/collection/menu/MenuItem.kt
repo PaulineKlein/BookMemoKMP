@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import bookmemokmp.shared.generated.resources.Res
+import bookmemokmp.shared.generated.resources.add_item_menu
 import bookmemokmp.shared.generated.resources.discover_manga
 import bookmemokmp.shared.generated.resources.export_csv
 import bookmemokmp.shared.generated.resources.export_database
@@ -28,6 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MenuItem(
+    onAddBook: () -> Unit,
     onShowDiscoverSheet: () -> Unit,
     onExportCsv: () -> Unit,
     onExportDb: () -> Unit,
@@ -45,6 +47,10 @@ fun MenuItem(
             expanded = menuExpanded,
             onDismissRequest = { menuExpanded = false }
         ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.add_item_menu)) },
+                onClick = { onAddBook(); menuExpanded = false }
+            )
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.discover_manga)) },
                 onClick = { onShowDiscoverSheet(); menuExpanded = false }
@@ -72,6 +78,7 @@ fun MenuItem(
 private fun PreviewMenuItem() {
     BookMemoTheme {
         MenuItem(
+            onAddBook = {},
             onShowDiscoverSheet = {},
             onExportCsv = {},
             onExportDb = {},
@@ -85,6 +92,7 @@ private fun PreviewMenuItem() {
 private fun PreviewMenuItemBigFont() {
     BookMemoTheme {
         MenuItem(
+            onAddBook = {},
             onShowDiscoverSheet = {},
             onExportCsv = {},
             onExportDb = {},

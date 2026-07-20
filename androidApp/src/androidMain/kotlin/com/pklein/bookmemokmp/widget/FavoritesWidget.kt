@@ -36,7 +36,7 @@ import com.pklein.bookmemokmp.MainActivity
 import com.pklein.bookmemokmp.R
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.domain.repository.CollectionRepository
+import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 import androidx.compose.foundation.background as composeBackground
@@ -64,7 +64,7 @@ class FavoritesWidget : GlanceAppWidget() {
         context: android.content.Context,
         id: GlanceId,
     ) {
-        val repository = GlobalContext.get().get<CollectionRepository>()
+        val repository = GlobalContext.get().get<ICollectionRepository>()
         val favorites = repository.getFavorites().first()
         provideContent {
             FavoritesContent(favorites)

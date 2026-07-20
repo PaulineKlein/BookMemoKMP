@@ -6,8 +6,8 @@ import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.JikanType
 import com.pklein.bookmemokmp.domain.model.SearchResult
-import com.pklein.bookmemokmp.domain.repository.CollectionRepository
 import com.pklein.bookmemokmp.domain.repository.IBookSearchRepository
+import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import com.pklein.bookmemokmp.domain.usecase.AddItemUseCase
 import com.pklein.bookmemokmp.domain.usecase.BookSearchUseCase
 import com.pklein.bookmemokmp.domain.usecase.DeleteItemUseCase
@@ -53,7 +53,7 @@ private val allItems = listOf(manga1, manga2, book1)
 
 // ── Fakes ──────────────────────────────────────────────────────────────────────
 
-private class FakeCollectionRepository : CollectionRepository {
+private class FakeICollectionRepository : ICollectionRepository {
     private val itemsList = MutableStateFlow(allItems)
 
     val addedItems = mutableListOf<CollectionItem>()
@@ -145,7 +145,7 @@ private fun kotlinx.coroutines.test.TestScope.activateFlows(vm: CollectionViewMo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 private fun buildViewModel(
-    collectionRepo: FakeCollectionRepository = FakeCollectionRepository(),
+    collectionRepo: FakeICollectionRepository = FakeICollectionRepository(),
     searchRepo: IBookSearchRepository = FakeBookSearchRepository(),
 ): CollectionViewModel {
     val getCollection = GetCollectionUseCase(collectionRepo)
@@ -335,7 +335,7 @@ class CollectionViewModelTest {
     @Test
     fun `buildCsvContent escapes double quotes in title`() =
         runTest {
-            val repo = FakeCollectionRepository()
+            val repo = FakeICollectionRepository()
             repo.setItems(
                 listOf(
                     CollectionItem(
@@ -530,7 +530,7 @@ class CollectionViewModelTest {
     @Test
     fun `addToWishlist saves item with wishlist=true and correct type`() =
         runTest {
-            val repo = FakeCollectionRepository()
+            val repo = FakeICollectionRepository()
             val vm = buildViewModel(collectionRepo = repo)
 
             val result =

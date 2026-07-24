@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.outlined.Delete
@@ -60,6 +61,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
+import bookmemokmp.shared.generated.resources.add_cover_url_accessibility
 import bookmemokmp.shared.generated.resources.add_item
 import bookmemokmp.shared.generated.resources.add_to_collection
 import bookmemokmp.shared.generated.resources.author
@@ -124,6 +126,7 @@ fun AddItemScreen(
     barcodeScanner: BarcodeScanner? = null,
 ) {
     val searchState by viewModel.searchState.collectAsState()
+    val saveEnglishDescription by viewModel.saveEnglishDescription.collectAsState()
 
     AddItemScreenContent(
         onSave = onSave,
@@ -134,8 +137,8 @@ fun AddItemScreen(
         onSearch = viewModel::search,
         onSearchIsbn = viewModel::searchByIsbn,
         onCheckDuplicate = viewModel::existsByTitleAndType,
-        initialSaveDescription = viewModel.englishDescriptionPref,
-        onSaveDescriptionChanged = { viewModel.englishDescriptionPref = it },
+        initialSaveDescription = saveEnglishDescription,
+        onSaveDescriptionChanged = viewModel::setSaveEnglishDescription,
         barcodeScanner = barcodeScanner,
     )
 }
@@ -204,6 +207,7 @@ private fun AddItemScreenContent(
     var jikanType by remember { mutableStateOf(initialItem?.mangaApiType) }
     var totChapter by remember { mutableStateOf(initialItem?.totChapter) }
     var totEpisode by remember { mutableStateOf(initialItem?.totEpisode) }
+    var showCoverUrlDialog by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState =
         rememberDatePickerState(
@@ -289,6 +293,16 @@ private fun AddItemScreenContent(
                 pendingDescriptionResult = null
             },
             onCancel = { pendingDescriptionResult = null },
+        )
+    }
+
+    if (showCoverUrlDialog) {
+        AddCoverUrlDialog(
+            onConfirm = { url ->
+                imageUrl = url
+                showCoverUrlDialog = false
+            },
+            onDismiss = { showCoverUrlDialog = false },
         )
     }
 
@@ -395,25 +409,39 @@ private fun AddItemScreenContent(
                                     .width(132.dp)
                                     .height(180.dp),
                         )
-                        if (imageUrl.isNotBlank()) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .align(Alignment.TopEnd)
-                                        .size(32.dp)
-                                        .background(
-                                            MaterialTheme.colorScheme.surfaceVariant,
-                                            CircleShape,
-                                        ).border(
-                                            1.dp,
-                                            MaterialTheme.colorScheme.outline,
-                                            CircleShape,
-                                        ).clickable { imageUrl = "" },
-                                contentAlignment = Alignment.Center,
-                            ) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(32.dp)
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                        CircleShape,
+                                    ).border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline,
+                                        CircleShape,
+                                    ).clickable {
+                                        if (imageUrl.isNotBlank()) {
+                                            // Delete image :
+                                            imageUrl = ""
+                                        } else {
+                                            showCoverUrlDialog = true
+                                        }
+                                    },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (imageUrl.isNotBlank()) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(Res.string.remove_cover_accessibility),
+                                    modifier = Modifier.size(12.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = stringResource(Res.string.add_cover_url_accessibility),
                                     modifier = Modifier.size(12.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -784,19 +812,23 @@ private fun AddItemScreenContent(
                             format = format,
                             isDigital = digital,
                         )
-                    scope.launch {
-                        isCheckingDuplicate = true
-                        try {
-                            val isDuplicate =
-                                onCheckDuplicate(item.title, item.type, initialItem?.id ?: 0L)
-                            if (isDuplicate) {
-                                pendingSaveItem = item
-                                showDuplicateDialog = true
-                            } else {
-                                onSave(item)
+                    if (isEditing) {
+                        onSave(item)
+                    } else {
+                        scope.launch {
+                            isCheckingDuplicate = true
+                            try {
+                                val isDuplicate =
+                                    onCheckDuplicate(item.title, item.type, 0L)
+                                if (isDuplicate) {
+                                    pendingSaveItem = item
+                                    showDuplicateDialog = true
+                                } else {
+                                    onSave(item)
+                                }
+                            } finally {
+                                isCheckingDuplicate = false
                             }
-                        } finally {
-                            isCheckingDuplicate = false
                         }
                     }
                 },

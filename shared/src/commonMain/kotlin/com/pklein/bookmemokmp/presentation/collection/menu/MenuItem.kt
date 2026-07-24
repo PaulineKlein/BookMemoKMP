@@ -18,57 +18,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.add_item_menu
 import bookmemokmp.shared.generated.resources.discover_manga
-import bookmemokmp.shared.generated.resources.export_csv
-import bookmemokmp.shared.generated.resources.export_database
 import bookmemokmp.shared.generated.resources.export_menu_accessibility
-import bookmemokmp.shared.generated.resources.import_database
 import com.pklein.bookmemokmp.isAndroidPlatform
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import org.jetbrains.compose.resources.stringResource
-
 
 @Composable
 fun MenuItem(
     onAddBook: () -> Unit,
     onShowDiscoverSheet: () -> Unit,
-    onExportCsv: () -> Unit,
-    onExportDb: () -> Unit,
-    onImportDb: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { menuExpanded = true }) {
             Icon(
                 imageVector = if (isAndroidPlatform) Icons.Default.MoreVert else Icons.Default.MoreHoriz,
-                contentDescription = stringResource(Res.string.export_menu_accessibility)
+                contentDescription = stringResource(Res.string.export_menu_accessibility),
             )
         }
         DropdownMenu(
             expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false }
+            onDismissRequest = { menuExpanded = false },
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.add_item_menu)) },
-                onClick = { onAddBook(); menuExpanded = false }
+                onClick = { onAddBook(); menuExpanded = false },
             )
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.discover_manga)) },
-                onClick = { onShowDiscoverSheet(); menuExpanded = false }
+                onClick = { onShowDiscoverSheet(); menuExpanded = false },
             )
-            if (isAndroidPlatform) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.export_csv)) },
-                    onClick = { onExportCsv(); menuExpanded = false }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.export_database)) },
-                    onClick = { onExportDb(); menuExpanded = false }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.import_database)) },
-                    onClick = { onImportDb(); menuExpanded = false }
-                )
-            }
         }
     }
 }
@@ -77,13 +56,7 @@ fun MenuItem(
 @Composable
 private fun PreviewMenuItem() {
     BookMemoTheme {
-        MenuItem(
-            onAddBook = {},
-            onShowDiscoverSheet = {},
-            onExportCsv = {},
-            onExportDb = {},
-            onImportDb = {}
-        )
+        MenuItem(onAddBook = {}, onShowDiscoverSheet = {})
     }
 }
 
@@ -91,12 +64,6 @@ private fun PreviewMenuItem() {
 @Composable
 private fun PreviewMenuItemBigFont() {
     BookMemoTheme {
-        MenuItem(
-            onAddBook = {},
-            onShowDiscoverSheet = {},
-            onExportCsv = {},
-            onExportDb = {},
-            onImportDb = {}
-        )
+        MenuItem(onAddBook = {}, onShowDiscoverSheet = {})
     }
 }

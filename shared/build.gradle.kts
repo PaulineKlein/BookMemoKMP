@@ -122,6 +122,13 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    add("androidMainImplementation", platform(libs.firebase.bom))
+    add("androidMainImplementation", libs.firebase.auth)
+    add("androidMainImplementation", libs.firebase.firestore)
+    add("androidMainImplementation", libs.kotlinx.coroutines.play.services)
+    add("androidMainImplementation", libs.credentials)
+    add("androidMainImplementation", libs.credentials.play.services.auth)
+    add("androidMainImplementation", libs.googleid)
 }
 
 sqldelight {

@@ -132,6 +132,8 @@
     <string name="fav_remove_accessibility">Remove to Favorite</string>
     <string name="add_accessibility">Add</string>
     <string name="remove_cover_accessibility">Remove cover image</string>
+    <string name="add_cover_url_accessibility">Add cover image URL</string>
+    <string name="cover_url_dialog_title">Cover image URL</string>
     <string name="clear_search_accessibility">Clear search</string>
     <string name="close_accessibility">Close</string>
     <string name="export_menu_accessibility">Export options</string>
@@ -156,4 +158,33 @@
     <string name="discover_add_wishlist">Add to wishlist</string>
     <string name="discover_added">Added to wishlist!</string>
     <string name="discover_retry">Relaunch the search</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_cloud_backup">Cloud Backup</string>
+    <string name="settings_signed_in">Signed in</string>
+    <string name="settings_not_signed_in">Not signed in</string>
+    <string name="settings_sign_in">Sign in with Google</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_last_backup">Last backup: %1$s</string>
+    <string name="settings_no_backup">No backup yet</string>
+    <string name="settings_backup_now">Backup now</string>
+    <string name="settings_saving">Saving…</string>
+    <string name="settings_restore">Restore</string>
+    <string name="settings_restore_conflict_title">Duplicates found</string>
+    <string name="settings_restore_conflict_message">%1$d item(s) already exist in your collection. What do you want to do?</string>
+    <string name="settings_restore_replace">Replace</string>
+    <string name="settings_restore_duplicate">Keep both</string>
+    <string name="settings_restore_skip">Skip duplicates</string>
+    <string name="settings_local_data">Local Data</string>
+    <string name="settings_error_sign_in">Authentication failed. Please try again.</string>
+    <string name="settings_error_backup">Backup failed. Please try again.</string>
+    <string name="settings_error_restore">Restore failed. Please try again.</string>
+    <string name="settings_success_backup">Backup completed successfully.</string>
+    <string name="settings_success_restore">Restore completed successfully.</string>
+    <string name="settings_preferences">Preferences</string>
+    <string name="settings_save_english_description">Save English description for Manga</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
 </resources>

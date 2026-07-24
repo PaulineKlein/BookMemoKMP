@@ -38,12 +38,12 @@ class AddItemViewModel(
     private val _searchState = MutableStateFlow<SearchState>(SearchState.Idle)
     val searchState: StateFlow<SearchState> = _searchState.asStateFlow()
 
-    var englishDescriptionPref: Boolean
-        get() = userPrefs.saveEnglishDescription
-        set(value) = saveEnglishDescriptionPref(value)
+    private val _saveEnglishDescription = MutableStateFlow(userPrefs.saveEnglishDescription)
+    val saveEnglishDescription: StateFlow<Boolean> = _saveEnglishDescription.asStateFlow()
 
-    private fun saveEnglishDescriptionPref(enabled: Boolean) {
-        userPrefs.saveEnglishDescription = enabled
+    fun setSaveEnglishDescription(value: Boolean) {
+        userPrefs.saveEnglishDescription = value
+        _saveEnglishDescription.value = value
     }
 
     fun searchByIsbn(

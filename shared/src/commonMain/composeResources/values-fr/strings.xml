@@ -131,6 +131,8 @@
     <string name="fav_remove_accessibility">Retirer des favoris</string>
     <string name="add_accessibility">Ajouter</string>
     <string name="remove_cover_accessibility">Supprimer l'image de couverture</string>
+    <string name="add_cover_url_accessibility">Ajouter une URL d'image de couverture</string>
+    <string name="cover_url_dialog_title">URL de l'image de couverture</string>
     <string name="clear_search_accessibility">Effacer la recherche en cours</string>
     <string name="close_accessibility">Fermer</string>
     <string name="export_menu_accessibility">Options d'export</string>
@@ -155,4 +157,33 @@
     <string name="discover_add_wishlist">Ajouter à la liste d'envies</string>
     <string name="discover_added">Ajouté à la liste d'envies !</string>
     <string name="discover_retry">Relancer la recherche</string>
+
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_cloud_backup">Sauvegarde en ligne</string>
+    <string name="settings_signed_in">Connecté</string>
+    <string name="settings_not_signed_in">Non connecté</string>
+    <string name="settings_sign_in">Se connecter avec Google</string>
+    <string name="settings_sign_out">Se déconnecter</string>
+    <string name="settings_last_backup">Dernière sauvegarde : %1$s</string>
+    <string name="settings_no_backup">Aucune sauvegarde</string>
+    <string name="settings_backup_now">Sauvegarder</string>
+    <string name="settings_saving">Sauvegarde…</string>
+    <string name="settings_restore">Restaurer</string>
+    <string name="settings_restore_conflict_title">Doublons détectés</string>
+    <string name="settings_restore_conflict_message">%1$d élément(s) existent déjà dans votre collection. Que souhaitez-vous faire ?</string>
+    <string name="settings_restore_replace">Remplacer</string>
+    <string name="settings_restore_duplicate">Garder les deux</string>
+    <string name="settings_restore_skip">Ignorer les doublons</string>
+    <string name="settings_local_data">Données locales</string>
+    <string name="settings_error_sign_in">Échec de l'authentification. Veuillez réessayer.</string>
+    <string name="settings_error_backup">Échec de la sauvegarde. Veuillez réessayer.</string>
+    <string name="settings_error_restore">Échec de la restauration. Veuillez réessayer.</string>
+    <string name="settings_success_backup">Sauvegarde effectuée avec succès.</string>
+    <string name="settings_success_restore">Restauration effectuée avec succès.</string>
+    <string name="settings_preferences">Préférences</string>
+    <string name="settings_save_english_description">Enregistrer les descriptions de Manga en anglais</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_system">Système</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
 </resources>

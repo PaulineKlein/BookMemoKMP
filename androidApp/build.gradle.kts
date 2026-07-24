@@ -109,4 +109,6 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+    implementation(libs.firebase.appcheck.playintegrity)
+    debugImplementation(libs.firebase.appcheck.debug)
 }

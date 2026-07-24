@@ -176,8 +176,11 @@ private val BookMemoShapes =
 // ── Theme entry point ─────────────────────────────────────────────────────────
 
 @Composable
-fun BookMemoTheme(content: @Composable () -> Unit) {
-    val colorScheme = if (isSystemInDarkTheme()) BookMemoDarkColors else BookMemoColors
+fun BookMemoTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = if (darkTheme) BookMemoDarkColors else BookMemoColors
     MaterialTheme(
         colorScheme = colorScheme,
         shapes = BookMemoShapes,

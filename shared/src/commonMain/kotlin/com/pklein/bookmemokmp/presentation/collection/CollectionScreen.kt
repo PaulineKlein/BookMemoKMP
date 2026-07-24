@@ -10,6 +10,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,7 +58,6 @@ import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.add_accessibility
 import bookmemokmp.shared.generated.resources.cat
 import bookmemokmp.shared.generated.resources.clear_search_accessibility
-import bookmemokmp.shared.generated.resources.csv_headline_title
 import bookmemokmp.shared.generated.resources.search_placeholder
 import bookmemokmp.shared.generated.resources.tab_collection
 import bookmemokmp.shared.generated.resources.tab_stats
@@ -88,9 +89,7 @@ fun CollectionScreen(
     viewModel: CollectionViewModel,
     onAddClick: () -> Unit,
     onEditClick: (CollectionItem) -> Unit,
-    onExportCsv: (String) -> Unit = {},
-    onExportDb: () -> Unit = {},
-    onImportDb: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
 ) {
     val items by viewModel.displayedItems.collectAsState()
     val allItems by viewModel.allItems.collectAsState()
@@ -101,7 +100,6 @@ fun CollectionScreen(
     val discoverState by viewModel.discoverState.collectAsState()
     val updateCheckState by viewModel.updateCheckState.collectAsState()
     val keyboard = LocalSoftwareKeyboardController.current
-    val csvHeader = stringResource(Res.string.csv_headline_title)
 
     CollectionContent(
         items = items,
@@ -124,9 +122,7 @@ fun CollectionScreen(
         onEditClick = onEditClick,
         onFavoriteToggle = { viewModel.update(it) },
         onProgressUpdate = { viewModel.update(it) },
-        onExportCsv = { onExportCsv(viewModel.buildCsvContent(csvHeader)) },
-        onExportDb = onExportDb,
-        onImportDb = onImportDb,
+        onSettingsClick = onSettingsClick,
         onDiscoverManga = viewModel::loadTopManga,
         onLoadMoreManga = viewModel::loadMoreManga,
         onAddToWishlist = viewModel::addToWishlist,
@@ -157,9 +153,7 @@ private fun CollectionContent(
     onEditClick: (CollectionItem) -> Unit,
     onFavoriteToggle: (CollectionItem) -> Unit,
     onProgressUpdate: (CollectionItem) -> Unit,
-    onExportCsv: () -> Unit,
-    onExportDb: () -> Unit,
-    onImportDb: () -> Unit,
+    onSettingsClick: () -> Unit,
     onDiscoverManga: () -> Unit,
     onLoadMoreManga: () -> Unit,
     onAddToWishlist: (SearchResult, ItemType) -> Unit,
@@ -253,17 +247,30 @@ private fun CollectionContent(
                         fadeOut(animationSpec = tween(800)),
             ) {
                 Column {
-                    Image(
-                        painter = painterResource(Res.drawable.cat),
-                        contentDescription = null,
+                    Row(
                         modifier =
                             Modifier
-                                .height(70.dp)
-                                .align(Alignment.Start)
-                                .padding(start = 16.dp, top = 12.dp),
-                        contentScale = ContentScale.Fit,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                    )
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, top = 12.dp, end = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.cat),
+                            contentDescription = null,
+                            modifier = Modifier.height(70.dp),
+                            contentScale = ContentScale.Fit,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
                     Row(
                         modifier =
                             Modifier
@@ -297,9 +304,6 @@ private fun CollectionContent(
                                 showDiscoverBook = true
                                 onDiscoverManga()
                             },
-                            onExportCsv = onExportCsv,
-                            onExportDb = onExportDb,
-                            onImportDb = onImportDb,
                         )
                     }
                     FilterRow(activeFilter = activeFilter, onFilterChange = onFilterChange)
@@ -441,9 +445,7 @@ private fun PreviewCollectionWithItems() {
             onEditClick = {},
             onFavoriteToggle = {},
             onProgressUpdate = {},
-            onExportCsv = {},
-            onExportDb = {},
-            onImportDb = {},
+            onSettingsClick = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
             onAddToWishlist = { _, _ -> },
@@ -477,9 +479,7 @@ private fun PreviewCollectionBooksAndFavorites() {
             onEditClick = {},
             onFavoriteToggle = {},
             onProgressUpdate = {},
-            onExportCsv = {},
-            onExportDb = {},
-            onImportDb = {},
+            onSettingsClick = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
             onAddToWishlist = { _, _ -> },
@@ -513,9 +513,7 @@ private fun PreviewCollectionEmpty() {
             onEditClick = {},
             onFavoriteToggle = {},
             onProgressUpdate = {},
-            onExportCsv = {},
-            onExportDb = {},
-            onImportDb = {},
+            onSettingsClick = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
             onAddToWishlist = { _, _ -> },
@@ -549,9 +547,7 @@ private fun PreviewCollectionNoResults() {
             onEditClick = {},
             onFavoriteToggle = {},
             onProgressUpdate = {},
-            onExportCsv = {},
-            onExportDb = {},
-            onImportDb = {},
+            onSettingsClick = {},
             onDiscoverManga = {},
             onLoadMoreManga = {},
             onAddToWishlist = { _, _ -> },

@@ -33,27 +33,49 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
+import bookmemokmp.shared.generated.resources.close_accessibility
 import bookmemokmp.shared.generated.resources.discover_empty
 import bookmemokmp.shared.generated.resources.discover_error
 import bookmemokmp.shared.generated.resources.discover_loading
 import bookmemokmp.shared.generated.resources.discover_retry
-import bookmemokmp.shared.generated.resources.close_accessibility
-import bookmemokmp.shared.generated.resources.discover_title
+import bookmemokmp.shared.generated.resources.discover_title_anime
+import bookmemokmp.shared.generated.resources.discover_title_manga
+import bookmemokmp.shared.generated.resources.discover_title_novels
+import bookmemokmp.shared.generated.resources.discover_title_one_shots
+import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
+import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.presentation.collection.viewmodel.DiscoverState
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import org.jetbrains.compose.resources.stringResource
 
+sealed interface DiscoverTypeState {
+    data object Dismissed : DiscoverTypeState
+
+    data object TopManga : DiscoverTypeState
+
+    data object TopOneShots : DiscoverTypeState
+
+    data object TopNovels : DiscoverTypeState
+
+    data object TopAnime : DiscoverTypeState
+
+    data class Author(
+        val item: CollectionItem,
+    ) : DiscoverTypeState
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoverBookBottomSheet(
     state: DiscoverState,
-    author: String? = null,
+    type: DiscoverTypeState,
+    saveEnglishDescription: Boolean,
     onDismiss: () -> Unit,
-    onRetryTopManga: () -> Unit,
-    onRetryAuthor: () -> Unit,
+    onRetry: () -> Unit,
     onLoadMore: () -> Unit,
-    onAddToWishlistTopManga: (SearchResult) -> Unit,
+    onAddToWishlistTopRanking: (SearchResult, FormatType) -> Unit,
     onAddToWishlistAuthor: (SearchResult) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -64,12 +86,12 @@ fun DiscoverBookBottomSheet(
     ) {
         DiscoverBookContent(
             state = state,
-            author = author,
+            type = type,
+            saveEnglishDescription = saveEnglishDescription,
             onDismiss = onDismiss,
-            onRetryTopManga = onRetryTopManga,
-            onRetryAuthor = onRetryAuthor,
+            onRetry = onRetry,
             onLoadMore = onLoadMore,
-            onAddToWishlistTopManga = onAddToWishlistTopManga,
+            onAddToWishlistTopRanking = onAddToWishlistTopRanking,
             onAddToWishlistAuthor = onAddToWishlistAuthor,
         )
     }
@@ -78,12 +100,12 @@ fun DiscoverBookBottomSheet(
 @Composable
 private fun DiscoverBookContent(
     state: DiscoverState,
-    author: String? = null,
+    type: DiscoverTypeState,
+    saveEnglishDescription: Boolean,
     onDismiss: () -> Unit,
-    onRetryTopManga: () -> Unit,
-    onRetryAuthor: () -> Unit,
+    onRetry: () -> Unit,
     onLoadMore: () -> Unit,
-    onAddToWishlistTopManga: (SearchResult) -> Unit,
+    onAddToWishlistTopRanking: (SearchResult, FormatType) -> Unit,
     onAddToWishlistAuthor: (SearchResult) -> Unit,
 ) {
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
@@ -92,7 +114,32 @@ private fun DiscoverBookContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = if (author.isNullOrBlank()) stringResource(Res.string.discover_title) else author,
+                text =
+                    when (type) {
+                        DiscoverTypeState.TopManga -> {
+                            stringResource(Res.string.discover_title_manga)
+                        }
+
+                        DiscoverTypeState.TopOneShots -> {
+                            stringResource(Res.string.discover_title_one_shots)
+                        }
+
+                        DiscoverTypeState.TopNovels -> {
+                            stringResource(Res.string.discover_title_novels)
+                        }
+
+                        DiscoverTypeState.TopAnime -> {
+                            stringResource(Res.string.discover_title_anime)
+                        }
+
+                        is DiscoverTypeState.Author -> {
+                            type.item.author ?: stringResource(Res.string.discover_title_manga)
+                        }
+
+                        else -> {
+                            stringResource(Res.string.discover_title_manga)
+                        }
+                    },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f).padding(vertical = 12.dp),
@@ -156,13 +203,7 @@ private fun DiscoverBookContent(
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                         TextButton(
-                            onClick = {
-                                if (author.isNullOrBlank()) {
-                                    onRetryTopManga()
-                                } else {
-                                    onRetryAuthor()
-                                }
-                            },
+                            onClick = { onRetry() },
                         ) {
                             Text(stringResource(Res.string.discover_retry))
                         }
@@ -185,13 +226,39 @@ private fun DiscoverBookContent(
                 }
                 LazyColumn(state = listState) {
                     itemsIndexed(state.results, key = { index, _ -> index }) { _, result ->
+                        val effectiveSave =
+                            type is DiscoverTypeState.Author || saveEnglishDescription
                         DiscoverBookItem(
                             result = result,
+                            saveEnglishDescription = effectiveSave,
                             onAddToWishlist = {
-                                if (author.isNullOrBlank()) {
-                                    onAddToWishlistTopManga(result)
-                                } else {
-                                    onAddToWishlistAuthor(result)
+                                val resultToAdd =
+                                    if (effectiveSave) result else result.copy(description = null)
+                                when (type) {
+                                    DiscoverTypeState.TopManga -> {
+                                        onAddToWishlistTopRanking(resultToAdd, FormatType.MANGA)
+                                    }
+
+                                    DiscoverTypeState.TopAnime -> {
+                                        onAddToWishlistTopRanking(resultToAdd, FormatType.ANIME)
+                                    }
+
+                                    DiscoverTypeState.TopNovels -> {
+                                        onAddToWishlistTopRanking(
+                                            resultToAdd,
+                                            FormatType.LIGHT_NOVEL,
+                                        )
+                                    }
+
+                                    DiscoverTypeState.TopOneShots -> {
+                                        onAddToWishlistTopRanking(resultToAdd, FormatType.ONE_SHOT)
+                                    }
+
+                                    is DiscoverTypeState.Author -> {
+                                        onAddToWishlistAuthor(resultToAdd)
+                                    }
+
+                                    else -> {}
                                 }
                             },
                         )
@@ -245,11 +312,12 @@ private fun PreviewDiscoverLoading() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Loading,
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -261,11 +329,12 @@ private fun PreviewDiscoverEmpty() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Empty,
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -277,11 +346,12 @@ private fun PreviewDiscoverEmptyBigFont() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Empty,
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -293,11 +363,12 @@ private fun PreviewDiscoverError() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Error,
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -309,11 +380,12 @@ private fun PreviewDiscoverErrorBigFont() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Error,
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -325,11 +397,12 @@ private fun PreviewDiscoverSuccess() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Success(sampleResults),
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -341,11 +414,12 @@ private fun PreviewDiscoverSuccessBigFont() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Success(sampleResults),
+            type = DiscoverTypeState.TopManga,
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -357,12 +431,19 @@ private fun PreviewDiscoverAuthorSuccess() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Success(sampleResults),
-            author = "Kentaro Miura",
+            type =
+                DiscoverTypeState.Author(
+                    CollectionItem(
+                        type = ItemType.MANGA,
+                        title = "Berserk",
+                        author = "Kentaro Miura",
+                    ),
+                ),
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }
@@ -374,12 +455,19 @@ private fun PreviewDiscoverAuthorSuccessBigFont() {
     BookMemoTheme {
         DiscoverBookContent(
             state = DiscoverState.Success(sampleResults),
-            author = "Kentaro Miura",
+            type =
+                DiscoverTypeState.Author(
+                    CollectionItem(
+                        type = ItemType.MANGA,
+                        title = "Berserk",
+                        author = "Kentaro Miura",
+                    ),
+                ),
+            saveEnglishDescription = true,
             onDismiss = {},
-            onRetryTopManga = {},
-            onRetryAuthor = {},
+            onRetry = {},
             onLoadMore = {},
-            onAddToWishlistTopManga = {},
+            onAddToWishlistTopRanking = { _, _ -> },
             onAddToWishlistAuthor = {},
         )
     }

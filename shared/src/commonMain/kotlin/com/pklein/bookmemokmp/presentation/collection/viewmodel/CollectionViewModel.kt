@@ -2,9 +2,11 @@ package com.pklein.bookmemokmp.presentation.collection.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pklein.bookmemokmp.data.UserPreferencesRepository
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
+import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.domain.usecase.AddItemUseCase
 import com.pklein.bookmemokmp.domain.usecase.BookSearchUseCase
@@ -67,7 +69,10 @@ class CollectionViewModel(
     private val addItem: AddItemUseCase,
     private val updateItem: UpdateItemUseCase,
     private val deleteItem: DeleteItemUseCase,
+    userPrefs: UserPreferencesRepository,
 ) : ViewModel() {
+    val saveEnglishDescription: StateFlow<Boolean> = userPrefs.saveEnglishDescriptionFlow
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
@@ -165,25 +170,52 @@ class CollectionViewModel(
     private val _discoverState = MutableStateFlow<DiscoverState>(DiscoverState.Idle)
     val discoverState: StateFlow<DiscoverState> = _discoverState.asStateFlow()
     private var discoverPage = 1
+    private var discoverApiType: MangaApiType? = null
 
     fun loadTopManga() {
+        discoverApiType = MangaApiType.MANGA
+        loadTopRanking()
+    }
+
+    fun loadTopOneShots() {
+        discoverApiType = MangaApiType.ONE_SHOTS
+        loadTopRanking()
+    }
+
+    fun loadTopNovels() {
+        discoverApiType = MangaApiType.NOVELS
+        loadTopRanking()
+    }
+
+    fun loadTopAnime() {
+        discoverApiType = MangaApiType.ANIME
+        loadTopRanking()
+    }
+
+    private fun loadTopRanking() {
         if (_discoverState.value is DiscoverState.Loading) return
         discoverPage = 1
         _discoverState.value = DiscoverState.Loading
         viewModelScope.launch {
-            _discoverState.value = fetchTopMangaPage(page = 1, accumulated = emptyList())
+            _discoverState.value =
+                fetchTopRankingPage(
+                    page = 1,
+                    accumulated = emptyList(),
+                    mangaApiType = discoverApiType,
+                )
         }
     }
 
-    fun loadMoreManga() {
+    fun loadMoreRankingPage() {
         val current = _discoverState.value as? DiscoverState.Success ?: return
         if (!current.hasNextPage || current.isLoadingMore) return
         _discoverState.value = current.copy(isLoadingMore = true)
         viewModelScope.launch {
             _discoverState.value =
-                fetchTopMangaPage(
+                fetchTopRankingPage(
                     page = discoverPage + 1,
                     accumulated = current.results,
+                    mangaApiType = discoverApiType,
                 ).let { next ->
                     // If the next page fetch fails, restore the previous results
                     if (next is DiscoverState.Error) {
@@ -195,11 +227,12 @@ class CollectionViewModel(
         }
     }
 
-    private suspend fun fetchTopMangaPage(
+    private suspend fun fetchTopRankingPage(
         page: Int,
         accumulated: List<SearchResult>,
+        mangaApiType: MangaApiType?,
     ): DiscoverState =
-        runCatching { bookSearch.fetchTopManga(page) }
+        runCatching { bookSearch.fetchTopRanking(page, mangaApiType) }
             .fold(
                 onSuccess = { (searchResults, hasNextPage) ->
                     val filteredResults =
@@ -271,21 +304,30 @@ class CollectionViewModel(
         val collectionKeys =
             allItems.value
                 .filter { it.type == item }
-                .map { it.title.trim().lowercase().normalizeSeriesTitle() }
-                .toSet()
+                .map {
+                    it.title
+                        .trim()
+                        .lowercase()
+                        .normalizeSeriesTitle()
+                }.toSet()
 
         return results.filter { result ->
-            result.title.trim().lowercase().normalizeSeriesTitle() !in collectionKeys
+            result.title
+                .trim()
+                .lowercase()
+                .normalizeSeriesTitle() !in collectionKeys
         }
     }
 
     fun addToWishlist(
         result: SearchResult,
         type: ItemType,
+        format: FormatType?,
     ) = viewModelScope.launch {
         addItem(
             CollectionItem(
                 type = type,
+                format = format,
                 title = result.title,
                 author = result.author,
                 year = result.year,
@@ -434,10 +476,11 @@ class CollectionViewModel(
     }
 }
 
-private val seriesTitleNormRegex = Regex(
-    """[,\s\-–]+(?:vol(?:ume)?\.?|tome|t\.|no\.?|n°|#|book|bd\.?|volume)\s*\d+[\d/]*.*$""" +
-        """|[(\s\-–]+\d+(?:/\d+)?[)\s]*$""",
-    RegexOption.IGNORE_CASE,
-)
+private val seriesTitleNormRegex =
+    Regex(
+        """[,\s\-–]+(?:vol(?:ume)?\.?|tome|t\.|no\.?|n°|#|book|bd\.?|volume)\s*\d+[\d/]*.*$""" +
+            """|[(\s\-–]+\d+(?:/\d+)?[)\s]*$""",
+        RegexOption.IGNORE_CASE,
+    )
 
 private fun String.normalizeSeriesTitle(): String = seriesTitleNormRegex.replace(this, "").trim()

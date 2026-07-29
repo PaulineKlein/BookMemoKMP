@@ -20,7 +20,12 @@ interface IBookSearchRepository {
         langRestrict: String? = null,
     ): List<SearchResult>
 
-    suspend fun fetchTopManga(page: Int = 1): Pair<List<SearchResult>, Boolean>
+    suspend fun fetchTopManga(
+        page: Int = 1,
+        rankingType: String,
+    ): Pair<List<SearchResult>, Boolean>
+
+    suspend fun fetchTopAnime(page: Int = 1): Pair<List<SearchResult>, Boolean>
 
     suspend fun fetchMangaUpdate(malId: Long): UpdateResult
 

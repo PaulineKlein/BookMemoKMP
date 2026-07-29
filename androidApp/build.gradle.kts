@@ -49,8 +49,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = 12
-        versionName = "2.3"
+        versionCode = 13
+        versionName = "3.0"
     }
 
     packaging {

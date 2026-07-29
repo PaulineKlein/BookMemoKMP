@@ -17,7 +17,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.add_item_menu
+import bookmemokmp.shared.generated.resources.discover_anime
 import bookmemokmp.shared.generated.resources.discover_manga
+import bookmemokmp.shared.generated.resources.discover_novels
+import bookmemokmp.shared.generated.resources.discover_one_shots
 import bookmemokmp.shared.generated.resources.export_menu_accessibility
 import com.pklein.bookmemokmp.isAndroidPlatform
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
@@ -26,7 +29,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun MenuItem(
     onAddBook: () -> Unit,
-    onShowDiscoverSheet: () -> Unit,
+    onShowDiscoverSheetManga: () -> Unit,
+    onShowDiscoverSheetOneShots: () -> Unit,
+    onShowDiscoverSheetNovels: () -> Unit,
+    onShowDiscoverSheetAnime: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     Box {
@@ -42,11 +48,38 @@ fun MenuItem(
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.add_item_menu)) },
-                onClick = { onAddBook(); menuExpanded = false },
+                onClick = {
+                    onAddBook()
+                    menuExpanded = false
+                },
             )
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.discover_manga)) },
-                onClick = { onShowDiscoverSheet(); menuExpanded = false },
+                onClick = {
+                    onShowDiscoverSheetManga()
+                    menuExpanded = false
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.discover_one_shots)) },
+                onClick = {
+                    onShowDiscoverSheetOneShots()
+                    menuExpanded = false
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.discover_novels)) },
+                onClick = {
+                    onShowDiscoverSheetNovels()
+                    menuExpanded = false
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.discover_anime)) },
+                onClick = {
+                    onShowDiscoverSheetAnime()
+                    menuExpanded = false
+                },
             )
         }
     }
@@ -56,7 +89,13 @@ fun MenuItem(
 @Composable
 private fun PreviewMenuItem() {
     BookMemoTheme {
-        MenuItem(onAddBook = {}, onShowDiscoverSheet = {})
+        MenuItem(
+            onAddBook = {},
+            onShowDiscoverSheetManga = {},
+            onShowDiscoverSheetOneShots = {},
+            onShowDiscoverSheetNovels = {},
+            onShowDiscoverSheetAnime = {},
+        )
     }
 }
 
@@ -64,6 +103,12 @@ private fun PreviewMenuItem() {
 @Composable
 private fun PreviewMenuItemBigFont() {
     BookMemoTheme {
-        MenuItem(onAddBook = {}, onShowDiscoverSheet = {})
+        MenuItem(
+            onAddBook = {},
+            onShowDiscoverSheetManga = {},
+            onShowDiscoverSheetOneShots = {},
+            onShowDiscoverSheetNovels = {},
+            onShowDiscoverSheetAnime = {},
+        )
     }
 }

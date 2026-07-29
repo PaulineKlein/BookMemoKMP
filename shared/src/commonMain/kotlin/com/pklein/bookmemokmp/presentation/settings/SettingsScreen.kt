@@ -189,7 +189,7 @@ private fun SettingsContent(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             // ── Preferences section ────────────────────────────────────────────
@@ -198,7 +198,7 @@ private fun SettingsContent(
                 style = MaterialTheme.typography.headlineSmall,
             )
 
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 val themeOptions =
                     listOf(
                         ThemeMode.SYSTEM to stringResource(Res.string.settings_theme_system),

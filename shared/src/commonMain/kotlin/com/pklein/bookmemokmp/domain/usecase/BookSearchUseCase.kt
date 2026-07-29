@@ -24,14 +24,38 @@ class BookSearchUseCase(
         langRestrict: String? = null,
     ): List<SearchResult> = repository.fetchMoreBooksFromAuthor(type, author, authorId, langRestrict)
 
-    suspend fun fetchTopManga(page: Int = 1): Pair<List<SearchResult>, Boolean> = repository.fetchTopManga(page)
+    suspend fun fetchTopRanking(
+        page: Int = 1,
+        mangaApiType: MangaApiType?,
+    ): Pair<List<SearchResult>, Boolean> =
+        when (mangaApiType) {
+            MangaApiType.ANIME -> {
+                repository.fetchTopAnime(page)
+            }
+
+            MangaApiType.MANGA, MangaApiType.NOVELS, MangaApiType.ONE_SHOTS -> {
+                repository.fetchTopManga(
+                    page = page,
+                    rankingType = mangaApiType.value,
+                )
+            }
+
+            null -> {
+                Pair(emptyList(), false)
+            }
+        }
 
     suspend fun checkForUpdates(
-        jikanId: Long,
+        id: Long,
         mangaApiType: MangaApiType,
     ): UpdateResult =
         when (mangaApiType) {
-            MangaApiType.ANIME -> repository.fetchAnimeUpdate(jikanId)
-            MangaApiType.MANGA -> repository.fetchMangaUpdate(jikanId)
+            MangaApiType.ANIME -> {
+                repository.fetchAnimeUpdate(id)
+            }
+
+            MangaApiType.MANGA, MangaApiType.NOVELS, MangaApiType.ONE_SHOTS -> {
+                repository.fetchMangaUpdate(id)
+            }
         }
 }

@@ -67,7 +67,12 @@ class BookSearchRepository(
             ).deduplicateBySeries()
     }
 
-    override suspend fun fetchTopManga(page: Int): Pair<List<SearchResult>, Boolean> = searchService.fetchTopManga(page)
+    override suspend fun fetchTopManga(
+        page: Int,
+        rankingType: String,
+    ): Pair<List<SearchResult>, Boolean> = searchService.fetchTopManga(page, rankingType)
+
+    override suspend fun fetchTopAnime(page: Int): Pair<List<SearchResult>, Boolean> = searchService.fetchTopAnime(page)
 
     override suspend fun fetchMangaUpdate(malId: Long): UpdateResult = searchService.fetchMangaUpdate(malId)
 

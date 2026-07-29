@@ -67,6 +67,7 @@ import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
 import com.pklein.bookmemokmp.presentation.collection.collectionList.CollectionListPage
 import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverBookBottomSheet
+import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverTypeState
 import com.pklein.bookmemokmp.presentation.collection.filter.CollectionFilter
 import com.pklein.bookmemokmp.presentation.collection.filter.FilterRow
 import com.pklein.bookmemokmp.presentation.collection.filter.FormatFilterRow
@@ -99,6 +100,7 @@ fun CollectionScreen(
     val formatFilter by viewModel.formatFilter.collectAsState()
     val discoverState by viewModel.discoverState.collectAsState()
     val updateCheckState by viewModel.updateCheckState.collectAsState()
+    val saveEnglishDescription by viewModel.saveEnglishDescription.collectAsState()
     val keyboard = LocalSoftwareKeyboardController.current
 
     CollectionContent(
@@ -110,6 +112,7 @@ fun CollectionScreen(
         activeFormat = formatFilter,
         discoverState = discoverState,
         updateCheckState = updateCheckState,
+        saveEnglishDescription = saveEnglishDescription,
         onSearchChange = viewModel::onSearchQueryChange,
         onClearSearch = {
             viewModel.clearSearch()
@@ -124,7 +127,10 @@ fun CollectionScreen(
         onProgressUpdate = { viewModel.update(it) },
         onSettingsClick = onSettingsClick,
         onDiscoverManga = viewModel::loadTopManga,
-        onLoadMoreManga = viewModel::loadMoreManga,
+        onDiscoverOneShots = viewModel::loadTopOneShots,
+        onDiscoverNovels = viewModel::loadTopNovels,
+        onDiscoverAnime = viewModel::loadTopAnime,
+        onLoadMoreRankingPage = viewModel::loadMoreRankingPage,
         onAddToWishlist = viewModel::addToWishlist,
         onCheckForUpdates = viewModel::checkForUpdates,
         onDismissUpdateCheck = viewModel::dismissUpdateCheck,
@@ -144,6 +150,7 @@ private fun CollectionContent(
     activeFormat: FormatType?,
     discoverState: DiscoverState,
     updateCheckState: UpdateCheckState,
+    saveEnglishDescription: Boolean,
     onSearchChange: (String) -> Unit,
     onClearSearch: () -> Unit,
     onFilterChange: (CollectionFilter?) -> Unit,
@@ -155,8 +162,11 @@ private fun CollectionContent(
     onProgressUpdate: (CollectionItem) -> Unit,
     onSettingsClick: () -> Unit,
     onDiscoverManga: () -> Unit,
-    onLoadMoreManga: () -> Unit,
-    onAddToWishlist: (SearchResult, ItemType) -> Unit,
+    onDiscoverOneShots: () -> Unit,
+    onDiscoverNovels: () -> Unit,
+    onDiscoverAnime: () -> Unit,
+    onLoadMoreRankingPage: () -> Unit,
+    onAddToWishlist: (SearchResult, ItemType, FormatType?) -> Unit,
     onCheckForUpdates: (CollectionItem) -> Unit,
     onSearchAuthor: (CollectionItem, String?) -> Unit,
     onDismissUpdateCheck: () -> Unit,
@@ -165,8 +175,7 @@ private fun CollectionContent(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val statsScrollState = rememberScrollState()
-    var showDiscoverBook by remember { mutableStateOf(false) }
-    var discoverItem by remember { mutableStateOf<CollectionItem?>(null) }
+    var discoverTypeState by remember { mutableStateOf<DiscoverTypeState>(DiscoverTypeState.Dismissed) }
 
     // Hide header on scroll-down, reveal on scroll-up — CoordinatorLayout style.
     // NestedScrollConnection receives raw deltas so it is immune to list re-anchoring at the bottom.
@@ -188,29 +197,46 @@ private fun CollectionContent(
             }
         }
 
-    if (showDiscoverBook) {
+    if (discoverTypeState != DiscoverTypeState.Dismissed) {
+        val authorItem = (discoverTypeState as? DiscoverTypeState.Author)?.item
         DiscoverBookBottomSheet(
             state = discoverState,
-            author = discoverItem?.author,
-            onDismiss = {
-                showDiscoverBook = false
-                discoverItem = null
-            },
-            onRetryTopManga = onDiscoverManga,
-            onRetryAuthor = {
-                discoverItem?.let {
-                    onSearchAuthor(
-                        it,
-                        if (Locale.current.language == "fr") "fr" else "en",
-                    )
+            type = discoverTypeState,
+            saveEnglishDescription = saveEnglishDescription,
+            onDismiss = { discoverTypeState = DiscoverTypeState.Dismissed },
+            onRetry = {
+                when (discoverTypeState) {
+                    is DiscoverTypeState.TopManga -> {
+                        onDiscoverManga()
+                    }
+
+                    is DiscoverTypeState.TopOneShots -> {
+                        onDiscoverOneShots()
+                    }
+
+                    is DiscoverTypeState.TopNovels -> {
+                        onDiscoverNovels()
+                    }
+
+                    is DiscoverTypeState.TopAnime -> {
+                        onDiscoverAnime()
+                    }
+
+                    is DiscoverTypeState.Author -> {
+                        authorItem?.let {
+                            onSearchAuthor(it, if (Locale.current.language == "fr") "fr" else "en")
+                        }
+                    }
+
+                    else -> {}
                 }
             },
-            onLoadMore = onLoadMoreManga,
-            onAddToWishlistTopManga = { result ->
-                onAddToWishlist(result, ItemType.MANGA)
+            onLoadMore = onLoadMoreRankingPage,
+            onAddToWishlistTopRanking = { result, format ->
+                onAddToWishlist(result, ItemType.MANGA, format)
             },
             onAddToWishlistAuthor = { result ->
-                onAddToWishlist(result, discoverItem?.type ?: ItemType.LITERATURE)
+                onAddToWishlist(result, authorItem?.type ?: ItemType.LITERATURE, null)
             },
         )
     }
@@ -300,9 +326,21 @@ private fun CollectionContent(
                         )
                         MenuItem(
                             onAddBook = onAddClick,
-                            onShowDiscoverSheet = {
-                                showDiscoverBook = true
+                            onShowDiscoverSheetManga = {
+                                discoverTypeState = DiscoverTypeState.TopManga
                                 onDiscoverManga()
+                            },
+                            onShowDiscoverSheetOneShots = {
+                                discoverTypeState = DiscoverTypeState.TopOneShots
+                                onDiscoverOneShots()
+                            },
+                            onShowDiscoverSheetNovels = {
+                                discoverTypeState = DiscoverTypeState.TopNovels
+                                onDiscoverNovels()
+                            },
+                            onShowDiscoverSheetAnime = {
+                                discoverTypeState = DiscoverTypeState.TopAnime
+                                onDiscoverAnime()
                             },
                         )
                     }
@@ -345,8 +383,7 @@ private fun CollectionContent(
                             onCheckForUpdates = onCheckForUpdates,
                             onDismissUpdateCheck = onDismissUpdateCheck,
                             onSearchAuthor = { item ->
-                                discoverItem = item
-                                showDiscoverBook = true
+                                discoverTypeState = DiscoverTypeState.Author(item)
                                 onSearchAuthor(
                                     item,
                                     if (Locale.current.language == "fr") "fr" else "en",
@@ -447,9 +484,13 @@ private fun PreviewCollectionWithItems() {
             onProgressUpdate = {},
             onSettingsClick = {},
             onDiscoverManga = {},
-            onLoadMoreManga = {},
-            onAddToWishlist = { _, _ -> },
+            onDiscoverOneShots = {},
+            onDiscoverNovels = {},
+            onDiscoverAnime = {},
+            onLoadMoreRankingPage = {},
+            onAddToWishlist = { _, _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
+            saveEnglishDescription = true,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = { _, _ -> },
@@ -481,9 +522,13 @@ private fun PreviewCollectionBooksAndFavorites() {
             onProgressUpdate = {},
             onSettingsClick = {},
             onDiscoverManga = {},
-            onLoadMoreManga = {},
-            onAddToWishlist = { _, _ -> },
+            onDiscoverOneShots = {},
+            onDiscoverNovels = {},
+            onDiscoverAnime = {},
+            onLoadMoreRankingPage = {},
+            onAddToWishlist = { _, _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
+            saveEnglishDescription = true,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = { _, _ -> },
@@ -515,9 +560,13 @@ private fun PreviewCollectionEmpty() {
             onProgressUpdate = {},
             onSettingsClick = {},
             onDiscoverManga = {},
-            onLoadMoreManga = {},
-            onAddToWishlist = { _, _ -> },
+            onDiscoverOneShots = {},
+            onDiscoverNovels = {},
+            onDiscoverAnime = {},
+            onLoadMoreRankingPage = {},
+            onAddToWishlist = { _, _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
+            saveEnglishDescription = true,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = { _, _ -> },
@@ -549,9 +598,13 @@ private fun PreviewCollectionNoResults() {
             onProgressUpdate = {},
             onSettingsClick = {},
             onDiscoverManga = {},
-            onLoadMoreManga = {},
-            onAddToWishlist = { _, _ -> },
+            onDiscoverOneShots = {},
+            onDiscoverNovels = {},
+            onDiscoverAnime = {},
+            onLoadMoreRankingPage = {},
+            onAddToWishlist = { _, _, _ -> },
             updateCheckState = UpdateCheckState.Idle,
+            saveEnglishDescription = true,
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = { _, _ -> },

@@ -78,6 +78,8 @@
     <string name="format_poetry">Poésie</string>
     <string name="format_theatre">Théâtre</string>
     <string name="format_light_novel">Light Novel</string>
+    <string name="format_anime">Animé</string>
+    <string name="format_one_shot">One Shot</string>
     <string name="format_manga">Manga</string>
     <string name="format_manhwa">Manhwa</string>
     <string name="format_manhua">Manhua</string>
@@ -149,12 +151,19 @@
     <string name="check_update_new_episode">Nouveaux épisodes disponibles ! %1$d épisodes au total (vous en êtes à l\'épisode %2$d)</string>
     <string name="check_update_new_episode_no_progress">Nouveaux épisodes disponibles ! %1$d épisodes au total</string>
 
-    <string name="discover_manga">Découvrir des mangas</string>
-    <string name="discover_title">Top Manga</string>
+    <string name="discover_manga">Découvrir des Mangas</string>
+    <string name="discover_one_shots">Découvrir des One Shots</string>
+    <string name="discover_novels">Découvrir des Light Novels</string>
+    <string name="discover_anime">Découvrir des Animés</string>
+    <string name="discover_title_manga">Top Manga</string>
+    <string name="discover_title_one_shots">Top One Shots</string>
+    <string name="discover_title_novels">Top Light Novels</string>
+    <string name="discover_title_anime">Top Animé</string>
     <string name="discover_loading">Chargement des suggestions…</string>
     <string name="discover_empty">Il n'existe pas de suggestion disponible, non présente dans votre collection</string>
     <string name="discover_error">Impossible de charger les suggestions. Veuillez réessayer.</string>
     <string name="discover_add_wishlist">Ajouter à la liste d'envies</string>
+    <string name="discover_description_english_only">Description disponible en anglais uniquement</string>
     <string name="discover_added">Ajouté à la liste d'envies !</string>
     <string name="discover_retry">Relancer la recherche</string>
 
@@ -181,7 +190,7 @@
     <string name="settings_success_backup">Sauvegarde effectuée avec succès.</string>
     <string name="settings_success_restore">Restauration effectuée avec succès.</string>
     <string name="settings_preferences">Préférences</string>
-    <string name="settings_save_english_description">Enregistrer les descriptions de Manga en anglais</string>
+    <string name="settings_save_english_description">Pré-remplir les descriptions de Manga, disponibles uniquement en anglais ?</string>
     <string name="settings_theme">Thème</string>
     <string name="settings_theme_system">Système</string>
     <string name="settings_theme_light">Clair</string>

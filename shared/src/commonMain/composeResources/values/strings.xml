@@ -79,6 +79,8 @@
     <string name="format_poetry">Poetry</string>
     <string name="format_theatre">Theatre</string>
     <string name="format_light_novel">Light Novel</string>
+    <string name="format_anime">Anime</string>
+    <string name="format_one_shot">One Shot</string>
     <string name="format_manga">Manga</string>
     <string name="format_manhwa">Manhwa</string>
     <string name="format_manhua">Manhua</string>
@@ -150,12 +152,19 @@
     <string name="check_update_new_episode">New episodes available! %1$d episodes total (you are at episode %2$d)</string>
     <string name="check_update_new_episode_no_progress">New episodes available! %1$d episodes total</string>
 
-    <string name="discover_manga">Discover manga</string>
-    <string name="discover_title">Top Manga</string>
+    <string name="discover_manga">Discover Manga</string>
+    <string name="discover_one_shots">Discover One Shots</string>
+    <string name="discover_novels">Discover Light Novels</string>
+    <string name="discover_anime">Discover Anime</string>
+    <string name="discover_title_manga">Top Manga</string>
+    <string name="discover_title_one_shots">Top One Shots</string>
+    <string name="discover_title_novels">Top Light Novels</string>
+    <string name="discover_title_anime">Top Anime</string>
     <string name="discover_loading">Loading suggestions…</string>
     <string name="discover_empty">There are no available suggestions that are not already in your collection.</string>
     <string name="discover_error">Could not load suggestions. Please try again.</string>
     <string name="discover_add_wishlist">Add to wishlist</string>
+    <string name="discover_description_english_only">Description available in English only</string>
     <string name="discover_added">Added to wishlist!</string>
     <string name="discover_retry">Relaunch the search</string>
 
@@ -182,7 +191,7 @@
     <string name="settings_success_backup">Backup completed successfully.</string>
     <string name="settings_success_restore">Restore completed successfully.</string>
     <string name="settings_preferences">Preferences</string>
-    <string name="settings_save_english_description">Save English description for Manga</string>
+    <string name="settings_save_english_description">Pre-fill Manga descriptions, available only in English?</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>

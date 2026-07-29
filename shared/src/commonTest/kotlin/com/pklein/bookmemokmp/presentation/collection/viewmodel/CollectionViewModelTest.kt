@@ -1,8 +1,10 @@
 package com.pklein.bookmemokmp.presentation.collection.viewmodel
 
 import app.cash.sqldelight.db.QueryResult
+import com.pklein.bookmemokmp.data.UserPreferencesRepository
 import com.pklein.bookmemokmp.data.remote.UpdateResult
 import com.pklein.bookmemokmp.domain.model.CollectionItem
+import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.domain.model.SearchResult
@@ -16,6 +18,7 @@ import com.pklein.bookmemokmp.domain.usecase.UpdateItemUseCase
 import com.pklein.bookmemokmp.presentation.collection.filter.CollectionFilter
 import com.pklein.bookmemokmp.presentation.collection.filter.StatusFilterField
 import com.pklein.bookmemokmp.presentation.collection.filter.TriState
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -105,7 +108,15 @@ private class FakeBookSearchRepository(
     private val mangaUpdate: UpdateResult = UpdateResult(null, null, null),
     private val shouldFail: Boolean = false,
 ) : IBookSearchRepository {
-    override suspend fun fetchTopManga(page: Int): Pair<List<SearchResult>, Boolean> {
+    override suspend fun fetchTopManga(
+        page: Int,
+        rankingType: String,
+    ): Pair<List<SearchResult>, Boolean> {
+        if (shouldFail) throw RuntimeException("Network error")
+        return topMangaResult
+    }
+
+    override suspend fun fetchTopAnime(page: Int): Pair<List<SearchResult>, Boolean> {
         if (shouldFail) throw RuntimeException("Network error")
         return topMangaResult
     }
@@ -136,6 +147,104 @@ private class FakeBookSearchRepository(
     ) = emptyList<SearchResult>()
 }
 
+private class FakeSettings : Settings {
+    private val map = mutableMapOf<String, Any>()
+    override val keys: Set<String> get() = map.keys
+    override val size: Int get() = map.size
+
+    override fun clear() = map.clear()
+
+    override fun remove(key: String) {
+        map.remove(key)
+    }
+
+    override fun hasKey(key: String) = map.containsKey(key)
+
+    override fun putInt(
+        key: String,
+        value: Int,
+    ) {
+        map[key] = value
+    }
+
+    override fun getInt(
+        key: String,
+        defaultValue: Int,
+    ) = map[key] as? Int ?: defaultValue
+
+    override fun getIntOrNull(key: String) = map[key] as? Int
+
+    override fun putLong(
+        key: String,
+        value: Long,
+    ) {
+        map[key] = value
+    }
+
+    override fun getLong(
+        key: String,
+        defaultValue: Long,
+    ) = map[key] as? Long ?: defaultValue
+
+    override fun getLongOrNull(key: String) = map[key] as? Long
+
+    override fun putString(
+        key: String,
+        value: String,
+    ) {
+        map[key] = value
+    }
+
+    override fun getString(
+        key: String,
+        defaultValue: String,
+    ) = map[key] as? String ?: defaultValue
+
+    override fun getStringOrNull(key: String) = map[key] as? String
+
+    override fun putFloat(
+        key: String,
+        value: Float,
+    ) {
+        map[key] = value
+    }
+
+    override fun getFloat(
+        key: String,
+        defaultValue: Float,
+    ) = map[key] as? Float ?: defaultValue
+
+    override fun getFloatOrNull(key: String) = map[key] as? Float
+
+    override fun putDouble(
+        key: String,
+        value: Double,
+    ) {
+        map[key] = value
+    }
+
+    override fun getDouble(
+        key: String,
+        defaultValue: Double,
+    ) = map[key] as? Double ?: defaultValue
+
+    override fun getDoubleOrNull(key: String) = map[key] as? Double
+
+    override fun putBoolean(
+        key: String,
+        value: Boolean,
+    ) {
+        map[key] = value
+    }
+
+    override fun getBoolean(
+        key: String,
+        defaultValue: Boolean,
+    ) = map[key] as? Boolean ?: defaultValue
+
+    override fun getBooleanOrNull(key: String) = map[key] as? Boolean
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 /**
@@ -160,7 +269,15 @@ private fun buildViewModel(
     val addItem = AddItemUseCase(collectionRepo)
     val updateItem = UpdateItemUseCase(collectionRepo)
     val deleteItem = DeleteItemUseCase(collectionRepo)
-    return CollectionViewModel(getCollection, bookSearch, addItem, updateItem, deleteItem)
+    val userPrefs = UserPreferencesRepository(FakeSettings())
+    return CollectionViewModel(
+        getCollection,
+        bookSearch,
+        addItem,
+        updateItem,
+        deleteItem,
+        userPrefs,
+    )
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────────
@@ -439,7 +556,8 @@ class CollectionViewModelTest {
     @Test
     fun `checkForUpdates returns UpToDate when totTome unchanged`() =
         runTest {
-            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 107)
+            val item =
+                manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 107)
             val vm =
                 buildViewModel(
                     searchRepo =
@@ -462,7 +580,8 @@ class CollectionViewModelTest {
     @Test
     fun `checkForUpdates returns NewContent when fresh totTome is higher`() =
         runTest {
-            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 100)
+            val item =
+                manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 100)
             val vm =
                 buildViewModel(
                     searchRepo =
@@ -511,7 +630,8 @@ class CollectionViewModelTest {
     @Test
     fun `dismissUpdateCheck resets state to Idle`() =
         runTest {
-            val item = manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 100)
+            val item =
+                manga1.copy(mangaApiId = 42L, mangaApiType = MangaApiType.MANGA, totTome = 100)
             val vm =
                 buildViewModel(
                     searchRepo =
@@ -549,7 +669,7 @@ class CollectionViewModelTest {
                     mangaApiId = 7L,
                     mangaApiType = MangaApiType.MANGA,
                 )
-            vm.addToWishlist(result, ItemType.MANGA)
+            vm.addToWishlist(result, ItemType.MANGA, FormatType.MANGA)
             advanceUntilIdle()
 
             assertEquals(1, repo.addedItems.size)

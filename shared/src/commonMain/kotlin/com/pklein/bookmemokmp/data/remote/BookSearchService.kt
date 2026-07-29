@@ -2,8 +2,8 @@ package com.pklein.bookmemokmp.data.remote
 
 import com.pklein.bookmemokmp.androidCertFingerprint
 import com.pklein.bookmemokmp.androidPackageName
+import com.pklein.bookmemokmp.data.remote.dto.AnimeApiResponse
 import com.pklein.bookmemokmp.data.remote.dto.AnimeApiSingleResponse
-import com.pklein.bookmemokmp.data.remote.dto.ApiAnimeResponse
 import com.pklein.bookmemokmp.data.remote.dto.GoogleBooksResponse
 import com.pklein.bookmemokmp.data.remote.dto.MangaApiResponse
 import com.pklein.bookmemokmp.data.remote.dto.MangaApiSingleResponse
@@ -91,7 +91,7 @@ class BookSearchService {
     }
 
     suspend fun searchAnimeApi(query: String): List<SearchResult> {
-        val response: ApiAnimeResponse =
+        val response: AnimeApiResponse =
             client
                 .get("https://api.myanimelist.net/v2/anime") {
                     mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
@@ -103,13 +103,16 @@ class BookSearchService {
         return response.toSearchResults()
     }
 
-    suspend fun fetchTopManga(page: Int = 1): Pair<List<SearchResult>, Boolean> {
+    suspend fun fetchTopManga(
+        page: Int = 1,
+        rankingType: String,
+    ): Pair<List<SearchResult>, Boolean> {
         val offset = (page - 1) * SEARCH_TOP_RESULTS_LIMIT
         val response: MangaApiResponse =
             client
                 .get("https://api.myanimelist.net/v2/manga/ranking") {
                     mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
-                    parameter("ranking_type", "all")
+                    parameter("ranking_type", rankingType)
                     parameter("limit", SEARCH_TOP_RESULTS_LIMIT)
                     parameter("offset", offset)
                     parameter("nsfw", false) // Filter out Adult entries
@@ -121,10 +124,25 @@ class BookSearchService {
         return response.toSearchResults() to (response.pagination?.hasNextPage ?: false)
     }
 
-    suspend fun fetchMangaUpdate(jikanId: Long): UpdateResult {
+    suspend fun fetchTopAnime(page: Int = 1): Pair<List<SearchResult>, Boolean> {
+        val offset = (page - 1) * SEARCH_TOP_RESULTS_LIMIT
+        val response: AnimeApiResponse =
+            client
+                .get("https://api.myanimelist.net/v2/anime/ranking") {
+                    mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
+                    parameter("ranking_type", "all")
+                    parameter("limit", SEARCH_TOP_RESULTS_LIMIT)
+                    parameter("offset", offset)
+                    parameter("nsfw", false) // Filter out Adult entries
+                    parameter("fields", "synopsis,num_episodes,status,start_date,studios{name}")
+                }.body()
+        return response.toSearchResults() to (response.pagination?.hasNextPage ?: false)
+    }
+
+    suspend fun fetchMangaUpdate(id: Long): UpdateResult {
         val response: MangaApiSingleResponse =
             client
-                .get("https://api.myanimelist.net/v2/manga/$jikanId") {
+                .get("https://api.myanimelist.net/v2/manga/$id") {
                     mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
                     parameter("fields", "num_volumes,num_chapters,authors{id,first_name,last_name}")
                 }.body()
@@ -137,10 +155,10 @@ class BookSearchService {
         )
     }
 
-    suspend fun fetchAnimeUpdate(jikanId: Long): UpdateResult {
+    suspend fun fetchAnimeUpdate(id: Long): UpdateResult {
         val response: AnimeApiSingleResponse =
             client
-                .get("https://api.myanimelist.net/v2/anime/$jikanId") {
+                .get("https://api.myanimelist.net/v2/anime/$id") {
                     mangaApiKey()?.let { header("X-MAL-CLIENT-ID", it) }
                     parameter("fields", "num_episodes")
                 }.body()

@@ -4,6 +4,8 @@ enum class MangaApiType(
     val value: String,
 ) {
     MANGA("manga"),
+    ONE_SHOTS("oneshots"),
+    NOVELS("novels"),
     ANIME("anime"),
     ;
 

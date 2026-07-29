@@ -22,10 +22,20 @@ internal data class MangaApiResponse(
 }
 
 @Serializable
-internal data class ApiAnimeResponse(
+internal data class AnimeApiResponse(
     val data: List<MangaApiNodeWrapper<MangaApiAnimeNode>>? = null,
     val paging: MangaApiPaging? = null,
-)
+) {
+    val pagination: MangaApiPagination?
+        get() =
+            if (paging?.next != null) {
+                MangaApiPagination(hasNextPage = true)
+            } else {
+                MangaApiPagination(
+                    hasNextPage = false,
+                )
+            }
+}
 
 @Serializable
 internal data class MangaApiPagination(

@@ -48,12 +48,10 @@ class SettingsViewModel(
         _themeMode.value = value
     }
 
-    private val _saveEnglishDescription = MutableStateFlow(userPrefs.saveEnglishDescription)
-    val saveEnglishDescription: StateFlow<Boolean> = _saveEnglishDescription.asStateFlow()
+    val saveEnglishDescription: StateFlow<Boolean> = userPrefs.saveEnglishDescriptionFlow
 
     fun setSaveEnglishDescription(value: Boolean) {
         userPrefs.saveEnglishDescription = value
-        _saveEnglishDescription.value = value
     }
 
     private val _email = MutableStateFlow(userPrefs.backupEmail)

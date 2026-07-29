@@ -1,6 +1,9 @@
 package com.pklein.bookmemokmp.data
 
 import com.russhwolf.settings.Settings
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
@@ -10,9 +13,17 @@ class UserPreferencesRepository(private val settings: Settings) {
         get() = ThemeMode.entries.getOrElse(settings.getInt(KEY_THEME_MODE, 0)) { ThemeMode.SYSTEM }
         set(value) = settings.putInt(KEY_THEME_MODE, value.ordinal)
 
+    private val _saveEnglishDescription = MutableStateFlow(
+        settings.getBoolean(KEY_SAVE_ENGLISH_DESC, defaultValue = true)
+    )
+    val saveEnglishDescriptionFlow: StateFlow<Boolean> = _saveEnglishDescription.asStateFlow()
+
     var saveEnglishDescription: Boolean
-        get() = settings.getBoolean(KEY_SAVE_ENGLISH_DESC, defaultValue = true)
-        set(value) = settings.putBoolean(KEY_SAVE_ENGLISH_DESC, value)
+        get() = _saveEnglishDescription.value
+        set(value) {
+            settings.putBoolean(KEY_SAVE_ENGLISH_DESC, value)
+            _saveEnglishDescription.value = value
+        }
 
     var backupEmail: String?
         get() = settings.getStringOrNull(KEY_BACKUP_EMAIL)

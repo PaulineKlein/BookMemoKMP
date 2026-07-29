@@ -1,6 +1,6 @@
 package com.pklein.bookmemokmp.data.remote.mapper
 
-import com.pklein.bookmemokmp.data.remote.dto.ApiAnimeResponse
+import com.pklein.bookmemokmp.data.remote.dto.AnimeApiResponse
 import com.pklein.bookmemokmp.data.remote.dto.MangaApiResponse
 import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.domain.model.SearchResult
@@ -34,7 +34,7 @@ internal fun MangaApiResponse.toSearchResults(): List<SearchResult> =
         )
     } ?: emptyList()
 
-internal fun ApiAnimeResponse.toSearchResults(): List<SearchResult> =
+internal fun AnimeApiResponse.toSearchResults(): List<SearchResult> =
     data?.map { wrapper ->
         val item = wrapper.node
         SearchResult(

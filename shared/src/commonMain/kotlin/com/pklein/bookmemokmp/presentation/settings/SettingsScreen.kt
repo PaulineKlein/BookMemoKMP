@@ -41,18 +41,21 @@ import bookmemokmp.shared.generated.resources.go_back_accessibility
 import bookmemokmp.shared.generated.resources.import_database
 import bookmemokmp.shared.generated.resources.settings_cloud_backup
 import bookmemokmp.shared.generated.resources.settings_error_backup
+import bookmemokmp.shared.generated.resources.settings_error_delete_cloud
 import bookmemokmp.shared.generated.resources.settings_error_restore
 import bookmemokmp.shared.generated.resources.settings_error_sign_in
 import bookmemokmp.shared.generated.resources.settings_local_data
 import bookmemokmp.shared.generated.resources.settings_preferences
 import bookmemokmp.shared.generated.resources.settings_save_english_description
 import bookmemokmp.shared.generated.resources.settings_success_backup
+import bookmemokmp.shared.generated.resources.settings_success_delete_cloud
 import bookmemokmp.shared.generated.resources.settings_success_restore
 import bookmemokmp.shared.generated.resources.settings_theme
 import bookmemokmp.shared.generated.resources.settings_theme_dark
 import bookmemokmp.shared.generated.resources.settings_theme_light
 import bookmemokmp.shared.generated.resources.settings_theme_system
 import bookmemokmp.shared.generated.resources.settings_title
+import com.pklein.bookmemokmp.appVersion
 import com.pklein.bookmemokmp.data.ThemeMode
 import com.pklein.bookmemokmp.isAndroidPlatform
 import com.pklein.bookmemokmp.presentation.additem.ToggleRowItem
@@ -83,8 +86,10 @@ fun SettingsScreen(
     val errorSignIn = stringResource(Res.string.settings_error_sign_in)
     val errorBackup = stringResource(Res.string.settings_error_backup)
     val errorRestore = stringResource(Res.string.settings_error_restore)
+    val errorDeleteCloud = stringResource(Res.string.settings_error_delete_cloud)
     val successBackup = stringResource(Res.string.settings_success_backup)
     val successRestore = stringResource(Res.string.settings_success_restore)
+    val successDeleteCloud = stringResource(Res.string.settings_success_delete_cloud)
 
     LaunchedEffect(notification) {
         val msg =
@@ -92,8 +97,10 @@ fun SettingsScreen(
                 BackupNotification.SignInError -> errorSignIn
                 BackupNotification.BackupError -> errorBackup
                 BackupNotification.RestoreError -> errorRestore
+                BackupNotification.DeleteError -> errorDeleteCloud
                 BackupNotification.BackupSuccess -> successBackup
                 BackupNotification.RestoreSuccess -> successRestore
+                BackupNotification.DeleteSuccess -> successDeleteCloud
                 null -> return@LaunchedEffect
             }
         snackbarHostState.showSnackbar(msg)
@@ -112,6 +119,7 @@ fun SettingsScreen(
         onSignOut = viewModel::signOut,
         onBackupNow = viewModel::backupNow,
         onRestore = viewModel::restore,
+        onDeleteCloudData = viewModel::deleteCloudBackup,
         onApplyRestore = viewModel::applyRestore,
         onDismissConflict = viewModel::dismissRestoreConflict,
         importConflict = importConflict,
@@ -140,6 +148,7 @@ private fun SettingsContent(
     onSignOut: () -> Unit,
     onBackupNow: () -> Unit,
     onRestore: () -> Unit,
+    onDeleteCloudData: () -> Unit,
     onApplyRestore: (RestoreStrategy) -> Unit,
     onDismissConflict: () -> Unit,
     importConflict: com.pklein.bookmemokmp.presentation.settings.viewmodel.RestoreConflict?,
@@ -162,6 +171,16 @@ private fun SettingsContent(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(Res.string.go_back_accessibility),
+                        )
+                    }
+                },
+                actions = {
+                    appVersion()?.let { version ->
+                        Text(
+                            text = "v$version",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            modifier = Modifier.padding(end = 16.dp),
                         )
                     }
                 },
@@ -285,6 +304,7 @@ private fun SettingsContent(
                     onSignOut = onSignOut,
                     onBackupNow = onBackupNow,
                     onRestore = onRestore,
+                    onDeleteCloudData = onDeleteCloudData,
                 )
             }
         }
@@ -308,6 +328,7 @@ private fun PreviewSettingsNotSignedIn() {
             onSignOut = {},
             onBackupNow = {},
             onRestore = {},
+            onDeleteCloudData = {},
             onApplyRestore = {},
             onDismissConflict = {},
             importConflict = null,
@@ -338,6 +359,7 @@ private fun PreviewSettingsNotSignedInBigFont() {
             onSignOut = {},
             onBackupNow = {},
             onRestore = {},
+            onDeleteCloudData = {},
             onApplyRestore = {},
             onDismissConflict = {},
             importConflict = null,
@@ -368,6 +390,7 @@ private fun PreviewSettingsSignedInNoBackup() {
             onSignOut = {},
             onBackupNow = {},
             onRestore = {},
+            onDeleteCloudData = {},
             onApplyRestore = {},
             onDismissConflict = {},
             importConflict = null,
@@ -398,6 +421,7 @@ private fun PreviewSettingsSignedInWithBackup() {
             onSignOut = {},
             onBackupNow = {},
             onRestore = {},
+            onDeleteCloudData = {},
             onApplyRestore = {},
             onDismissConflict = {},
             importConflict = null,
@@ -428,6 +452,7 @@ private fun PreviewSettingsSignedInWithBackupBigFont() {
             onSignOut = {},
             onBackupNow = {},
             onRestore = {},
+            onDeleteCloudData = {},
             onApplyRestore = {},
             onDismissConflict = {},
             importConflict = null,
@@ -458,6 +483,7 @@ private fun PreviewSettingsBackupInProgress() {
             onSignOut = {},
             onBackupNow = {},
             onRestore = {},
+            onDeleteCloudData = {},
             onApplyRestore = {},
             onDismissConflict = {},
             importConflict = null,

@@ -189,6 +189,11 @@
     <string name="settings_error_restore">Échec de la restauration. Veuillez réessayer.</string>
     <string name="settings_success_backup">Sauvegarde effectuée avec succès.</string>
     <string name="settings_success_restore">Restauration effectuée avec succès.</string>
+    <string name="settings_delete_cloud">Supprimer les données Cloud</string>
+    <string name="settings_delete_cloud_confirm_title">Supprimer la sauvegarde Cloud ?</string>
+    <string name="settings_delete_cloud_confirm_message">Cette action supprimera définitivement votre sauvegarde du Cloud. Votre collection locale ne sera pas affectée.</string>
+    <string name="settings_success_delete_cloud">Données Cloud supprimées avec succès.</string>
+    <string name="settings_error_delete_cloud">Échec de la suppression des données Cloud. Veuillez réessayer.</string>
     <string name="settings_preferences">Préférences</string>
     <string name="settings_save_english_description">Pré-remplir les descriptions de Manga, disponibles uniquement en anglais ?</string>
     <string name="settings_theme">Thème</string>

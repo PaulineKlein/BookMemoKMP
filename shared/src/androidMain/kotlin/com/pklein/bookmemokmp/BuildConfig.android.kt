@@ -21,6 +21,19 @@ actual fun androidPackageName(): String? {
     return app.packageName
 }
 
+actual fun appVersion(): String? =
+    try {
+        val app = getKoin().get<Application>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            app.packageManager.getPackageInfo(app.packageName, PackageManager.PackageInfoFlags.of(0)).versionName
+        } else {
+            @Suppress("DEPRECATION")
+            app.packageManager.getPackageInfo(app.packageName, 0).versionName
+        }
+    } catch (_: Exception) {
+        null
+    }
+
 actual fun androidCertFingerprint(): String? {
     val app = getKoin().get<Application>()
     return try {

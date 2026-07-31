@@ -9,3 +9,5 @@ expect fun mangaApiKey(): String?
 expect fun androidPackageName(): String?
 
 expect fun androidCertFingerprint(): String?
+
+expect fun appVersion(): String?

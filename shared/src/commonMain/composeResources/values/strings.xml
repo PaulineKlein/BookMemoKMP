@@ -190,6 +190,11 @@
     <string name="settings_error_restore">Restore failed. Please try again.</string>
     <string name="settings_success_backup">Backup completed successfully.</string>
     <string name="settings_success_restore">Restore completed successfully.</string>
+    <string name="settings_delete_cloud">Delete Cloud data</string>
+    <string name="settings_delete_cloud_confirm_title">Delete Cloud backup?</string>
+    <string name="settings_delete_cloud_confirm_message">This will permanently delete your backup from the Cloud. Your local collection will not be affected.</string>
+    <string name="settings_success_delete_cloud">Cloud data deleted successfully.</string>
+    <string name="settings_error_delete_cloud">Failed to delete Cloud data. Please try again.</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_save_english_description">Pre-fill Manga descriptions, available only in English?</string>
     <string name="settings_theme">Theme</string>

@@ -19,7 +19,7 @@ KMP permet de placer toute la couche **data** et **domain** dans un module `shar
 | Modèles de données (`CollectionItem`, `SearchResult`) | `MainActivity.kt` (Android) |
 | Repositories & Use Cases | `ContentView.swift` / `iOSApp.swift` (iOS) |
 | ViewModels (`CollectionViewModel`) | Glance widget Android |
-| Appels API Ktor (Google Books, Jikan) | Driver SQLDelight (Android/iOS) |
+| Appels API Ktor (Google Books, MyAnimeList) | Driver SQLDelight (Android/iOS) |
 | Base de données SQLDelight | Scanner code-barres GMS (Android) |
 | Préférences utilisateur | Ktor engine (OkHttp / Darwin) |
 | Navigation Compose Multiplatform | |
@@ -37,14 +37,15 @@ KMP permet de placer toute la couche **data** et **domain** dans un module `shar
 ## Fonctionnalités
 
 - **Ajout manuel ou par scan ISBN** — scanner code-barres via GMS Code Scanner (Android)
-- **Recherche en ligne** — Google Books API (livres), Jikan API (mangas & animés)
-- **Collection filtrée** — par type (livre / manga / animé), par statut (lu, en cours, souhaité), par favoris
-- **Suivi de progression** — tomes lus, chapitres lus, épisodes vus
-- **Vérification de nouveaux volumes** — comparaison avec les données Jikan (MAL ID) pour détecter de nouveaux tomes/épisodes
+- **Recherche en ligne** — Google Books API (livres), MyAnimeList API (mangas & animés)
+- **Collection filtrée** — par type (livre / manga / animé), par statut (lu, en cours, souhaité), par favoris, par format
+- **Suivi de progression** — tomes lus, chapitres lus, épisodes vus, cochage individuel des volumes
+- **Vérification de nouveaux volumes** — comparaison avec les données MAL pour détecter de nouveaux tomes/épisodes
+- **Sauvegarde cloud** — authentification Google Sign-In, backup/restore/suppression via Firebase Firestore
 - **Statistiques** — vue agrégée de la collection
-- **Export CSV** — partage de la collection depuis Android
+- **Export / Import CSV et base de données** — partage et migration de la collection depuis Android
 - **Widget Android** — liste des favoris via Jetpack Glance
-- **Thème pastel** — thème Material 3 personnalisé, commun Android et iOS
+- **Thème pastel** — thème Material 3 personnalisé, commun Android et iOS, avec mode sombre/clair/système
 - **Localisation** — français et anglais
 
 ---
@@ -53,19 +54,22 @@ KMP permet de placer toute la couche **data** et **domain** dans un module `shar
 
 | Catégorie | Librairie | Version |
 |---|---|---|
-| Multiplatform | Kotlin Multiplatform | 2.3.21 |
-| UI | Compose Multiplatform | 1.11.0 |
-| UI Components | Material 3 | 1.10.0 |
-| DI | Koin | 4.2.1 |
+| Multiplatform | Kotlin Multiplatform | 2.4.10 |
+| UI | Compose Multiplatform | 1.11.1 |
+| UI Components | Material 3 | 1.10.0-alpha05 |
+| DI | Koin | 4.2.2 |
 | Base de données | SQLDelight | 2.3.2 |
-| HTTP Client | Ktor | 3.5.0 |
+| HTTP Client | Ktor | 3.5.1 |
 | Sérialisation | kotlinx.serialization | 1.11.0 |
-| Images | Coil 3 | 3.4.0 |
+| Images | Coil 3 | 3.5.0 |
 | Navigation | Navigation Compose (JetBrains) | 2.9.2 |
 | Préférences | Multiplatform Settings | 1.3.0 |
 | Date/Heure | kotlinx-datetime | 0.8.0 |
 | Widget Android | Jetpack Glance | 1.1.1 |
 | Scanner | GMS Code Scanner | 16.1.0 |
+| Cloud Backup | Firebase BOM | 34.16.0 |
+| Authentification | Firebase Auth + Google Sign-In (Credential Manager) | — |
+| Analytics / Crashlytics | Firebase Crashlytics | 3.0.7 |
 
 ---
 
@@ -116,3 +120,6 @@ Ouvrir `iosApp/iosApp.xcodeproj` dans Xcode et lancer sur simulateur ou device.
 - Déboguer les contraintes des widgets Glance (incompatibilité Material3, pattern `flow.first()` vs `collect {}`)
 - Faire cohabiter Compose Multiplatform pour l'UI partagée avec des points d'entrée natifs SwiftUI / Android
 - Gérer les migrations de base de données SQLDelight (fichiers `.sqm`) sans casser les données existantes
+- Intégrer Firebase Auth (Google Sign-In via Credential Manager) et Firestore pour la sauvegarde cloud
+- Gérer les variantes de build Android (`debug`/`release` source sets) pour isoler les dépendances de développement (Firebase App Check debug provider)
+- Consommer l'API MyAnimeList v2 (authentification par header, structure `data[].node`, endpoints de ranking et de détail)

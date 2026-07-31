@@ -14,4 +14,6 @@ interface IBackupRepository {
     suspend fun backup(items: List<CollectionItem>)
 
     suspend fun restore(): List<CollectionItem>
+
+    suspend fun deleteBackup()
 }

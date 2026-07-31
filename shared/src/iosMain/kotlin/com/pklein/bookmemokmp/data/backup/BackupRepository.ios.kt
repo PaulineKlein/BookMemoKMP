@@ -15,4 +15,6 @@ class BackupRepository : IBackupRepository {
     override suspend fun backup(items: List<CollectionItem>) = Unit
 
     override suspend fun restore(): List<CollectionItem> = emptyList()
+
+    override suspend fun deleteBackup() = Unit
 }

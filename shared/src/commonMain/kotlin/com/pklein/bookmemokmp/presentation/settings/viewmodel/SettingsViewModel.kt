@@ -28,6 +28,10 @@ sealed interface BackupNotification {
     data object BackupSuccess : BackupNotification
 
     data object RestoreSuccess : BackupNotification
+
+    data object DeleteSuccess : BackupNotification
+
+    data object DeleteError : BackupNotification
 }
 
 data class RestoreConflict(
@@ -117,6 +121,22 @@ class SettingsViewModel(
                 _notification.value = BackupNotification.BackupSuccess
             } catch (_: Exception) {
                 _notification.value = BackupNotification.BackupError
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun deleteCloudBackup() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                backupService.deleteBackup()
+                userPrefs.lastBackupDate = null
+                _lastBackupDate.value = null
+                _notification.value = BackupNotification.DeleteSuccess
+            } catch (_: Exception) {
+                _notification.value = BackupNotification.DeleteError
             } finally {
                 _isLoading.value = false
             }

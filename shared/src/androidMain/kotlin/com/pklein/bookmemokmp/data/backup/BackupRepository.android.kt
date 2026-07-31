@@ -92,6 +92,17 @@ class BackupRepository(
         }
     }
 
+    override suspend fun deleteBackup() {
+        val uid = auth.currentUser?.uid ?: error("Not signed in")
+        withTimeout(15.seconds) {
+            firestore
+                .collection(COLLECTION_NAME)
+                .document(uid)
+                .delete()
+                .await()
+        }
+    }
+
     override suspend fun restore(): List<CollectionItem> {
         val uid = auth.currentUser?.uid ?: error("Not signed in")
         val doc =

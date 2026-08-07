@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.pklein.bookmemokmp.domain.repository.IBackupRepository
 import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
+import com.pklein.bookmemokmp.wear.pushFavoritesToWear
 import com.pklein.bookmemokmp.widget.EXTRA_EDIT_ITEM_ID
 import com.pklein.bookmemokmp.widget.FavoritesWidget
 import kotlinx.coroutines.launch
@@ -82,8 +83,17 @@ class MainActivity : ComponentActivity() {
     private fun observeFavoritesForWidget() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                repository.getFavorites().collect {
-                    FavoritesWidget().updateAll(this@MainActivity)
+                repository.getFavorites().collect { favorites ->
+                    try {
+                        FavoritesWidget().updateAll(this@MainActivity)
+                    } catch (_: Exception) {
+                        // AppWidgetManager unavailable on this device/emulator
+                    }
+                    try {
+                        pushFavoritesToWear(this@MainActivity, favorites)
+                    } catch (_: Exception) {
+                        // Watch not paired or not available — safe to ignore
+                    }
                 }
             }
         }

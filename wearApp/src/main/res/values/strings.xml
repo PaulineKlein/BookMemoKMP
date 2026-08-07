@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Book Memo</string>
+    <string name="tile_label">Favorites</string>
+    <string name="tile_no_favorites">No favorites yet</string>
+</resources>

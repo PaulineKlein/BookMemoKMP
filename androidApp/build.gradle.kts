@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.androidx.glance.appwidget)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
+            implementation(libs.play.services.wearable)
         }
     }
 }

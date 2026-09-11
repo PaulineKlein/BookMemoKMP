@@ -119,6 +119,7 @@
     <string name="statistics_volume">Volumes</string>
     <string name="statistics_chapter">Chapters</string>
     <string name="statistics_episode">Episodes</string>
+    <string name="statistics_watch_time">Estimated watch time</string>
 
     <string name="csv_headline_title">type,format,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_digital,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
 
@@ -197,6 +198,7 @@
     <string name="settings_error_delete_cloud">Failed to delete Cloud data. Please try again.</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_save_english_description">Pre-fill Manga descriptions, available only in English?</string>
+    <string name="settings_replace_title">Replace title with online search result title when editing?</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>

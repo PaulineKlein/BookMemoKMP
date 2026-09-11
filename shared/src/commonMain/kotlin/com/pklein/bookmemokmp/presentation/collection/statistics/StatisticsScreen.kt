@@ -35,6 +35,7 @@ import bookmemokmp.shared.generated.resources.statistics_manga
 import bookmemokmp.shared.generated.resources.statistics_progress
 import bookmemokmp.shared.generated.resources.statistics_type
 import bookmemokmp.shared.generated.resources.statistics_volume
+import bookmemokmp.shared.generated.resources.statistics_watch_time
 import bookmemokmp.shared.generated.resources.stats_total
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
@@ -61,6 +62,9 @@ fun StatisticsScreen(
                 )
             }
         }
+
+    val watchTimeEpisodes =
+        remember(filteredItems) { filteredItems.sumOf { it.episode ?: 0 } }
 
     val progressStats =
         remember(allItems, filteredItems) {
@@ -137,6 +141,36 @@ fun StatisticsScreen(
                 color = color,
             )
         }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(Res.string.statistics_watch_time),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = formatWatchTime(watchTimeEpisodes),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+private fun formatWatchTime(episodes: Int): String {
+    val totalMinutes = episodes * 25
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+    return when {
+        hours == 0 -> "${minutes}min"
+        minutes == 0 -> "${hours}h"
+        else -> "${hours}h ${minutes}min"
     }
 }
 
@@ -213,6 +247,7 @@ private val previewAllItems =
             type = ItemType.MANGA,
             title = "One Piece",
             author = "Eiichiro Oda",
+            episode = 100,
             bought = true,
             tome = 107,
         ),

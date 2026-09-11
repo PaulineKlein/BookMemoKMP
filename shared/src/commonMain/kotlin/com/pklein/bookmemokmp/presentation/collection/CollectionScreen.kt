@@ -116,7 +116,6 @@ fun CollectionScreen(
         onSearchChange = viewModel::onSearchQueryChange,
         onClearSearch = {
             viewModel.clearSearch()
-            keyboard?.hide()
         },
         onFilterChange = viewModel::onFilterChange,
         onStatusFilterCycle = viewModel::onStatusFilterCycle,
@@ -171,6 +170,7 @@ private fun CollectionContent(
     onSearchAuthor: (CollectionItem, String?) -> Unit,
     onDismissUpdateCheck: () -> Unit,
 ) {
+    val keyboard = LocalSoftwareKeyboardController.current
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -322,7 +322,7 @@ private fun CollectionContent(
                             },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { onClearSearch() }),
+                            keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
                         )
                         MenuItem(
                             onAddBook = onAddClick,

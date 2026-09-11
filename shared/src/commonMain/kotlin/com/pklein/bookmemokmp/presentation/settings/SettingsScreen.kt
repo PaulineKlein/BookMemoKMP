@@ -46,6 +46,7 @@ import bookmemokmp.shared.generated.resources.settings_error_restore
 import bookmemokmp.shared.generated.resources.settings_error_sign_in
 import bookmemokmp.shared.generated.resources.settings_local_data
 import bookmemokmp.shared.generated.resources.settings_preferences
+import bookmemokmp.shared.generated.resources.settings_replace_title
 import bookmemokmp.shared.generated.resources.settings_save_english_description
 import bookmemokmp.shared.generated.resources.settings_success_backup
 import bookmemokmp.shared.generated.resources.settings_success_delete_cloud
@@ -81,6 +82,7 @@ fun SettingsScreen(
     val importConflict by viewModel.importConflict.collectAsState()
     val notification by viewModel.notification.collectAsState()
     val saveEnglishDescription by viewModel.saveEnglishDescription.collectAsState()
+    val replaceTitle by viewModel.replaceTitle.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val errorSignIn = stringResource(Res.string.settings_error_sign_in)
@@ -114,6 +116,7 @@ fun SettingsScreen(
         restoreConflict = restoreConflict,
         snackbarHostState = snackbarHostState,
         saveEnglishDescription = saveEnglishDescription,
+        replaceTitle = replaceTitle,
         onBack = onBack,
         onSignIn = onSignIn,
         onSignOut = viewModel::signOut,
@@ -126,6 +129,7 @@ fun SettingsScreen(
         onApplyImport = viewModel::applyImport,
         onDismissImportConflict = viewModel::dismissImportConflict,
         onSaveEnglishDescriptionChange = viewModel::setSaveEnglishDescription,
+        onReplaceTitleChange = viewModel::setReplaceTitle,
         themeMode = themeMode,
         onThemeModeChange = viewModel::setThemeMode,
         onExportCsv = onExportCsv,
@@ -143,6 +147,7 @@ private fun SettingsContent(
     restoreConflict: com.pklein.bookmemokmp.presentation.settings.viewmodel.RestoreConflict?,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     saveEnglishDescription: Boolean,
+    replaceTitle: Boolean,
     onBack: () -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
@@ -155,6 +160,7 @@ private fun SettingsContent(
     onApplyImport: (RestoreStrategy) -> Unit,
     onDismissImportConflict: () -> Unit,
     onSaveEnglishDescriptionChange: (Boolean) -> Unit,
+    onReplaceTitleChange: (Boolean) -> Unit,
     themeMode: ThemeMode,
     onThemeModeChange: (ThemeMode) -> Unit,
     onExportCsv: () -> Unit,
@@ -256,6 +262,12 @@ private fun SettingsContent(
                     checked = saveEnglishDescription,
                     onCheckedChange = onSaveEnglishDescriptionChange,
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                ToggleRowItem(
+                    label = stringResource(Res.string.settings_replace_title),
+                    checked = replaceTitle,
+                    onCheckedChange = onReplaceTitleChange,
+                )
             }
 
             // ── Local and cloud data section (Android only) ─────────────────────────────
@@ -335,6 +347,8 @@ private fun PreviewSettingsNotSignedIn() {
             onApplyImport = {},
             onDismissImportConflict = {},
             onSaveEnglishDescriptionChange = {},
+            replaceTitle = true,
+            onReplaceTitleChange = {},
             themeMode = ThemeMode.SYSTEM,
             onThemeModeChange = {},
             onExportCsv = {},
@@ -366,6 +380,8 @@ private fun PreviewSettingsNotSignedInBigFont() {
             onApplyImport = {},
             onDismissImportConflict = {},
             onSaveEnglishDescriptionChange = {},
+            replaceTitle = true,
+            onReplaceTitleChange = {},
             themeMode = ThemeMode.SYSTEM,
             onThemeModeChange = {},
             onExportCsv = {},
@@ -397,6 +413,8 @@ private fun PreviewSettingsSignedInNoBackup() {
             onApplyImport = {},
             onDismissImportConflict = {},
             onSaveEnglishDescriptionChange = {},
+            replaceTitle = true,
+            onReplaceTitleChange = {},
             themeMode = ThemeMode.SYSTEM,
             onThemeModeChange = {},
             onExportCsv = {},
@@ -428,6 +446,8 @@ private fun PreviewSettingsSignedInWithBackup() {
             onApplyImport = {},
             onDismissImportConflict = {},
             onSaveEnglishDescriptionChange = {},
+            replaceTitle = true,
+            onReplaceTitleChange = {},
             themeMode = ThemeMode.SYSTEM,
             onThemeModeChange = {},
             onExportCsv = {},
@@ -459,6 +479,8 @@ private fun PreviewSettingsSignedInWithBackupBigFont() {
             onApplyImport = {},
             onDismissImportConflict = {},
             onSaveEnglishDescriptionChange = {},
+            replaceTitle = true,
+            onReplaceTitleChange = {},
             themeMode = ThemeMode.SYSTEM,
             onThemeModeChange = {},
             onExportCsv = {},
@@ -490,6 +512,8 @@ private fun PreviewSettingsBackupInProgress() {
             onApplyImport = {},
             onDismissImportConflict = {},
             onSaveEnglishDescriptionChange = {},
+            replaceTitle = true,
+            onReplaceTitleChange = {},
             themeMode = ThemeMode.SYSTEM,
             onThemeModeChange = {},
             onExportCsv = {},

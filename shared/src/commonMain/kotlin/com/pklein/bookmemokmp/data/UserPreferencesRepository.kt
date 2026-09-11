@@ -25,6 +25,10 @@ class UserPreferencesRepository(private val settings: Settings) {
             _saveEnglishDescription.value = value
         }
 
+    var replaceTitle: Boolean
+        get() = settings.getBoolean(KEY_REPLACE_TITLE, true)
+        set(value) = settings.putBoolean(KEY_REPLACE_TITLE, value)
+
     var backupEmail: String?
         get() = settings.getStringOrNull(KEY_BACKUP_EMAIL)
         set(value) = if (value != null) settings.putString(KEY_BACKUP_EMAIL, value)
@@ -38,6 +42,7 @@ class UserPreferencesRepository(private val settings: Settings) {
     private companion object {
         const val KEY_THEME_MODE = "theme_mode"
         const val KEY_SAVE_ENGLISH_DESC = "save_english_description"
+        const val KEY_REPLACE_TITLE = "replace_title"
         const val KEY_BACKUP_EMAIL = "backup_email"
         const val KEY_LAST_BACKUP = "backup_last_date"
     }

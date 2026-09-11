@@ -127,6 +127,7 @@ fun AddItemScreen(
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val saveEnglishDescription by viewModel.saveEnglishDescription.collectAsState()
+    val replaceTitle by viewModel.replaceTitle.collectAsState()
 
     AddItemScreenContent(
         onSave = onSave,
@@ -139,6 +140,7 @@ fun AddItemScreen(
         onCheckDuplicate = viewModel::existsByTitleAndType,
         initialSaveDescription = saveEnglishDescription,
         onSaveDescriptionChanged = viewModel::setSaveEnglishDescription,
+        replaceTitle = replaceTitle,
         barcodeScanner = barcodeScanner,
     )
 }
@@ -156,6 +158,7 @@ private fun AddItemScreenContent(
     onCheckDuplicate: suspend (title: String, type: ItemType, excludeId: Long) -> Boolean,
     initialSaveDescription: Boolean = true,
     onSaveDescriptionChanged: (Boolean) -> Unit = {},
+    replaceTitle: Boolean = true,
     barcodeScanner: BarcodeScanner? = null,
 ) {
     val scope = rememberCoroutineScope()
@@ -239,7 +242,7 @@ private fun AddItemScreenContent(
             onSelect = { result, shouldSaveDescription ->
                 if (showEnglishNotice) onSaveDescriptionChanged(shouldSaveDescription)
                 // Apply non-description fields immediately
-                title = result.title
+                if (replaceTitle) title = result.title
                 result.author?.let { author = it }
                 result.year?.let { year = it.toString() }
                 imageUrl = result.imageUrl ?: ""

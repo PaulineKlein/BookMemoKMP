@@ -63,7 +63,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.sqldelight.android.driver)
             implementation(libs.koin.android)
-            implementation(libs.ktor.client.android)
+            implementation(libs.ktor.client.okhttp)
             implementation(libs.gms.code.scanner)
         }
         iosMain.dependencies {

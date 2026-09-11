@@ -50,8 +50,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = 14
-        versionName = "3.1"
+        versionCode = 15
+        versionName = "3.2"
     }
 
     packaging {

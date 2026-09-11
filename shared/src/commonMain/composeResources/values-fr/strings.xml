@@ -118,6 +118,7 @@
     <string name="statistics_volume">Tomes</string>
     <string name="statistics_chapter">Chapitres</string>
     <string name="statistics_episode">Episodes</string>
+    <string name="statistics_watch_time">Temps de visionnage estimé</string>
 
     <string name="csv_headline_title">type,format,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,format_numérique,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
 
@@ -196,6 +197,7 @@
     <string name="settings_error_delete_cloud">Échec de la suppression des données Cloud. Veuillez réessayer.</string>
     <string name="settings_preferences">Préférences</string>
     <string name="settings_save_english_description">Pré-remplir les descriptions de Manga, disponibles uniquement en anglais ?</string>
+    <string name="settings_replace_title">Remplacer le titre par le titre du résultat de recherche en ligne, lors de l'édition ?</string>
     <string name="settings_theme">Thème</string>
     <string name="settings_theme_system">Système</string>
     <string name="settings_theme_light">Clair</string>

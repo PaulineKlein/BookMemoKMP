@@ -21,6 +21,7 @@
     <string name="favorite">Favori (ajout sur Widget)</string>
     <string name="add_to_collection">Ajouter à la collection</string>
     <string name="edit_item">Modifier l'élément</string>
+    <string name="share_item">Partager</string>
     <string name="type_section">Type</string>
     <string name="edit_title">Titre *</string>
     <string name="title_required">Le titre est obligatoire</string>
@@ -119,6 +120,14 @@
     <string name="statistics_chapter">Chapitres</string>
     <string name="statistics_episode">Episodes</string>
     <string name="statistics_watch_time">Temps de visionnage estimé</string>
+    <plurals name="statistics_watch_time_years">
+        <item quantity="one">%1$d an</item>
+        <item quantity="other">%1$d ans</item>
+    </plurals>
+    <plurals name="statistics_watch_time_days">
+        <item quantity="one">%1$d jour</item>
+        <item quantity="other">%1$d jours</item>
+    </plurals>
 
     <string name="csv_headline_title">type,format,titre,auteur,dessinateur,année,acheté,wishlist,terminé,tome,total_tomes,chapitre,total_chapitres,épisode,total_épisodes,saison,description,favori,image_url,format_numérique,prêté,prêté_depuis,prêté_à,tomes_cochés,notes</string>
 

@@ -36,6 +36,8 @@ import bookmemokmp.shared.generated.resources.statistics_progress
 import bookmemokmp.shared.generated.resources.statistics_type
 import bookmemokmp.shared.generated.resources.statistics_volume
 import bookmemokmp.shared.generated.resources.statistics_watch_time
+import bookmemokmp.shared.generated.resources.statistics_watch_time_days
+import bookmemokmp.shared.generated.resources.statistics_watch_time_years
 import bookmemokmp.shared.generated.resources.stats_total
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.ItemType
@@ -43,6 +45,7 @@ import com.pklein.bookmemokmp.ui.theme.BadgeBookColor
 import com.pklein.bookmemokmp.ui.theme.BadgeComicColor
 import com.pklein.bookmemokmp.ui.theme.BadgeMangaColor
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -163,15 +166,22 @@ fun StatisticsScreen(
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+@Composable
 private fun formatWatchTime(episodes: Int): String {
     val totalMinutes = episodes * 25
-    val hours = totalMinutes / 60
+    val totalDays = totalMinutes / (24 * 60)
+    val years = totalDays / 365
+    val days = totalDays % 365
+    val hours = totalMinutes % (24 * 60) / 60
     val minutes = totalMinutes % 60
-    return when {
-        hours == 0 -> "${minutes}min"
-        minutes == 0 -> "${hours}h"
-        else -> "${hours}h ${minutes}min"
-    }
+    val parts =
+        buildList {
+            if (years > 0) add(pluralStringResource(Res.plurals.statistics_watch_time_years, years, years))
+            if (days > 0) add(pluralStringResource(Res.plurals.statistics_watch_time_days, days, days))
+            if (hours > 0) add("${hours}h")
+            if (minutes > 0) add("${minutes}min")
+        }
+    return parts.joinToString(" ").ifEmpty { "0min" }
 }
 
 // ── Type stat bar ─────────────────────────────────────────────────────────────

@@ -22,6 +22,7 @@
     <string name="favorite_ios">Favorite</string>
     <string name="add_to_collection">Add to collection</string>
     <string name="edit_item">Edit item</string>
+    <string name="share_item">Share</string>
     <string name="type_section">Type</string>
     <string name="edit_title">Title *</string>
     <string name="title_required">Title is required</string>
@@ -120,6 +121,14 @@
     <string name="statistics_chapter">Chapters</string>
     <string name="statistics_episode">Episodes</string>
     <string name="statistics_watch_time">Estimated watch time</string>
+    <plurals name="statistics_watch_time_years">
+        <item quantity="one">%1$d year</item>
+        <item quantity="other">%1$d years</item>
+    </plurals>
+    <plurals name="statistics_watch_time_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
 
     <string name="csv_headline_title">type,format,title,author,illustrator,year,bought,wishlist,finished,tome,total_tomes,chapter,total_chapters,episode,total_episodes,season,description,favorite,image_url,is_digital,is_borrowed,borrowed_since,borrowed_by,checked_tomes,notes</string>
 

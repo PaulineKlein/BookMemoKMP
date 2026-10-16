@@ -56,15 +56,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.add_accessibility
+import bookmemokmp.shared.generated.resources.author
 import bookmemokmp.shared.generated.resources.cat
 import bookmemokmp.shared.generated.resources.clear_search_accessibility
+import bookmemokmp.shared.generated.resources.illustrator
+import bookmemokmp.shared.generated.resources.last_chapter
+import bookmemokmp.shared.generated.resources.last_episode
+import bookmemokmp.shared.generated.resources.last_season
+import bookmemokmp.shared.generated.resources.last_volume
+import bookmemokmp.shared.generated.resources.publication_year
 import bookmemokmp.shared.generated.resources.search_placeholder
 import bookmemokmp.shared.generated.resources.tab_collection
 import bookmemokmp.shared.generated.resources.tab_stats
+import bookmemokmp.shared.generated.resources.volumes_missing
 import com.pklein.bookmemokmp.domain.model.CollectionItem
 import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.SearchResult
+import com.pklein.bookmemokmp.domain.model.ShareLabels
 import com.pklein.bookmemokmp.presentation.collection.collectionList.CollectionListPage
 import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverBookBottomSheet
 import com.pklein.bookmemokmp.presentation.collection.discover.DiscoverTypeState
@@ -91,6 +100,7 @@ fun CollectionScreen(
     onAddClick: () -> Unit,
     onEditClick: (CollectionItem) -> Unit,
     onSettingsClick: () -> Unit = {},
+    onShare: ((String) -> Unit)? = null,
 ) {
     val items by viewModel.displayedItems.collectAsState()
     val allItems by viewModel.allItems.collectAsState()
@@ -101,7 +111,17 @@ fun CollectionScreen(
     val discoverState by viewModel.discoverState.collectAsState()
     val updateCheckState by viewModel.updateCheckState.collectAsState()
     val saveEnglishDescription by viewModel.saveEnglishDescription.collectAsState()
-    val keyboard = LocalSoftwareKeyboardController.current
+    val shareLabels =
+        ShareLabels(
+            author = stringResource(Res.string.author),
+            illustrator = stringResource(Res.string.illustrator),
+            year = stringResource(Res.string.publication_year),
+            volume = stringResource(Res.string.last_volume),
+            chapter = stringResource(Res.string.last_chapter),
+            episode = stringResource(Res.string.last_episode),
+            season = stringResource(Res.string.last_season),
+            missingTemplate = stringResource(Res.string.volumes_missing, "%s"),
+        )
 
     CollectionContent(
         items = items,
@@ -134,6 +154,10 @@ fun CollectionScreen(
         onCheckForUpdates = viewModel::checkForUpdates,
         onDismissUpdateCheck = viewModel::dismissUpdateCheck,
         onSearchAuthor = viewModel::loadBooksFromAuthor,
+        onShare =
+            onShare?.let { share ->
+                { item -> share(viewModel.buildShareText(item, shareLabels)) }
+            },
     )
 }
 
@@ -169,6 +193,7 @@ private fun CollectionContent(
     onCheckForUpdates: (CollectionItem) -> Unit,
     onSearchAuthor: (CollectionItem, String?) -> Unit,
     onDismissUpdateCheck: () -> Unit,
+    onShare: ((CollectionItem) -> Unit)? = null,
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
     val pagerState = rememberPagerState(pageCount = { 2 })
@@ -382,6 +407,7 @@ private fun CollectionContent(
                             onProgressUpdate = onProgressUpdate,
                             onCheckForUpdates = onCheckForUpdates,
                             onDismissUpdateCheck = onDismissUpdateCheck,
+                            onShare = onShare,
                             onSearchAuthor = { item ->
                                 discoverTypeState = DiscoverTypeState.Author(item)
                                 onSearchAuthor(

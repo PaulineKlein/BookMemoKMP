@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LibraryAdd
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -51,6 +52,7 @@ import bookmemokmp.shared.generated.resources.fav_add_accessibility
 import bookmemokmp.shared.generated.resources.fav_remove_accessibility
 import bookmemokmp.shared.generated.resources.finished
 import bookmemokmp.shared.generated.resources.more_author
+import bookmemokmp.shared.generated.resources.share_item
 import bookmemokmp.shared.generated.resources.up_accessibility
 import bookmemokmp.shared.generated.resources.wishlist
 import com.pklein.bookmemokmp.domain.model.CollectionItem
@@ -70,10 +72,11 @@ fun BookItem(
     onEditClick: (CollectionItem) -> Unit,
     onProgressUpdate: (CollectionItem) -> Unit,
     onSearchAuthor: (CollectionItem) -> Unit,
+    modifier: Modifier = Modifier,
     updateCheckState: UpdateCheckState = UpdateCheckState.Idle,
     onCheckForUpdates: (CollectionItem) -> Unit = {},
     onDismissUpdateCheck: () -> Unit = {},
-    modifier: Modifier = Modifier,
+    onShare: ((CollectionItem) -> Unit)? = null,
     initialExpanded: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(initialExpanded) }
@@ -277,6 +280,16 @@ fun BookItem(
                                     modifier = Modifier.size(iconSize),
                                 )
                             }
+                        }
+                    }
+                    if (onShare != null) {
+                        IconButton(onClick = { onShare(item) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Share,
+                                contentDescription = stringResource(Res.string.share_item),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.size(iconSize),
+                            )
                         }
                     }
                     IconButton(onClick = { onFavoriteToggle(item.copy(favorite = !item.favorite)) }) {

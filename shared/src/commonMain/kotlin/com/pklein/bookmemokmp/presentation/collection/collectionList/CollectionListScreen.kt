@@ -43,6 +43,7 @@ fun CollectionListPage(
     onCheckForUpdates: (CollectionItem) -> Unit,
     onSearchAuthor: (CollectionItem) -> Unit,
     onDismissUpdateCheck: () -> Unit,
+    onShare: ((CollectionItem) -> Unit)? = null,
 ) {
     val noActiveFilters = activeFilter == null && !hasActiveStatusFilters
     when {
@@ -80,6 +81,7 @@ fun CollectionListPage(
                             onCheckForUpdates = onCheckForUpdates,
                             onDismissUpdateCheck = onDismissUpdateCheck,
                             onSearchAuthor = onSearchAuthor,
+                            onShare = onShare,
                         )
                     }
                 }

@@ -33,6 +33,7 @@ fun App(
     onLaunchSignIn: (onSuccess: () -> Unit, onError: () -> Unit) -> Unit = { _, _ -> },
     onExportCsv: (String) -> Unit = {},
     onExportDb: () -> Unit = {},
+    onShareItem: ((String) -> Unit)? = null,
     onImportDb: () -> Unit = {},
     onImportItems: ((List<CollectionItem>) -> Unit) -> Unit = {},
     barcodeScanner: BarcodeScanner? = null,
@@ -77,6 +78,7 @@ fun App(
                         navController.navigate(Screen.EditItem.route)
                     },
                     onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                    onShare = onShareItem,
                 )
             }
 

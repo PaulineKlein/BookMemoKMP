@@ -8,6 +8,7 @@ import com.pklein.bookmemokmp.domain.model.FormatType
 import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.domain.model.SearchResult
+import com.pklein.bookmemokmp.domain.model.ShareLabels
 import com.pklein.bookmemokmp.domain.usecase.AddItemUseCase
 import com.pklein.bookmemokmp.domain.usecase.BookSearchUseCase
 import com.pklein.bookmemokmp.domain.usecase.DeleteItemUseCase
@@ -113,13 +114,14 @@ class CollectionViewModel(
             FilterParams(query, filter, status, fmt)
         }.flatMapLatest { params ->
             val sourceFlow =
-                params.filter?.let { getCollection.byType(it.itemType) }
+                params
+                    .filter
+                    ?.let { getCollection.byType(it.itemType) }
                     ?: getCollection.all()
             sourceFlow.map { items ->
                 var result = items
                 if (params.query.isNotBlank()) {
-                    result =
-                        result.filter { it.matchesQuery(params.query) }
+                    result = result.filter { it.matchesQuery(params.query) }
                 }
                 result = result.applyTriState(params.statusFilters.favorites) { it.favorite }
                 result = result.applyTriState(params.statusFilters.bought) { it.bought }
@@ -398,6 +400,32 @@ class CollectionViewModel(
         _updateCheckState.value = UpdateCheckState.Idle
     }
 
+    // ── Builds the plain-text summary of an item, used when sharing it. ───────────────────────
+    fun buildShareText(
+        item: CollectionItem,
+        labels: ShareLabels,
+    ): String {
+        fun progress(
+            current: Int?,
+            total: Int?,
+        ): String? =
+            current?.takeIf { it > 0 }?.let { cur ->
+                total?.takeIf { it > 0 }?.let { "$cur/$it" } ?: "$cur"
+            }
+
+        return buildList {
+            add(item.title)
+            item.author?.takeIf { it.isNotBlank() }?.let { add("${labels.author}: $it") }
+            item.illustrator?.takeIf { it.isNotBlank() }?.let { add("${labels.illustrator}: $it") }
+            item.year?.takeIf { it > 0 }?.let { add("${labels.year}: $it") }
+            progress(item.tome, item.totTome)?.let { add("${labels.volume}: $it") }
+            item.missingTomesLabel()?.let { add(labels.missingTemplate.replace("%s", it)) }
+            progress(item.chapter, item.totChapter)?.let { add("${labels.chapter}: $it") }
+            progress(item.episode, item.totEpisode)?.let { add("${labels.episode}: $it") }
+            item.season?.takeIf { it > 0 }?.let { add("${labels.season}: $it") }
+        }.joinToString("\n")
+    }
+
     // ── Builds a CSV string from the full unfiltered collection. ──────────────────────────────
     fun buildCsvContent(headline: String): String =
         buildString {
@@ -472,7 +500,7 @@ class CollectionViewModel(
         val q = query.trim().lowercase()
         return title.lowercase().contains(q) ||
             author?.lowercase()?.contains(q) == true ||
-            description?.lowercase()?.contains(q) == true
+            illustrator?.lowercase()?.contains(q) == true
     }
 }
 

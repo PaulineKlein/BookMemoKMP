@@ -40,6 +40,20 @@ class MainViewModel(
         )
     }
 
+    fun shareText(text: String) {
+        val app = getApplication<Application>()
+        val intent =
+            Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, text)
+            }
+        app.startActivity(
+            Intent.createChooser(intent, null).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            },
+        )
+    }
+
     fun shareDatabaseFile() {
         val app = getApplication<Application>()
         val dbFile = app.getDatabasePath("Book.db")

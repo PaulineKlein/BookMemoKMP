@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
                 onLaunchSignIn = { onSuccess, onError -> launchGoogleSignIn(onSuccess, onError) },
                 onExportCsv = mainViewModel::shareCsvFile,
                 onExportDb = mainViewModel::shareDatabaseFile,
+                onShareItem = mainViewModel::shareText,
                 onImportDb = { importDbLauncher.launch(arrayOf("*/*")) },
                 onImportItems = { callback -> mainViewModel.onImportItemsCallback = callback },
                 barcodeScanner =

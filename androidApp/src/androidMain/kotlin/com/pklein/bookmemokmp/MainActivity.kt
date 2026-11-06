@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.pklein.bookmemokmp.domain.repository.IBackupRepository
 import com.pklein.bookmemokmp.domain.repository.ICollectionRepository
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
+import com.pklein.bookmemokmp.scanner.CoverScanner
 import com.pklein.bookmemokmp.wear.pushFavoritesToWear
 import com.pklein.bookmemokmp.widget.EXTRA_EDIT_ITEM_ID
 import com.pklein.bookmemokmp.widget.FavoritesWidget
@@ -36,6 +37,8 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri?.let { mainViewModel.importDatabaseFile(it) }
         }
+
+    private val coverScanner = CoverScanner(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -59,6 +62,12 @@ class MainActivity : ComponentActivity() {
                 barcodeScanner =
                     if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
                         BarcodeScanner(this)
+                    } else {
+                        null
+                    },
+                coverScanner =
+                    if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                        coverScanner
                     } else {
                         null
                     },

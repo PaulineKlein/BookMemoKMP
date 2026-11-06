@@ -16,6 +16,7 @@ internal fun GoogleBooksResponse.toSearchResults(): List<SearchResult> =
             imageUrl =
                 volume.volumeInfo.imageLinks
                     ?.thumbnail
-                    ?.replace("http://", "https://"),
+                    ?.replace("http://", "https://")
+                    ?.replace("&edge=curl", ""),
         )
     } ?: emptyList()

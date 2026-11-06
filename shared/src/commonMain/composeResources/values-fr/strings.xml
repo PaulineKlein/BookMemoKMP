@@ -108,8 +108,11 @@
     <string name="filter_wishlist">Liste d'envies</string>
     <string name="filter_not_in_wishlist">Hors liste d'envies</string>
 
-    <string name="scan_barcode">Scanner un code</string>
+    <string name="scan_barcode">Scanner le code-barres</string>
     <string name="scan_barcode_error">Échec du scan. Veuillez réessayer.</string>
+    <string name="scan_cover">Scanner la couverture</string>
+    <string name="scan_cover_error">Impossible de lire un titre sur la couverture. Réessayez avec une photo plus nette et bien éclairée.</string>
+    <string name="ok">OK</string>
 
     <string name="statistics_type">Nombre de titres par section</string>
     <string name="statistics_book">Livres</string>

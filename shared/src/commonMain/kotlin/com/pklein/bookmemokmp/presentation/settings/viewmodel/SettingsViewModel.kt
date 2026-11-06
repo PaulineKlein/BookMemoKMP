@@ -58,12 +58,10 @@ class SettingsViewModel(
         userPrefs.saveEnglishDescription = value
     }
 
-    private val _replaceTitle = MutableStateFlow(userPrefs.replaceTitle)
-    val replaceTitle: StateFlow<Boolean> = _replaceTitle.asStateFlow()
+    val replaceTitle: StateFlow<Boolean> = userPrefs.replaceTitleFlow
 
     fun setReplaceTitle(value: Boolean) {
         userPrefs.replaceTitle = value
-        _replaceTitle.value = value
     }
 
     private val _email = MutableStateFlow(userPrefs.backupEmail)

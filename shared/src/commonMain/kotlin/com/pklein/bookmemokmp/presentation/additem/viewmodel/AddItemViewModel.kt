@@ -40,8 +40,7 @@ class AddItemViewModel(
 
     val saveEnglishDescription: StateFlow<Boolean> = userPrefs.saveEnglishDescriptionFlow
 
-    private val _replaceTitle = MutableStateFlow(userPrefs.replaceTitle)
-    val replaceTitle: StateFlow<Boolean> = _replaceTitle.asStateFlow()
+    val replaceTitle: StateFlow<Boolean> = userPrefs.replaceTitleFlow
 
     fun setSaveEnglishDescription(value: Boolean) {
         userPrefs.saveEnglishDescription = value

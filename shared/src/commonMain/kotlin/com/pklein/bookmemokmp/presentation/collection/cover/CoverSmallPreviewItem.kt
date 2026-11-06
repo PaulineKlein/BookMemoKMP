@@ -18,13 +18,14 @@ import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
 import bookmemokmp.shared.generated.resources.book_1
 import coil3.compose.SubcomposeAsyncImage
+import com.pklein.bookmemokmp.presentation.additem.withoutPageCurl
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CoverSmallPreviewItem(imageUrl: String?) {
     SubcomposeAsyncImage(
-        model = imageUrl?.ifBlank { null },
+        model = imageUrl?.withoutPageCurl()?.ifBlank { null },
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier

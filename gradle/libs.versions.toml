@@ -1,7 +1,7 @@
 [versions]
-agp = "9.4.1"
+agp = "9.5.0"
 glance = "1.2.0"
-wear-compose = "1.6.2"
+wear-compose = "1.7.1"
 wear-tiles = "1.6.2"
 wear-protolayout = "1.4.2"
 wear = "1.4.0"
@@ -13,23 +13,24 @@ androidx-appcompat = "1.8.0"
 androidx-core = "1.19.1"
 androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.11.0"
-androidx-navigation = "2.9.2"
+androidx-navigation = "2.10.0"
 androidx-testExt = "1.3.0"
-composeMultiplatform = "1.12.1"
+composeMultiplatform = "1.12.2"
 coroutines = "1.11.0"
 junit = "4.13.2"
 koin = "4.2.2"
 kotlin = "2.4.21"
-ktor = "3.6.0"
-kotlinx-serialization = "1.11.0"
+ktor = "3.6.1"
+kotlinx-serialization = "1.12.0"
 coil = "3.6.3"
 sqldelight = "2.4.1"
 multiplatform-settings = "1.3.0"
 material3 = "1.10.0-alpha05"
 kotlinx-datetime = "0.8.0"
 gms-code-scanner = "16.1.0"
+gms-text-recognition = "19.0.1"
 material ="1.7.3"
-firebase-bom = "35.0.1"
+firebase-bom = "35.1.0"
 firebaseCrashlytics = "3.0.8"
 googleServices = "4.5.0"
 playServicesAuth = "22.0.0"
@@ -86,6 +87,7 @@ coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.r
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
 kotlinx-datetime = { module ="org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 gms-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "gms-code-scanner" }
+gms-text-recognition = { module = "com.google.android.gms:play-services-mlkit-text-recognition", version.ref = "gms-text-recognition" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }

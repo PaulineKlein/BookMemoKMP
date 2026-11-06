@@ -23,6 +23,7 @@ import com.pklein.bookmemokmp.presentation.collection.viewmodel.CollectionViewMo
 import com.pklein.bookmemokmp.presentation.settings.SettingsScreen
 import com.pklein.bookmemokmp.presentation.settings.viewmodel.SettingsViewModel
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
+import com.pklein.bookmemokmp.scanner.CoverScanner
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,6 +38,7 @@ fun App(
     onImportDb: () -> Unit = {},
     onImportItems: ((List<CollectionItem>) -> Unit) -> Unit = {},
     barcodeScanner: BarcodeScanner? = null,
+    coverScanner: CoverScanner? = null,
 ) {
     val collectionViewModel: CollectionViewModel = koinViewModel()
     val addItemViewModel: AddItemViewModel = koinViewModel()
@@ -111,6 +113,7 @@ fun App(
                     },
                     onBack = { navController.popBackStack() },
                     barcodeScanner = barcodeScanner,
+                    coverScanner = coverScanner,
                 )
             }
 
@@ -130,6 +133,7 @@ fun App(
                             navController.popBackStack()
                         },
                         barcodeScanner = barcodeScanner,
+                        coverScanner = coverScanner,
                     )
                 }
             }

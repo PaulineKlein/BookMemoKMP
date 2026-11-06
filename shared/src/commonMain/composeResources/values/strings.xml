@@ -111,6 +111,9 @@
 
     <string name="scan_barcode">Scan barcode</string>
     <string name="scan_barcode_error">Barcode scan failed. Please try again.</string>
+    <string name="scan_cover">Scan cover</string>
+    <string name="scan_cover_error">Could not read a title from the cover. Please try again with a sharper, well-lit photo.</string>
+    <string name="ok">OK</string>
 
     <string name="statistics_type">Number of items by section</string>
     <string name="statistics_book">Books</string>

@@ -25,9 +25,15 @@ class UserPreferencesRepository(private val settings: Settings) {
             _saveEnglishDescription.value = value
         }
 
+    private val _replaceTitle = MutableStateFlow(settings.getBoolean(KEY_REPLACE_TITLE, true))
+    val replaceTitleFlow: StateFlow<Boolean> = _replaceTitle.asStateFlow()
+
     var replaceTitle: Boolean
-        get() = settings.getBoolean(KEY_REPLACE_TITLE, true)
-        set(value) = settings.putBoolean(KEY_REPLACE_TITLE, value)
+        get() = _replaceTitle.value
+        set(value) {
+            settings.putBoolean(KEY_REPLACE_TITLE, value)
+            _replaceTitle.value = value
+        }
 
     var backupEmail: String?
         get() = settings.getStringOrNull(KEY_BACKUP_EMAIL)

@@ -18,7 +18,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.LibraryAdd
+import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -165,7 +165,7 @@ fun BookItem(
                         if (hasAuthor) {
                             Spacer(Modifier.width(4.dp))
                             Icon(
-                                imageVector = Icons.Filled.LibraryAdd,
+                                imageVector = Icons.Filled.PersonSearch,
                                 contentDescription = stringResource(Res.string.more_author),
                                 tint = BadgeBookColor,
                                 modifier = Modifier.size(authorIconSize),

@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,9 +23,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,8 +39,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -58,6 +64,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
@@ -85,18 +92,19 @@ import bookmemokmp.shared.generated.resources.loan_borrowed_by
 import bookmemokmp.shared.generated.resources.loan_borrowed_since
 import bookmemokmp.shared.generated.resources.loaned
 import bookmemokmp.shared.generated.resources.notes
+import bookmemokmp.shared.generated.resources.ok
 import bookmemokmp.shared.generated.resources.progress_section
 import bookmemokmp.shared.generated.resources.publication_year
 import bookmemokmp.shared.generated.resources.remove_cover_accessibility
 import bookmemokmp.shared.generated.resources.scan_barcode
+import bookmemokmp.shared.generated.resources.scan_cover
+import bookmemokmp.shared.generated.resources.scan_cover_error
 import bookmemokmp.shared.generated.resources.search_online
-import bookmemokmp.shared.generated.resources.searching
 import bookmemokmp.shared.generated.resources.title_required
 import bookmemokmp.shared.generated.resources.total_volumes
 import bookmemokmp.shared.generated.resources.type_book
 import bookmemokmp.shared.generated.resources.type_comic
 import bookmemokmp.shared.generated.resources.type_manga
-import bookmemokmp.shared.generated.resources.type_section
 import bookmemokmp.shared.generated.resources.update_item
 import bookmemokmp.shared.generated.resources.wishlist
 import com.pklein.bookmemokmp.domain.model.CollectionItem
@@ -108,6 +116,7 @@ import com.pklein.bookmemokmp.presentation.additem.viewmodel.AddItemViewModel
 import com.pklein.bookmemokmp.presentation.additem.viewmodel.SearchState
 import com.pklein.bookmemokmp.presentation.additem.volumeCheckboxGrid.VolumeCheckboxGrid
 import com.pklein.bookmemokmp.scanner.BarcodeScanner
+import com.pklein.bookmemokmp.scanner.CoverScanner
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -124,6 +133,7 @@ fun AddItemScreen(
     initialItem: CollectionItem? = null,
     onDelete: (() -> Unit)? = null,
     barcodeScanner: BarcodeScanner? = null,
+    coverScanner: CoverScanner? = null,
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val saveEnglishDescription by viewModel.saveEnglishDescription.collectAsState()
@@ -142,6 +152,7 @@ fun AddItemScreen(
         onSaveDescriptionChanged = viewModel::setSaveEnglishDescription,
         replaceTitle = replaceTitle,
         barcodeScanner = barcodeScanner,
+        coverScanner = coverScanner,
     )
 }
 
@@ -160,6 +171,7 @@ private fun AddItemScreenContent(
     onSaveDescriptionChanged: (Boolean) -> Unit = {},
     replaceTitle: Boolean = true,
     barcodeScanner: BarcodeScanner? = null,
+    coverScanner: CoverScanner? = null,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -211,6 +223,7 @@ private fun AddItemScreenContent(
     var totChapter by remember { mutableStateOf(initialItem?.totChapter) }
     var totEpisode by remember { mutableStateOf(initialItem?.totEpisode) }
     var showCoverUrlDialog by remember { mutableStateOf(false) }
+    var showCoverScanError by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState =
         rememberDatePickerState(
@@ -299,6 +312,18 @@ private fun AddItemScreenContent(
         )
     }
 
+    if (showCoverScanError) {
+        AlertDialog(
+            onDismissRequest = { showCoverScanError = false },
+            text = { Text(stringResource(Res.string.scan_cover_error)) },
+            confirmButton = {
+                TextButton(onClick = { showCoverScanError = false }) {
+                    Text(stringResource(Res.string.ok))
+                }
+            },
+        )
+    }
+
     if (showCoverUrlDialog) {
         AddCoverUrlDialog(
             onConfirm = { url ->
@@ -372,45 +397,19 @@ private fun AddItemScreenContent(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // ── Type ─────────────────────────────────────────────────────────
-                Text(
-                    stringResource(Res.string.type_section),
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    ItemType.entries.forEachIndexed { index, itemType ->
-                        SegmentedButton(
-                            selected = type == itemType,
-                            onClick = {
-                                type = itemType
-                                format = null
-                            },
-                            shape = SegmentedButtonDefaults.itemShape(index, ItemType.entries.size),
-                        ) {
-                            Text(
-                                when (itemType) {
-                                    ItemType.LITERATURE -> stringResource(Res.string.type_book)
-                                    ItemType.MANGA -> stringResource(Res.string.type_manga)
-                                    ItemType.COMIC -> stringResource(Res.string.type_comic)
-                                },
-                            )
-                        }
-                    }
-                }
-
-                // ── Basic info ───────────────────────────────────────────────────
-                Row(
+                // ── Cover ────────────────────────────────────────────────────────
+                Box(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.Top,
+                    contentAlignment = Alignment.Center,
                 ) {
                     Box {
                         CoverPreviewItem(
                             imageUrl = imageUrl,
+                            tryHigherZoom = true,
                             modifier =
                                 Modifier
-                                    .width(132.dp)
-                                    .height(180.dp),
+                                    .width(210.dp)
+                                    .height(280.dp),
                         )
                         Box(
                             modifier =
@@ -438,22 +437,49 @@ private fun AddItemScreenContent(
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(Res.string.remove_cover_accessibility),
-                                    modifier = Modifier.size(12.dp),
+                                    modifier = Modifier.size(20.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             } else {
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = stringResource(Res.string.add_cover_url_accessibility),
-                                    modifier = Modifier.size(12.dp),
+                                    modifier = Modifier.size(20.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
                     }
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                }
+
+                // ── Type ─────────────────────────────────────────────────────────
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    ItemType.entries.forEachIndexed { index, itemType ->
+                        SegmentedButton(
+                            selected = type == itemType,
+                            onClick = {
+                                type = itemType
+                                format = null
+                            },
+                            shape = SegmentedButtonDefaults.itemShape(index, ItemType.entries.size),
+                        ) {
+                            Text(
+                                when (itemType) {
+                                    ItemType.LITERATURE -> stringResource(Res.string.type_book)
+                                    ItemType.MANGA -> stringResource(Res.string.type_manga)
+                                    ItemType.COMIC -> stringResource(Res.string.type_comic)
+                                },
+                            )
+                        }
+                    }
+                }
+
+                // ── Title & search ───────────────────────────────────────────────
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         OutlinedTextField(
                             value = title,
@@ -462,7 +488,7 @@ private fun AddItemScreenContent(
                                 titleError = false
                             },
                             label = { Text(stringResource(Res.string.edit_title)) },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.weight(1f),
                             isError = titleError,
                             supportingText =
                                 if (titleError) {
@@ -470,9 +496,9 @@ private fun AddItemScreenContent(
                                 } else {
                                     null
                                 },
-                            singleLine = true,
+                            maxLines = 2,
                         )
-                        Button(
+                        FilledIconButton(
                             onClick = {
                                 searchQuery = title.trim()
                                 showResultsDialog = true
@@ -483,62 +509,116 @@ private fun AddItemScreenContent(
                                 )
                             },
                             enabled = title.isNotBlank() && searchState !is SearchState.Loading,
-                            modifier = Modifier.fillMaxWidth(),
                             colors =
-                                ButtonDefaults.buttonColors(
+                                IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
                                     disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                                     disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 ),
+                            modifier = Modifier.padding(top = 6.dp),
                         ) {
                             if (searchState is SearchState.Loading) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
+                                    modifier = Modifier.size(20.dp),
                                     strokeWidth = 2.dp,
-                                )
-                                Text(
-                                    stringResource(Res.string.searching),
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             } else {
-                                Text(stringResource(Res.string.search_online))
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = stringResource(Res.string.search_online),
+                                )
                             }
                         }
-                        if (barcodeScanner != null) {
-                            Button(
-                                onClick = {
-                                    barcodeScanner.scan(
-                                        onResult = { isbn ->
-                                            title = isbn
-                                            titleError = false
-                                            showResultsDialog = true
-                                            onSearchIsbn(isbn, false)
-                                        },
-                                        onNotFoundException = {
-                                            showResultsDialog = true
-                                            onSearchIsbn(null, true)
-                                        },
-                                        onError = {
-                                            showResultsDialog = true
-                                            onSearchIsbn(null, false)
-                                        },
+                    }
+                    if (barcodeScanner != null || coverScanner != null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            if (barcodeScanner != null) {
+                                Button(
+                                    onClick = {
+                                        barcodeScanner.scan(
+                                            onResult = { isbn ->
+                                                title = isbn
+                                                titleError = false
+                                                showResultsDialog = true
+                                                onSearchIsbn(isbn, false)
+                                            },
+                                            onNotFoundException = {
+                                                showResultsDialog = true
+                                                onSearchIsbn(null, true)
+                                            },
+                                            onError = {
+                                                showResultsDialog = true
+                                                onSearchIsbn(null, false)
+                                            },
+                                        )
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(horizontal = 12.dp),
+                                    colors =
+                                        ButtonDefaults.buttonColors(
+                                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        ),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.QrCodeScanner,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
                                     )
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors =
-                                    ButtonDefaults.buttonColors(
-                                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    ),
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.QrCodeScanner,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                )
-                                Text(
-                                    stringResource(Res.string.scan_barcode),
-                                    modifier = Modifier.padding(start = 4.dp),
-                                )
+                                    Text(
+                                        stringResource(Res.string.scan_barcode),
+                                        modifier =
+                                            Modifier.padding(
+                                                start = 2.dp,
+                                                top = 2.dp,
+                                                bottom = 2.dp,
+                                            ),
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+                            }
+                            if (coverScanner != null) {
+                                Button(
+                                    onClick = {
+                                        coverScanner.scan(
+                                            onResult = { scannedTitle ->
+                                                title = scannedTitle
+                                                titleError = false
+                                                searchQuery = scannedTitle
+                                                showResultsDialog = true
+                                                onSearch(
+                                                    scannedTitle,
+                                                    type,
+                                                    if (Locale.current.language == "fr") "fr" else "en",
+                                                )
+                                            },
+                                            onError = { showCoverScanError = true },
+                                        )
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(horizontal = 12.dp),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CameraAlt,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                    Text(
+                                        stringResource(Res.string.scan_cover),
+                                        modifier =
+                                            Modifier.padding(
+                                                start = 2.dp,
+                                                top = 2.dp,
+                                                bottom = 2.dp,
+                                            ),
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
                             }
                         }
                     }

@@ -1,24 +1,42 @@
 package com.pklein.bookmemokmp.presentation.collection.collectionList
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.AutoStories
+import androidx.compose.material.icons.outlined.FilterListOff
+import androidx.compose.material.icons.outlined.SearchOff
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
+import bookmemokmp.shared.generated.resources.add_item_menu
+import bookmemokmp.shared.generated.resources.empty_category_description
+import bookmemokmp.shared.generated.resources.empty_collection_action
+import bookmemokmp.shared.generated.resources.empty_collection_description
+import bookmemokmp.shared.generated.resources.empty_collection_title
+import bookmemokmp.shared.generated.resources.empty_filters_action
+import bookmemokmp.shared.generated.resources.empty_filters_description
+import bookmemokmp.shared.generated.resources.empty_filters_title
+import bookmemokmp.shared.generated.resources.empty_search_action
+import bookmemokmp.shared.generated.resources.empty_search_description
 import bookmemokmp.shared.generated.resources.item_count
-import bookmemokmp.shared.generated.resources.search_all_empty
 import bookmemokmp.shared.generated.resources.search_category_empty
 import bookmemokmp.shared.generated.resources.search_empty
 import com.pklein.bookmemokmp.domain.model.CollectionItem
@@ -43,20 +61,81 @@ fun CollectionListPage(
     onCheckForUpdates: (CollectionItem) -> Unit,
     onSearchAuthor: (CollectionItem) -> Unit,
     onDismissUpdateCheck: () -> Unit,
+    onAddClick: () -> Unit,
+    onClearSearch: () -> Unit,
+    onClearFilters: () -> Unit,
     onShare: ((CollectionItem) -> Unit)? = null,
 ) {
     val noActiveFilters = activeFilter == null && !hasActiveStatusFilters
     when {
         items.isEmpty() && searchQuery.isBlank() && noActiveFilters -> {
-            EmptyState(stringResource(Res.string.search_all_empty))
+            EmptyState(
+                title = stringResource(Res.string.empty_collection_title),
+                description = stringResource(Res.string.empty_collection_description),
+                illustration = { EmptyStateIcon(Icons.Outlined.AutoStories) },
+                action = {
+                    FilledTonalButton(
+                        onClick = onAddClick,
+                        shape = FloatingActionButtonDefaults.shape,
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Spacer(Modifier.size(8.dp))
+                        Text(stringResource(Res.string.empty_collection_action))
+                    }
+                },
+            )
+        }
+
+        items.isEmpty() && searchQuery.isBlank() && hasActiveStatusFilters -> {
+            EmptyState(
+                title = stringResource(Res.string.empty_filters_title),
+                description = stringResource(Res.string.empty_filters_description),
+                illustration = { EmptyStateIcon(Icons.Outlined.FilterListOff) },
+                action = {
+                    FilledTonalButton(onClick = onClearFilters) {
+                        Text(stringResource(Res.string.empty_filters_action))
+                    }
+                },
+            )
         }
 
         items.isEmpty() && searchQuery.isBlank() -> {
-            EmptyState(stringResource(Res.string.search_category_empty))
+            EmptyState(
+                title = stringResource(Res.string.search_category_empty),
+                description = stringResource(Res.string.empty_category_description),
+                illustration = { EmptyStateIcon(Icons.Outlined.AutoStories) },
+                action = {
+                    FilledTonalButton(
+                        onClick = onAddClick,
+                        shape = FloatingActionButtonDefaults.shape,
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Spacer(Modifier.size(8.dp))
+                        Text(stringResource(Res.string.add_item_menu))
+                    }
+                },
+            )
         }
 
         items.isEmpty() -> {
-            EmptyState(stringResource(Res.string.search_empty, searchQuery))
+            EmptyState(
+                title = stringResource(Res.string.search_empty, searchQuery),
+                description = stringResource(Res.string.empty_search_description),
+                illustration = { EmptyStateIcon(Icons.Outlined.SearchOff) },
+                action = {
+                    TextButton(onClick = onClearSearch) {
+                        Text(stringResource(Res.string.empty_search_action))
+                    }
+                },
+            )
         }
 
         else -> {
@@ -90,23 +169,6 @@ fun CollectionListPage(
     }
 }
 
-// ── Empty state ───────────────────────────────────────────────────────────────
-
-@Composable
-private fun EmptyState(message: String) {
-    Box(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = message,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
 // ── Previews ──────────────────────────────────────────────────────────────────
 
 /** All filter selected, list with items. */
@@ -127,6 +189,9 @@ private fun PreviewCollectionWithItems() {
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
         )
     }
 }
@@ -148,6 +213,9 @@ private fun PreviewCollectionWithItemsBigFont() {
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
         )
     }
 }
@@ -202,6 +270,9 @@ private fun PreviewCollectionNoResults() {
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
         )
     }
 }
@@ -224,6 +295,9 @@ private fun PreviewCollectionNoResultsDark() {
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
         )
     }
 }
@@ -246,6 +320,9 @@ private fun PreviewCollectionEmpty() {
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
         )
     }
 }
@@ -268,6 +345,59 @@ private fun PreviewCollectionEmptyBigFont() {
             onCheckForUpdates = {},
             onDismissUpdateCheck = {},
             onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
+        )
+    }
+}
+
+/** Status filters active, nothing matches. */
+@Preview(showBackground = true)
+@Composable
+private fun PreviewCollectionNoFilterMatch() {
+    BookMemoTheme {
+        CollectionListPage(
+            items = emptyList(),
+            searchQuery = "",
+            activeFilter = null,
+            hasActiveStatusFilters = true,
+            listState = LazyListState(),
+            onEditClick = {},
+            onFavoriteToggle = {},
+            onProgressUpdate = {},
+            updateCheckState = UpdateCheckState.Idle,
+            onCheckForUpdates = {},
+            onDismissUpdateCheck = {},
+            onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
+        )
+    }
+}
+
+/** Type filter active, no item of that type yet — dark theme, big font. */
+@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true, fontScale = 2.0f)
+@Composable
+private fun PreviewCollectionCategoryEmptyDark() {
+    BookMemoTheme {
+        CollectionListPage(
+            items = emptyList(),
+            searchQuery = "",
+            activeFilter = CollectionFilter.MANGA,
+            hasActiveStatusFilters = false,
+            listState = LazyListState(),
+            onEditClick = {},
+            onFavoriteToggle = {},
+            onProgressUpdate = {},
+            updateCheckState = UpdateCheckState.Idle,
+            onCheckForUpdates = {},
+            onDismissUpdateCheck = {},
+            onSearchAuthor = {},
+            onAddClick = {},
+            onClearSearch = {},
+            onClearFilters = {},
         )
     }
 }

@@ -16,7 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import bookmemokmp.shared.generated.resources.Res
-import bookmemokmp.shared.generated.resources.book_1
+import bookmemokmp.shared.generated.resources.book
 import coil3.compose.SubcomposeAsyncImage
 import com.pklein.bookmemokmp.presentation.additem.withoutPageCurl
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
@@ -28,30 +28,32 @@ fun CoverSmallPreviewItem(imageUrl: String?) {
         model = imageUrl?.withoutPageCurl()?.ifBlank { null },
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(40.dp, 56.dp)
-            .clip(RoundedCornerShape(4.dp)),
+        modifier =
+            Modifier
+                .size(40.dp, 56.dp)
+                .clip(RoundedCornerShape(4.dp)),
         loading = {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
                 )
             }
         },
         error = {
             Image(
-                painter = painterResource(Res.drawable.book_1),
+                painter = painterResource(Res.drawable.book),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(40.dp, 56.dp)
+                modifier = Modifier.size(40.dp, 56.dp),
             )
-        }
+        },
     )
 }
 
@@ -63,7 +65,7 @@ fun CoverSmallPreviewItem(imageUrl: String?) {
 private fun PreviewCoverPreviewItemEmpty() {
     BookMemoTheme {
         CoverSmallPreviewItem(
-            imageUrl = ""
+            imageUrl = "",
         )
     }
 }
@@ -74,8 +76,7 @@ private fun PreviewCoverPreviewItemEmpty() {
 private fun PreviewCoverPreviewItemWithUrlFailed() {
     BookMemoTheme {
         CoverSmallPreviewItem(
-            imageUrl = "https://example.com/cover.jpg"
+            imageUrl = "https://example.com/cover.jpg",
         )
     }
 }
-

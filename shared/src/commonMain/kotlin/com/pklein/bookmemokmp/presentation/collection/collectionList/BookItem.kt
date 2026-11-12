@@ -61,8 +61,8 @@ import com.pklein.bookmemokmp.domain.model.ItemType
 import com.pklein.bookmemokmp.domain.model.MangaApiType
 import com.pklein.bookmemokmp.presentation.collection.cover.CoverSmallPreviewItem
 import com.pklein.bookmemokmp.presentation.collection.viewmodel.UpdateCheckState
-import com.pklein.bookmemokmp.ui.theme.BadgeBookColor
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
+import com.pklein.bookmemokmp.ui.theme.typeColors
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -167,7 +167,7 @@ fun BookItem(
                             Icon(
                                 imageVector = Icons.Filled.PersonSearch,
                                 contentDescription = stringResource(Res.string.more_author),
-                                tint = BadgeBookColor,
+                                tint = typeColors().book,
                                 modifier = Modifier.size(authorIconSize),
                             )
                         }

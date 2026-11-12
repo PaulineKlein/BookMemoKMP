@@ -15,10 +15,8 @@ import bookmemokmp.shared.generated.resources.type_book
 import bookmemokmp.shared.generated.resources.type_comic
 import bookmemokmp.shared.generated.resources.type_manga
 import com.pklein.bookmemokmp.domain.model.ItemType
-import com.pklein.bookmemokmp.ui.theme.BadgeBookColor
-import com.pklein.bookmemokmp.ui.theme.BadgeComicColor
-import com.pklein.bookmemokmp.ui.theme.BadgeMangaColor
 import com.pklein.bookmemokmp.ui.theme.BookMemoTheme
+import com.pklein.bookmemokmp.ui.theme.typeColors
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -27,11 +25,12 @@ fun TypeBadge(
     type: ItemType,
     title: String? = null,
 ) {
+    val colors = typeColors()
     val (bgColor, label) =
         when (type) {
-            ItemType.LITERATURE -> BadgeBookColor to stringResource(Res.string.type_book)
-            ItemType.MANGA -> BadgeMangaColor to stringResource(Res.string.type_manga)
-            ItemType.COMIC -> BadgeComicColor to stringResource(Res.string.type_comic)
+            ItemType.LITERATURE -> colors.book to stringResource(Res.string.type_book)
+            ItemType.MANGA -> colors.manga to stringResource(Res.string.type_manga)
+            ItemType.COMIC -> colors.comic to stringResource(Res.string.type_comic)
         }
     Box(
         modifier =

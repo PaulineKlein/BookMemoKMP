@@ -8,6 +8,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 
 // ── Palette ───────────────────────────────────────────────────────────────────
@@ -51,16 +52,34 @@ private val ErrorRedLight = Color(0xFFF7D9DF)
 // Success green (used for "Read" status badge)
 val SuccessGreen = Color(0xFF81C784)
 
-// ── Badge colors (used by BookItem) ──────────────────────────────────────────
+// ── Type colors (Book / Manga / Comic) ───────────────────────────────────────
 
-/** Soft pastel blue — Book badge. */
-val BadgeBookColor = Color(0xFF6BA3D0)
+// Dark theme: soft pastels (≥5:1 on the dark card surface).
+private val BookColorDark = Color(0xFF6BA3D0)
+private val MangaColorDark = Color(0xFFE8956D)
+private val ComicColorDark = Color(0xFF6BBAA8)
 
-/** Soft coral — Manga badge. */
-val BadgeMangaColor = Color(0xFFE8956D)
+// Light theme: darker variants reaching 3:1 on the light card surface (WCAG 1.4.11).
+private val BookColorLight = Color(0xFF4E91C7)
+private val MangaColorLight = Color(0xFFDE682F)
+private val ComicColorLight = Color(0xFF479986)
 
-/** Soft teal — Comic badge. */
-val BadgeComicColor = Color(0xFF6BBAA8)
+data class TypeColors(
+    val book: Color,
+    val manga: Color,
+    val comic: Color,
+)
+
+/** Type colors for badges, icons and charts: darker in light theme, soft pastels in dark theme. */
+@Composable
+fun typeColors(): TypeColors {
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    return if (isDark) {
+        TypeColors(BookColorDark, MangaColorDark, ComicColorDark)
+    } else {
+        TypeColors(BookColorLight, MangaColorLight, ComicColorLight)
+    }
+}
 
 // ── Color scheme ──────────────────────────────────────────────────────────────
 

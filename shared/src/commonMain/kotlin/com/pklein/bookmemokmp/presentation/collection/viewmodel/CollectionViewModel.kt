@@ -155,6 +155,12 @@ class CollectionViewModel(
         _formatFilter.value = format
     }
 
+    fun clearFilters() {
+        _filter.value = null
+        _formatFilter.value = null
+        _statusFilters.value = StatusFilters()
+    }
+
     fun onStatusFilterCycle(field: StatusFilterField) {
         _statusFilters.update { field.cycle(it) }
     }

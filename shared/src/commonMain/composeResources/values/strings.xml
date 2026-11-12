@@ -1,6 +1,14 @@
 <resources>
     <string name="search_placeholder">Search by title, author …</string>
-    <string name="search_all_empty">Your collection is empty\nTap + to add your first book</string>
+    <string name="empty_collection_title">Your collection is empty</string>
+    <string name="empty_collection_description">Add your first book, manga or comic to start tracking what you own and what you read.</string>
+    <string name="empty_collection_action">Add your first book</string>
+    <string name="empty_category_description">Add one to start building this part of your collection.</string>
+    <string name="empty_filters_title">No items match your filters</string>
+    <string name="empty_filters_description">Try removing a filter to see more of your collection.</string>
+    <string name="empty_filters_action">Clear filters</string>
+    <string name="empty_search_description">Check the spelling, or try another title or author.</string>
+    <string name="empty_search_action">Clear search</string>
     <string name="search_category_empty">No items in this category yet</string>
     <string name="search_empty">No results for %1$s</string>
     <plurals name="item_count">
@@ -91,7 +99,7 @@
 
     <string name="tab_collection">My collection</string>
     <string name="tab_stats">My statistics</string>
-    <string name="stats_total">Total</string>
+    <string name="statistics_of_total">of %1$d</string>
 
     <string name="filter_book">Books</string>
     <string name="filter_manga">Manga</string>
